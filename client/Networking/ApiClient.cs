@@ -9,7 +9,7 @@ namespace Vagabond.Client.Networking
     {
         public static async Task<StateResponse> HydrateVagabondState()
         {
-            string payload = await RequestHandler.GetJsonAsync("/Vagabond/sync");
+            string payload = await RequestHandler.GetJsonAsync("/vagabond/sync");
             return JsonConvert.DeserializeObject<StateResponse>(payload);
         }
     }
