@@ -26,7 +26,7 @@ public record ModMetadata : AbstractModMetadata
     public override string Author { get; init; } = "Oogabooga.dev";
     public override List<string>? Contributors { get; init; } = new() { "Oogabooga.dev" };
     public override SemanticVersioning.Version Version { get; init; } = new("0.1.0");
-    public override SemanticVersioning.Range SptVersion { get; init; } = new("=4.0.13");
+    public override SemanticVersioning.Range SptVersion { get; init; } = new(">=4.0.13");
     public override List<string>? Incompatibilities { get; init; }
     public override Dictionary<string, SemanticVersioning.Range>? ModDependencies { get; init; }
     public override string? Url { get; init; } = "https://github.com/mreliasen/spt-vagabond";
@@ -200,27 +200,27 @@ public class FenceTweaks(ConfigServer configServer) : IOnLoad
         {
             if (update.TraderId == "579dc571d53a0658a154fbec")
             {
-                update.Seconds.Min = 600;
-                update.Seconds.Max = 600;
+                update.Seconds.Min = 300;
+                update.Seconds.Max = 300;
             }
         }
         
         // limits
-        traderConfig.Fence.AmmoMaxPenLimit = 28;
+        traderConfig.Fence.AmmoMaxPenLimit = 26;
         traderConfig.Fence.ItemStackSizeOverrideMinMax[BaseClasses.AMMO] = new MinMax<int>
         {
-            Min = 2,
-            Max = 10
+            Min = 25,
+            Max = 100
         };
 
         traderConfig.Fence.ItemStackSizeOverrideMinMax[BaseClasses.AMMO_BOX] = new MinMax<int>
         {
             Min = 1,
-            Max = 10
+            Max = 3
         };
         
         // pricing
-        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.AMMO] = 180;
+        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.AMMO] = 170;
         traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.WEAPON] = 40000;
         traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.BACKPACK] = 30000;
         traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.VEST] = 35000;
@@ -230,12 +230,12 @@ public class FenceTweaks(ConfigServer configServer) : IOnLoad
         traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.SILENCER] = 20000;
         
         // Weapons and ammo
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.AMMO] = 140;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.AMMO_BOX] = 100;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.MAGAZINE] = 60;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.PISTOL] = 8;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.SMG] = 4;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.SHOTGUN] = 6;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.AMMO] = 160;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.AMMO_BOX] = 110;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.MAGAZINE] = 80;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.PISTOL] = 10;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.SMG] = 3;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.SHOTGUN] = 4;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.ASSAULT_RIFLE] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.ASSAULT_CARBINE] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.MARKSMAN_RIFLE] = 0;
@@ -246,16 +246,16 @@ public class FenceTweaks(ConfigServer configServer) : IOnLoad
         traderConfig.Fence.ItemTypeLimits[BaseClasses.ARMORED_EQUIPMENT] = 4;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.HEADWEAR] = 4;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.HEADPHONES] = 1;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.FACE_COVER] = 1;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.FACE_COVER] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.ARMOR_PLATE] = 1; 
         
         // misc
         traderConfig.Fence.ItemTypeLimits[BaseClasses.MEDICAL] = 8;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.HANDGUARD] = 1;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.MUZZLE] = 1;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.FLASHLIGHT] = 1;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.FUNCTIONAL_MOD] = 1;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.MOUNT] = 1;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.HANDGUARD] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.MUZZLE] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.FLASHLIGHT] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.FUNCTIONAL_MOD] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.MOUNT] = 0;
         
         // stuff we dont want to sell
         traderConfig.Fence.ItemTypeLimits[BaseClasses.GEAR_MOD] = 0;
@@ -283,10 +283,10 @@ public class FenceTweaks(ConfigServer configServer) : IOnLoad
         //  restocks and presets
         traderConfig.Fence.DiscountOptions.AssortSize = 0;
         traderConfig.Fence.WeaponPresetMinMax.Min = 35;
-        traderConfig.Fence.WeaponPresetMinMax.Max = 50;
+        traderConfig.Fence.WeaponPresetMinMax.Max = 40;
         traderConfig.Fence.EquipmentPresetMinMax.Min = 3;
         traderConfig.Fence.EquipmentPresetMinMax.Max = 5;
-        traderConfig.Fence.AssortSize = 280;
+        traderConfig.Fence.AssortSize = 290;
 
         return Task.CompletedTask;
     }
