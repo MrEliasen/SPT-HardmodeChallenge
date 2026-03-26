@@ -11,6 +11,7 @@ V-ex is used as the only way to get back to your stash, however taking v-ex does
 1. Download the latest version [here](https://github.com/MrEliasen/SPT-Vagabond/releases/latest/download/spt-hardmodechallenge.zip)
 2. extract and copy the `spt-vagabond\server\Vagabond` folder to `SPT\user\mods` and the `spt-vagabond\client\Vagabond` to `bepinex\plugins`.
 3. If you use **Headless** clients, you will need to add the client plugin to the headless spt client as well, or it will mess with extrations.
+4. Create a new profile, and it will get enrolled into the Vagabond challenge once you create your character.
 
 ## What is the Vagabond challenge?
 
