@@ -27,7 +27,7 @@ public class HardmodeChallenge : BaseUnityPlugin
         _logger = Logger;
         State = new HardmodeState();
         new ExfiltrationPointPatch().Enable();
-        new ExfiltrationPointPatch().Enable();
+        new MatchMakerLocationSelectionPatch().Enable();
         new MenuShowPatch().Enable();
         NotificationService.Create(transform);
         Log("loaded");
