@@ -1,7 +1,7 @@
-# Vagabond - SPT 4.0.13+
+# SPT Vagabond
 
-This is a a mod for SPT 4.0.13+ (possibly work on earlier 4.0 versions) which adds a light gameplay overhaul.
-You can only use transit and v-ex extractions, you start with limited gear and have to go through every map once to complete the challege.
+This is a a mod which adds a light gameplay overhaul.
+You can only use transit and v-ex extractions, you start with limited gear and have to go through every map once to complete the challenge.
 
 You will only be able to start on maps you have already completed, and only once you transit from a map is it marked as completed.
 V-ex is used as the only way to get back to your stash, however taking v-ex does not count towards the map being completed.
@@ -10,7 +10,7 @@ V-ex is used as the only way to get back to your stash, however taking v-ex does
 
 1. Download the latest version [here](https://github.com/MrEliasen/SPT-Vagabond/releases/latest/download/spt-vagabond.zip)
 2. extract and copy the `spt-vagabond\server\Vagabond` folder to `SPT\user\mods` and the `spt-vagabond\client\Vagabond` to `bepinex\plugins`.
-3. If you use **Headless** clients, you will need to add the client plugin to the headless spt client as well, or it will mess with extrations.
+3. If you use **Headless** clients, you will need to add the client plugin to the headless spt client as well, or it will mess with extractions.
 4. Create a new profile, and it will get enrolled into the Vagabond challenge once you create your character.
 
 ## What is the Vagabond challenge?
