@@ -6,7 +6,7 @@ namespace Vagabond.Server.Config;
 
 public sealed class VagabondConfig
 {
-    public int StartingRoubles { get; set; } = 150_000;
+    public int StartingRoubles { get; set; } = 135_000;
     public bool EnableFenceChanges { get; set; } = true;
     public bool AddSpectatorTrader { get; set; } = false;
     public bool EnableDifficultyChanges { get; set; } = true;

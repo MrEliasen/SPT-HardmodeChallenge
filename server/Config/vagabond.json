@@ -1,5 +1,5 @@
 {
-  "StartingRoubles": 150000, // The amount of money a player starts with
+  "StartingRoubles": 135000, // The amount of money a player starts with
   "EnableFenceChanges": true, // makes fence less random and useful as a starter vendor - recommend removing other traders
   "WipeStashOnEveryRaidEntry": false,
   "WipeStashOnFirstRaidEntry": true,
