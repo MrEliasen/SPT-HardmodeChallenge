@@ -2,6 +2,11 @@
 
 This is a a mod for SPT 4.0.13+ which adds gameplay changes, a light overhaul.
 
+This mod changes exfil points globally for the hosted raid, which affects both players and AI extraction options.
+Currently with this version, that is the quickest and simplest way I could find, without changing this server-side for all players.
+
+I might change this to merely affect actual exfil and leave the markers, but for now, just a heads up.
+
 ## What is the hardmode challenge?
 
 1. New profiles are are stripped down to an empty character and stash.
@@ -106,4 +111,6 @@ build\<client/server>\...
 
 ## Install
 
-Copy the `server\HardmodeChallenge` folder to `SPT\user\mods` and the `client\HardmodeChallenge` to `bepinex\plugins`
+Copy the `server\HardmodeChallenge` folder to `SPT\user\mods` and the `client\HardmodeChallenge` to `bepinex\plugins`.
+
+If you use **Headless** clients, they will need the client-side plugin as well, or extration limitations will not apply.

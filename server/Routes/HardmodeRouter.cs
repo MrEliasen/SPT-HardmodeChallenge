@@ -53,8 +53,6 @@ public class HardmodeRouter(
         var pocket = profile?.CharacterData?.PmcData?.Inventory?.Items?
             .FirstOrDefault(x => string.Equals(x.SlotId, "Pockets", StringComparison.OrdinalIgnoreCase));
 
-        HardmodeLogger.Log($"SYNC POCKET TEMPLATE: {pocket?.Template}");
-
         foreach (var raidName in state.CompletedRaids)
         {
             HCLocation raidNameE;
