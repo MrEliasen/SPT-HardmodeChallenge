@@ -1,13 +1,13 @@
-﻿using HardmodeChallenge.Server.Config;
-using SPTarkov.DI.Annotations;
+﻿using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils.Cloners;
+using Vagabond.Server.Config;
 
-namespace HardmodeChallenge.Server.Services;
+namespace Vagabond.Server.Services;
 
 
 [Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 1)]
@@ -65,7 +65,7 @@ public class BarterTraderService(ICloner cloner, DatabaseService databaseService
 
     public void AddTraderAssortment(Trader trader)
     {
-        foreach (var barter in HardmodeConfig._config.SpectatorTraderAssortment)
+        foreach (var barter in VagabondConfig._config.SpectatorTraderAssortment)
         {
             var rootId = new MongoId();
             trader.Assort.Items.Add(new Item

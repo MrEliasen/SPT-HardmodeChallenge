@@ -1,13 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
-using HardmodeChallenge.Server.Services;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Services.Mod;
+using Vagabond.Server.Services;
 
-namespace HardmodeChallenge.Server.State;
+namespace Vagabond.Server.State;
 
-public sealed class HardmodeState
+public sealed class VagabondState
 {
-    private const string ModKey = "dev.oogabooga.spt-hardmodechallenge";
+    private const string ModKey = "dev.oogabooga.spt-vagabond";
     
     public bool ProfileInitialized { get; set; }
     public bool HasEnteredFirstRaid { get; set; }
@@ -18,23 +18,23 @@ public sealed class HardmodeState
     public bool ResetProfile { get; set; }
 
     [SetsRequiredMembers]
-    public HardmodeState()
+    public VagabondState()
     {
         CompletedRaids = new List<string>();
     }
     
-    public static HardmodeState GetState(MongoId sessionId)
+    public static VagabondState GetState(MongoId sessionId)
     {
         var profileDataService = ReflectionUtil.GetService<ProfileDataService>();
         if (profileDataService == null)
         {
-            return new HardmodeState();
+            return new VagabondState();
         }
 
-        return profileDataService.GetProfileData<HardmodeState>(sessionId, ModKey) ?? new HardmodeState();
+        return profileDataService.GetProfileData<VagabondState>(sessionId, ModKey) ?? new VagabondState();
     }
 
-    public static void SaveState(MongoId sessionId, HardmodeState state)
+    public static void SaveState(MongoId sessionId, VagabondState state)
     {
         var profileDataService = ReflectionUtil.GetService<ProfileDataService>();
         profileDataService?.SaveProfileData(sessionId, ModKey, state);

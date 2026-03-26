@@ -1,15 +1,15 @@
 using System.Threading.Tasks;
-using HardmodeChallenge.Client.Models;
 using Newtonsoft.Json;
 using SPT.Common.Http;
+using Vagabond.Client.Models;
 
-namespace HardmodeChallenge.Client.Networking
+namespace Vagabond.Client.Networking
 {
     internal static class ApiClient
     {
-        public static async Task<StateResponse> HydrateHardmodeState()
+        public static async Task<StateResponse> HydrateVagabondState()
         {
-            string payload = await RequestHandler.GetJsonAsync("/hardmode-challenge/sync");
+            string payload = await RequestHandler.GetJsonAsync("/Vagabond/sync");
             return JsonConvert.DeserializeObject<StateResponse>(payload);
         }
     }

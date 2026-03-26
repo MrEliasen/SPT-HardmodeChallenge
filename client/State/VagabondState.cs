@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HardmodeChallenge.Client.State;
+namespace Vagabond.Client.State;
 
-public sealed class HardmodeState
+public sealed class VagabondState
 {
     public bool IsRefreshing { get; set; }
     public DateTime LastRefreshUtc { get; set; }

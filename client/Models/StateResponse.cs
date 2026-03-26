@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace HardmodeChallenge.Client.Models
+namespace Vagabond.Client.Models
 {
     public class StateResponse
     {

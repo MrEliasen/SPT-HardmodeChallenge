@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 
-namespace HardmodeChallenge.Server.Services;
+namespace Vagabond.Server.Services;
 
 internal static class ReflectionUtil
 {

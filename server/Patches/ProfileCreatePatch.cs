@@ -1,13 +1,13 @@
 using System.Reflection;
-using HardmodeChallenge.Server.Definitions;
-using HardmodeChallenge.Server.Services;
-using HardmodeChallenge.Server.State;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
+using Vagabond.Server.Definitions;
+using Vagabond.Server.Services;
+using Vagabond.Server.State;
 
-namespace HardmodeChallenge.Server.Patches;
+namespace Vagabond.Server.Patches;
 
 public sealed class ProfileCreatePatch : AbstractPatch
 {
@@ -31,62 +31,62 @@ public sealed class ProfileCreatePatch : AbstractPatch
 
     public static void CreateProfile(MongoId sessionId)
     {
-        if (!HardmodeService.ShouldApplyHardmodeRules(sessionId))
+        if (!VagabondService.ShouldApplyVagabondRules(sessionId))
         {
             return;
         }
 
-        var pmc = HardmodeService.GetPmcProfile(sessionId);
+        var pmc = VagabondService.GetPmcProfile(sessionId);
         if (pmc?.CharacterData?.PmcData == null)
         {
-            HardmodeLogger.Error($"BootstrapProfile did not modify profile for {sessionId}; PMC null {sessionId}");
+            VagabondLogger.Error($"BootstrapProfile did not modify profile for {sessionId}; PMC null {sessionId}");
             return;
         }
 
         var changed = InitializeNewCharacter(sessionId, pmc);
         if (!changed)
         {
-            HardmodeLogger.Error(
+            VagabondLogger.Error(
                 $"BootstrapProfile did not modify profile for {sessionId}; InitializeNewCharacter did not complete.");
             return;
         }
 
-        var state = HardmodeState.GetState(sessionId);
+        var state = VagabondState.GetState(sessionId);
         state.ProfileInitialized = true;
         state.ChallengesCompleted = 0; 
         state.CompletedRaids = [];
-        HardmodeState.SaveState(sessionId, state);
-        HardmodeService.ApplyTraderRestrictions(pmc.CharacterData.PmcData, true);
-        HardmodeService.PersistProfileIfPossible(sessionId);
+        VagabondState.SaveState(sessionId, state);
+        VagabondService.ApplyTraderRestrictions(pmc.CharacterData.PmcData, true);
+        VagabondService.PersistProfileIfPossible(sessionId);
         MailerService.SendMail(sessionId, Messages.Welcome(state.CompletedRaids));
 
-        HardmodeLogger.Success($"activated hardmode profile for {sessionId}.");
+        VagabondLogger.Success($"activated Vagabond profile for {sessionId}.");
     }
 
     private static bool InitializeNewCharacter(MongoId sessionId, SptProfile pmc)
     {
         if (pmc.CharacterData?.PmcData == null)
         {
-            HardmodeLogger.Error("InitializeNewCharacter: PmcData was null.");
+            VagabondLogger.Error("InitializeNewCharacter: PmcData was null.");
             return false;
         }
 
         var inventory = pmc.CharacterData.PmcData.Inventory;
         if (inventory == null)
         {
-            HardmodeLogger.Error("InitializeNewCharacter: inventory was null.");
+            VagabondLogger.Error("InitializeNewCharacter: inventory was null.");
             return false;
         }
 
         var items = inventory.Items;
         if (items == null)
         {
-            HardmodeLogger.Error("InitializeNewCharacter: inventory items list was null.");
+            VagabondLogger.Error("InitializeNewCharacter: inventory items list was null.");
             return false;
         }
 
-        HardmodeService.WipeItems(sessionId, pmc.CharacterData.PmcData, 0, true, true);
-        HardmodeService.AddMoney(sessionId, pmc.CharacterData.PmcData);
+        VagabondService.WipeItems(sessionId, pmc.CharacterData.PmcData, 0, true, true);
+        VagabondService.AddMoney(sessionId, pmc.CharacterData.PmcData);
         return true;
     }
 }

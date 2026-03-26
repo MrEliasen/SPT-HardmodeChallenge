@@ -1,14 +1,14 @@
 using System.Reflection;
 using System.Text.Json.Nodes;
-using HardmodeChallenge.Server.Definitions;
-using HardmodeChallenge.Server.Models.Enums;
-using HardmodeChallenge.Server.Services;
-using HardmodeChallenge.Server.State;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Callbacks;
 using SPTarkov.Server.Core.Models.Common;
+using Vagabond.Server.Definitions;
+using Vagabond.Server.Models.Enums;
+using Vagabond.Server.Services;
+using Vagabond.Server.State;
 
-namespace HardmodeChallenge.Server.Patches;
+namespace Vagabond.Server.Patches;
 
 public sealed class RaidLocationsPatch : AbstractPatch
 {
@@ -33,29 +33,29 @@ public sealed class RaidLocationsPatch : AbstractPatch
             return jsonString;
         }
 
-        if (!HardmodeService.ShouldApplyHardmodeRules(sessionId))
+        if (!VagabondService.ShouldApplyVagabondRules(sessionId))
         {
-            HardmodeLogger.Error($"Ignoring for session {sessionId}.");
+            VagabondLogger.Error($"Ignoring for session {sessionId}.");
             return jsonString;
         }
 
-        var pmc = HardmodeService.GetPmcProfile(sessionId);
+        var pmc = VagabondService.GetPmcProfile(sessionId);
         if (pmc == null || pmc.CharacterData?.PmcData == null)
         {
-            HardmodeLogger.Error($"Raid extractions: could not resolve PMC profile for {sessionId}.");
+            VagabondLogger.Error($"Raid extractions: could not resolve PMC profile for {sessionId}.");
             return jsonString;
         }
 
-        var state = HardmodeState.GetState(sessionId);
+        var state = VagabondState.GetState(sessionId);
         if (!state.ProfileInitialized)
         {
-            HardmodeLogger.Error($"Missing state {sessionId}.");
+            VagabondLogger.Error($"Missing state {sessionId}.");
             return jsonString;
         }
 
         if (state.CompletedRaids.Count == 0)
         {
-            HardmodeLogger.Error($"CompletedRaids is zero {sessionId}.");
+            VagabondLogger.Error($"CompletedRaids is zero {sessionId}.");
             return jsonString;
         }
 
@@ -64,17 +64,17 @@ public sealed class RaidLocationsPatch : AbstractPatch
 
         if (locations == null)
         {
-            HardmodeLogger.Error($"locations is null {sessionId}.");
+            VagabondLogger.Error($"locations is null {sessionId}.");
             return jsonString;
         }
 
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
         foreach (var raidName in state.CompletedRaids)
         {
-            HCLocation raidNameE;
-            HCLocation.TryParse(raidName, true, out raidNameE);
+            RaidLocations raidNameE;
+            RaidLocations.TryParse(raidName, true, out raidNameE);
 
-            if (raidNameE != HCLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+            if (raidNameE != RaidLocations.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
             {
                 foreach (var mapId in mapIds)
                 {
@@ -142,7 +142,7 @@ public sealed class RaidLocationsPatch : AbstractPatch
         int countPve = exfil["CountPVE"]?.GetValue<int>() ?? 0;
 
         return string.Equals(passageRequirement, "TransferItem", StringComparison.OrdinalIgnoreCase)
-               && string.Equals(id, HardmodeService.Roubles, StringComparison.OrdinalIgnoreCase)
+               && string.Equals(id, VagabondService.Roubles, StringComparison.OrdinalIgnoreCase)
                && string.Equals(requirementTip, "EXFIL_Item", StringComparison.OrdinalIgnoreCase)
                && (count > 0 || countPve > 0);
     }

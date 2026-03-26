@@ -1,8 +1,4 @@
 using System.Reflection;
-using HardmodeChallenge.Server.Config;
-using HardmodeChallenge.Server.Definitions;
-using HardmodeChallenge.Server.Services;
-using HardmodeChallenge.Server.State;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Models.Common;
@@ -10,8 +6,12 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
+using Vagabond.Server.Config;
+using Vagabond.Server.Definitions;
+using Vagabond.Server.Services;
+using Vagabond.Server.State;
 
-namespace HardmodeChallenge.Server.Patches;
+namespace Vagabond.Server.Patches;
 
 public sealed class RaidEndPatch : AbstractPatch
 {
@@ -47,7 +47,7 @@ public sealed class RaidEndPatch : AbstractPatch
     {
         try
         {
-            if (!HardmodeService.ShouldApplyHardmodeRules(sessionId))
+            if (!VagabondService.ShouldApplyVagabondRules(sessionId))
             {
                 return;
             }
@@ -57,7 +57,7 @@ public sealed class RaidEndPatch : AbstractPatch
                 return;
             }
 
-            var state = HardmodeState.GetState(sessionId);
+            var state = VagabondState.GetState(sessionId);
             if (!state.ProfileInitialized)
             {
                 return;
@@ -71,21 +71,21 @@ public sealed class RaidEndPatch : AbstractPatch
             if (isTransfer)
             {
                 // add the map to the list if they have not already been there
-                if (!HardmodeService.IsMapCompleted(state.CompletedRaids, locationName))
+                if (!VagabondService.IsMapCompleted(state.CompletedRaids, locationName))
                 {
                     state.CompletedRaids.Add(locationName);
-                    HardmodeState.SaveState(sessionId, state);
+                    VagabondState.SaveState(sessionId, state);
                 }
             }
 
             if (request.Results.TookCarExtract([]))
             {
-                if (HardmodeService.HasCompletedAllMaps(state.CompletedRaids) && !state.CompletedChallenge)
+                if (VagabondService.HasCompletedAllMaps(state.CompletedRaids) && !state.CompletedChallenge)
                 {
                     state.ChallengesCompleted++;
-                    state.ResetProfile = HardmodeConfig._config.ResetProfileOnWin;
+                    state.ResetProfile = VagabondConfig._config.ResetProfileOnWin;
                     state.CompletedChallenge = true;
-                    HardmodeState.SaveState(sessionId, state);
+                    VagabondState.SaveState(sessionId, state);
                     MailerService.SendMail(sessionId, Messages.CompletedChallenge());
                     return;
                 }
@@ -94,13 +94,13 @@ public sealed class RaidEndPatch : AbstractPatch
             if (!state.CompletedChallenge)
             {
                 MailerService.SendMail(sessionId,
-                    "Hardmode Challenge Progress:\n" + Messages.MapProgression(state.CompletedRaids) +
+                    "Vagabond Challenge Progress:\n" + Messages.MapProgression(state.CompletedRaids) +
                     $"\n{Messages.Rules()}");
             }
         }
         catch (Exception ex)
         {
-            HardmodeLogger.Error($"HandleRaidEnd failed: {ex}");
+            VagabondLogger.Error($"HandleRaidEnd failed: {ex}");
         }
     }
 }

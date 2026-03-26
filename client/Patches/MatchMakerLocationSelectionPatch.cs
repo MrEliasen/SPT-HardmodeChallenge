@@ -3,7 +3,7 @@ using EFT.UI.Matchmaker;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace HardmodeChallenge.Client.Patches;
+namespace Vagabond.Client.Patches;
 
 internal class MatchMakerLocationSelectionPatch : ModulePatch
 {
@@ -21,17 +21,17 @@ internal class MatchMakerLocationSelectionPatch : ModulePatch
             return;
         }
 
-        if (!HardmodeChallenge.State.ChallengeActive)
+        if (!Vagabond.State.ChallengeActive)
         {
             return;
         }
 
-        if (!HardmodeChallenge.State.ChallengeActive || HardmodeChallenge.State.CompletedRaids.Count == 0)
+        if (!Vagabond.State.ChallengeActive || Vagabond.State.CompletedRaids.Count == 0)
         {
             return;
         }
 
-        if (HardmodeChallenge.State.CompletedRaids.Contains(location._Id))
+        if (Vagabond.State.CompletedRaids.Contains(location._Id))
         {
             return;
         }

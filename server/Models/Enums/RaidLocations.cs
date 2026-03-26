@@ -1,8 +1,8 @@
 using System.ComponentModel;
 
-namespace HardmodeChallenge.Server.Models.Enums;
+namespace Vagabond.Server.Models.Enums;
 
-public enum HCLocation
+public enum RaidLocations
 {
     Nil,
     Factory,

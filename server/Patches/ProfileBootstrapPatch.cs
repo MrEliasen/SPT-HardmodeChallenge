@@ -1,15 +1,15 @@
 using System.Reflection;
-using HardmodeChallenge.Server.Config;
-using HardmodeChallenge.Server.Definitions;
-using HardmodeChallenge.Server.Services;
-using HardmodeChallenge.Server.State;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Profile;
+using Vagabond.Server.Config;
+using Vagabond.Server.Definitions;
+using Vagabond.Server.Services;
+using Vagabond.Server.State;
 
-namespace HardmodeChallenge.Server.Patches;
+namespace Vagabond.Server.Patches;
 
 public sealed class ProfileBootstrapPatch : AbstractPatch
 {
@@ -28,12 +28,12 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
     {
         try
         {
-            if (!HardmodeService.ShouldApplyHardmodeRules(sessionId))
+            if (!VagabondService.ShouldApplyVagabondRules(sessionId))
             {
                 return;
             }
 
-            var state = HardmodeState.GetState(sessionId);
+            var state = VagabondState.GetState(sessionId);
             if (!state.ProfileInitialized)
             {
                 return;
@@ -44,9 +44,9 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
                 var completed = state.CompletedChallenge;
                 state.ResetProfile = false;
                 state.CompletedChallenge = false;
-                HardmodeState.SaveState(sessionId, state);
-                HardmodeService.ResetProfile(sessionId, pmc, true, !HardmodeConfig._config.ResetProfileOnWin);
-                HardmodeService.PersistProfileIfPossible(sessionId);
+                VagabondState.SaveState(sessionId, state);
+                VagabondService.ResetProfile(sessionId, pmc, true, !VagabondConfig._config.ResetProfileOnWin);
+                VagabondService.PersistProfileIfPossible(sessionId);
                 
                 if (!completed)
                 {
@@ -55,11 +55,11 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
                 return;
             }
 
-            HardmodeService.ApplyTraderRestrictions(pmc, !state.HasEnteredFirstRaid);
+            VagabondService.ApplyTraderRestrictions(pmc, !state.HasEnteredFirstRaid);
         }
         catch (Exception ex)
         {
-            HardmodeLogger.Error($"Profile updating failed: {ex}");
+            VagabondLogger.Error($"Profile updating failed: {ex}");
         }
     }
 }

@@ -1,7 +1,3 @@
-using HardmodeChallenge.Server.Config;
-using HardmodeChallenge.Server.Definitions;
-using HardmodeChallenge.Server.Models.Enums;
-using HardmodeChallenge.Server.State;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
@@ -10,10 +6,14 @@ using SPTarkov.Server.Core.Models.Eft.Inventory;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Routers;
 using SPTarkov.Server.Core.Servers;
+using Vagabond.Server.Config;
+using Vagabond.Server.Definitions;
+using Vagabond.Server.Models.Enums;
+using Vagabond.Server.State;
 
-namespace HardmodeChallenge.Server.Services;
+namespace Vagabond.Server.Services;
 
-internal static class HardmodeService
+internal static class VagabondService
 {
     public const string Roubles = "5449016a4bdc2d6f028b456f";
     public const string SpectatorTraderID = "686172646d6f647472616465";
@@ -30,12 +30,12 @@ internal static class HardmodeService
         {
             if (!completedRaids.Any(x => string.Equals(x, raid.Key.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
-                if (!HardmodeConfig._config.IsLabsRequired && raid.Key == HCLocation.Labs)
+                if (!VagabondConfig._config.IsLabsRequired && raid.Key == RaidLocations.Labs)
                 {
                     continue;
                 }
 
-                if (!HardmodeConfig._config.IsLabyrinthRequired && raid.Key == HCLocation.Labyrinth)
+                if (!VagabondConfig._config.IsLabyrinthRequired && raid.Key == RaidLocations.Labyrinth)
                 {
                     continue;
                 }
@@ -52,36 +52,36 @@ internal static class HardmodeService
         var inventory = pmc.Inventory;
         if (inventory == null)
         {
-            HardmodeLogger.Error("PlayerCompletedChallenge: inventory was null.");
+            VagabondLogger.Error("PlayerCompletedChallenge: inventory was null.");
             return;
         }
 
         var items = inventory.Items;
         if (items == null)
         {
-            HardmodeLogger.Error("PlayerCompletedChallenge: inventory items list was null.");
+            VagabondLogger.Error("PlayerCompletedChallenge: inventory items list was null.");
             return;
         }
         
         ApplyTraderRestrictions(pmc, true);
 
-        var state = HardmodeState.GetState(sessionId);
+        var state = VagabondState.GetState(sessionId);
         state.ProfileInitialized = true;
         state.HasEnteredFirstRaid = false;
         state.RaidEntryCount = 0;
         state.ResetProfile = false;
         state.CompletedRaids = [];
-        HardmodeState.SaveState(sessionId, state);
+        VagabondState.SaveState(sessionId, state);
 
         if (softReset)
         {
-            HardmodeLogger.Log($"ResetProfile: player profile soft reset {sessionId}.");
+            VagabondLogger.Log($"ResetProfile: player profile soft reset {sessionId}.");
             return;
         }
 
         WipeItems(sessionId, pmc, state.ChallengesCompleted, true, true, true, keepSecureContainer);
         AddMoney(sessionId, pmc);
-        HardmodeLogger.Log($"ResetProfile: player profile reset {sessionId}.");
+        VagabondLogger.Log($"ResetProfile: player profile reset {sessionId}.");
     }
 
     public static SptProfile? GetPmcProfile(MongoId sessionId)
@@ -109,7 +109,7 @@ internal static class HardmodeService
         }
         catch (Exception ex)
         {
-            HardmodeLogger.Error($"PersistProfileIfPossible failed: {ex}");
+            VagabondLogger.Error($"PersistProfileIfPossible failed: {ex}");
         }
     }
 
@@ -119,26 +119,26 @@ internal static class HardmodeService
         var inventory = pmc.Inventory;
         if (inventory == null)
         {
-            HardmodeLogger.Error("Wipe Equipment: inventory was null.");
+            VagabondLogger.Error("Wipe Equipment: inventory was null.");
             return;
         }
 
         if (inventory.Items == null)
         {
-            HardmodeLogger.Error("Wipe Equipment: inventory items list was null.");
+            VagabondLogger.Error("Wipe Equipment: inventory items list was null.");
             return;
         }
 
         if (inventory.Stash == null)
         {
-            HardmodeLogger.Error("Wipe Equipment: Stash ID null");
+            VagabondLogger.Error("Wipe Equipment: Stash ID null");
             return;
         }
 
         var invHelper = ReflectionUtil.GetService<InventoryHelper>();
         if (invHelper == null)
         {
-            HardmodeLogger.Error("Wipe Equipment: Inventory Helper not found");
+            VagabondLogger.Error("Wipe Equipment: Inventory Helper not found");
             return;
         }
 
@@ -212,19 +212,19 @@ internal static class HardmodeService
             entry.Value.Disabled = true;
             entry.Value.Unlocked = false;
             
-            if (HardmodeConfig._config.AddSpectatorTrader && entry.Key == SpectatorTraderID)
+            if (VagabondConfig._config.AddSpectatorTrader && entry.Key == SpectatorTraderID)
             {
                 entry.Value.Disabled = false;
                 entry.Value.Unlocked = true;
             }
         
-            if (HardmodeConfig._config.PermanentTraders.Contains(entry.Key))
+            if (VagabondConfig._config.PermanentTraders.Contains(entry.Key))
             {
                 entry.Value.Disabled = false;
                 entry.Value.Unlocked = true;
             }
 
-            if (isNewAccount && HardmodeConfig._config.StarterTraders.Contains(entry.Key))
+            if (isNewAccount && VagabondConfig._config.StarterTraders.Contains(entry.Key))
             {
                 entry.Value.Disabled = false;
                 entry.Value.Unlocked = true;
@@ -232,7 +232,7 @@ internal static class HardmodeService
         }
     }
 
-    public static bool ShouldApplyHardmodeRules(MongoId sessionId)
+    public static bool ShouldApplyVagabondRules(MongoId sessionId)
     {
         try
         {
@@ -241,7 +241,7 @@ internal static class HardmodeService
                 return false;
             }
 
-            if (HardmodeConfig._config.IgnoredProfiles.Contains(sessionId))
+            if (VagabondConfig._config.IgnoredProfiles.Contains(sessionId))
             {
                 return false;
             }
@@ -274,11 +274,11 @@ internal static class HardmodeService
 
         if (invHelper == null || eventOutputHolder == null)
         {
-            HardmodeLogger.Error("AddMoney: required service was null.");
+            VagabondLogger.Error("AddMoney: required service was null.");
             return;
         }
 
-        var amount = HardmodeConfig._config.StartingRoubles;
+        var amount = VagabondConfig._config.StartingRoubles;
         while (amount > 0)
         {
             var moneyItem = new Item

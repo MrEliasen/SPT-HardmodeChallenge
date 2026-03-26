@@ -1,4 +1,4 @@
-﻿namespace HardmodeChallenge.Server.Models;
+﻿namespace Vagabond.Server.Models;
 
 public class SyncStateResponse
 {

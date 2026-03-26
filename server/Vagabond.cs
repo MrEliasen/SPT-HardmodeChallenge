@@ -1,6 +1,4 @@
 using System.Reflection;
-using HardmodeChallenge.Server.Config;
-using HardmodeChallenge.Server.Services;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Spt.Mod;
@@ -15,38 +13,40 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
+using Vagabond.Server.Config;
+using Vagabond.Server.Services;
 using Path = System.IO.Path;
 
-namespace HardmodeChallenge.Server;
+namespace Vagabond.Server;
 
 public record ModMetadata : AbstractModMetadata
 {
-    public override string ModGuid { get; init; } = "dev.oogabooga.spt-hardmodechallenge";
-    public override string Name { get; init; } = "HardmodeChallenge";
+    public override string ModGuid { get; init; } = "dev.oogabooga.spt-vagabond";
+    public override string Name { get; init; } = "Vagabond";
     public override string Author { get; init; } = "Oogabooga.dev";
     public override List<string>? Contributors { get; init; } = new() { "Oogabooga.dev" };
     public override SemanticVersioning.Version Version { get; init; } = new("0.1.0");
     public override SemanticVersioning.Range SptVersion { get; init; } = new("=4.0.13");
     public override List<string>? Incompatibilities { get; init; }
     public override Dictionary<string, SemanticVersioning.Range>? ModDependencies { get; init; }
-    public override string? Url { get; init; } = "https://github.com/mreliasen/spt-hardmodechallenge";
+    public override string? Url { get; init; } = "https://github.com/mreliasen/spt-vagabond";
     public override bool? IsBundleMod { get; init; }
     public override string License { get; init; } = "MIT";
 }
 
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
-public sealed class HardmodeChallengeLoader : IOnLoad
+public sealed class VagabondLoader : IOnLoad
 {
     public ModMetadata MetaData { get; } = new();
     
-    public HardmodeChallengeLoader(ISptLogger<HardmodeChallengeLoader> logger)
+    public VagabondLoader(ISptLogger<VagabondLoader> logger)
     {
-        HardmodeLogger.Init(logger);
+        VagabondLogger.Init(logger);
     }
 
     public Task OnLoad()
     {
-        HardmodeConfig.Initialize();
+        VagabondConfig.Initialize();
 
         new Patches.ProfileBootstrapPatch().Enable();;
         new Patches.ProfileCreatePatch().Enable();
@@ -59,7 +59,7 @@ public sealed class HardmodeChallengeLoader : IOnLoad
 }
 
 [Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 1)]
-public sealed class HardmodeChallengeDbLoader : IOnLoad
+public sealed class VagabondDbLoader : IOnLoad
 {
     private readonly ProfileDataService _profileDataService;
     private readonly SaveServer _saveServer;
@@ -68,16 +68,16 @@ public sealed class HardmodeChallengeDbLoader : IOnLoad
     private readonly MailSendService _mailSendService;
     private readonly LocationController _locationController;
 
-    private readonly ISptLogger<HardmodeChallengeDbLoader> _logger;
+    private readonly ISptLogger<VagabondDbLoader> _logger;
 
-    public HardmodeChallengeDbLoader(
+    public VagabondDbLoader(
         ProfileDataService profileDataService,
         SaveServer saveServer,
         InventoryHelper invHelper,
         EventOutputHolder eventOutputHolder,
         MailSendService mailSendService,
         LocationController locationController,
-        ISptLogger<HardmodeChallengeDbLoader> logger)
+        ISptLogger<VagabondDbLoader> logger)
     {
         _profileDataService = profileDataService;
         _saveServer = saveServer;
@@ -97,7 +97,7 @@ public sealed class HardmodeChallengeDbLoader : IOnLoad
         ReflectionUtil.Register(_mailSendService);
         ReflectionUtil.Register(_locationController);
 
-        _logger.Success($"[HardmodeChallenge] modules loaded.");
+        _logger.Success($"[Vagabond] modules loaded.");
         return Task.CompletedTask;
     }
 }
@@ -114,7 +114,7 @@ public class BarterTrader(
 
     public Task OnLoad()
     {
-        if (!HardmodeConfig._config.AddSpectatorTrader && HardmodeConfig._config.SpectatorTraderAssortment.Count <= 0)
+        if (!VagabondConfig._config.AddSpectatorTrader && VagabondConfig._config.SpectatorTraderAssortment.Count <= 0)
         {
             return Task.CompletedTask;
         }
@@ -150,13 +150,13 @@ public class DifficultyChanges(DatabaseService databaseService) : IOnLoad
 {
     public Task OnLoad()
     {
-        if (HardmodeConfig._config.EnableDifficultyChanges)
+        if (VagabondConfig._config.EnableDifficultyChanges)
         {
             var locationsdb = databaseService.GetLocations();
             locationsdb.Sandbox.Base.RequiredPlayerLevelMax = 0;
         }
 
-        if (HardmodeConfig._config.DisableFlea)
+        if (VagabondConfig._config.DisableFlea)
         {
             Globals globals = databaseService.GetGlobals();
             globals.Configuration.RagFair.MinUserLevel = 99;
@@ -171,7 +171,7 @@ public class FenceTweaks(ConfigServer configServer) : IOnLoad
 {
     public Task OnLoad()
     {
-        if (!HardmodeConfig._config.EnableFenceChanges)
+        if (!VagabondConfig._config.EnableFenceChanges)
         {
             return Task.CompletedTask;
         }

@@ -3,7 +3,7 @@ using EFT.Interactive;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace HardmodeChallenge.Client.Patches;
+namespace Vagabond.Client.Patches;
 
 internal class ExfiltrationPointPatch : ModulePatch
 {

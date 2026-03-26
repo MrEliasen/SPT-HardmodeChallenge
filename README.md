@@ -1,13 +1,18 @@
-# Hardmode Challenge for SPT 4.0.13+
+# Vagabond - SPT 4.0.13+
 
-This is a a mod for SPT 4.0.13+ which adds gameplay changes, a light overhaul.
+This is a a mod for SPT 4.0.13+ (possibly work on earlier 4.0 versions) which adds a light gameplay overhaul.
+You can only use transit and v-ex extractions, you start with limited gear and have to go through every map once to complete the challege.
 
-This mod changes exfil points globally for the hosted raid, which affects both players and AI extraction options.
-Currently with this version, that is the quickest and simplest way I could find, without changing this server-side for all players.
+You will only be able to start on maps you have already completed, and only once you transit from a map is it marked as completed.
+V-ex is used as the only way to get back to your stash, however taking v-ex does not count towards the map being completed.
 
-I might change this to merely affect actual exfil and leave the markers, but for now, just a heads up.
+## Install
 
-## What is the hardmode challenge?
+1. Download the latest version [here](https://github.com/MrEliasen/SPT-Vagabond/releases/latest/download/spt-hardmodechallenge.zip)
+2. extract and copy the `spt-vagabond\server\Vagabond` folder to `SPT\user\mods` and the `spt-vagabond\client\Vagabond` to `bepinex\plugins`.
+3. If you use **Headless** clients, you will need to add the client plugin to the headless spt client as well, or it will mess with extrations.
+
+## What is the Vagabond challenge?
 
 1. New profiles are are stripped down to an empty character and stash.
 2. Profile is given some amount of roubles to spend before the first raid.
@@ -25,9 +30,15 @@ I might change this to merely affect actual exfil and leave the markers, but for
    - Configurable if you want to include labs and labyrinth.
    - Your character and stash is wiped once again (configurable). Only items in your secure container is kept between challenges.
 
+#### Exfil Note
+This mod changes exfil points globally for the hosted raid, which affects both players and AI extraction options.
+Currently with this version, that is the quickest and simplest way I could find, without changing this server-side for all players.
+
+I might change this to merely affect actual exfil and leave the markers, but for now, just a heads up.
+
 ## Features
 
-Just look at the server config, I am lazy.. 
+Just look at the server config, I am lazy writing this, can elaborate later if the config is not enough.
 
 ```json
 {
@@ -89,28 +100,3 @@ Just look at the server config, I am lazy..
    }
 }
 ```
-
-## Build
-
-Prerequisites:
-
-- .NET 9+ SDK
-
-From this folder:
-
-```powershell
-dotnet restore
-dotnet build -c Release
-```
-
-The project is configured to output into:
-
-```text
-build\<client/server>\...
-```
-
-## Install
-
-Copy the `server\HardmodeChallenge` folder to `SPT\user\mods` and the `client\HardmodeChallenge` to `bepinex\plugins`.
-
-If you use **Headless** clients, they will need the client-side plugin as well, or extration limitations will not apply.

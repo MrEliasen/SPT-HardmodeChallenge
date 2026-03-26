@@ -1,10 +1,10 @@
 using System.Reflection;
 using System.Text.Json;
-using HardmodeChallenge.Server.Services;
+using Vagabond.Server.Services;
 
-namespace HardmodeChallenge.Server.Config;
+namespace Vagabond.Server.Config;
 
-public sealed class HardmodeConfig
+public sealed class VagabondConfig
 {
     public int StartingRoubles { get; set; } = 150_000;
     public bool EnableFenceChanges { get; set; } = true;
@@ -28,40 +28,40 @@ public sealed class HardmodeConfig
     public Dictionary<string, Dictionary<string, int>> SpectatorTraderAssortment { get; set; } = new();
 
     // internal
-    public static HardmodeConfig _config = new();
+    public static VagabondConfig _config = new();
 
     public static void Initialize()
     {
         _config = LoadConfig();
     }
 
-    private static HardmodeConfig LoadConfig()
+    private static VagabondConfig LoadConfig()
     {
         try
         {
             var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
                               AppContext.BaseDirectory;
-            var localConfig = Path.Combine(assemblyDir, "config", "hardmode-challenge.json");
+            var localConfig = Path.Combine(assemblyDir, "config", "vagabond.json");
             var siblingConfig = Path.Combine(Directory.GetParent(assemblyDir)?.FullName ?? assemblyDir, "config",
-                "hardmode-challenge.json");
+                "vagabond.json");
 
             var chosen = File.Exists(localConfig) ? localConfig : siblingConfig;
             if (!File.Exists(chosen))
             {
-                return new HardmodeConfig();
+                return new VagabondConfig();
             }
 
             var json = File.ReadAllText(chosen);
-            return JsonSerializer.Deserialize<HardmodeConfig>(json, new JsonSerializerOptions
+            return JsonSerializer.Deserialize<VagabondConfig>(json, new JsonSerializerOptions
             {
                 ReadCommentHandling = JsonCommentHandling.Skip,
                 PropertyNameCaseInsensitive = true
-            }) ?? new HardmodeConfig();
+            }) ?? new VagabondConfig();
         }
         catch (Exception ex)
         {
-            HardmodeLogger.Error($"Failed to load config, using defaults: {ex}");
-            return new HardmodeConfig();
+            VagabondLogger.Error($"Failed to load config, using defaults: {ex}");
+            return new VagabondConfig();
         }
     }
 }

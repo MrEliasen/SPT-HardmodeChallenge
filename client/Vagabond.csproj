@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <OutputType>Library</OutputType>
-    <RootNamespace>HardmodeChallenge.Client</RootNamespace>
+    <RootNamespace>Vagabond.Client</RootNamespace>
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
     
@@ -11,9 +11,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     
     <!-- Build Settings -->
-    <AssemblyName>HardmodeChallenge</AssemblyName>
     <Deterministic>true</Deterministic>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageId>Vagabond</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>

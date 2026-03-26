@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
-using HardmodeChallenge.Server.Config;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Models.Spt.Dialog;
 using SPTarkov.Server.Core.Services;
+using Vagabond.Server.Config;
 
-namespace HardmodeChallenge.Server.Patches;
+namespace Vagabond.Server.Patches;
 
 public sealed class MailAttachmentsPatch : AbstractPatch
 {
@@ -21,7 +21,7 @@ public sealed class MailAttachmentsPatch : AbstractPatch
             return true;
         }
 
-        if (HardmodeConfig._config.StripMailAttachments)
+        if (VagabondConfig._config.StripMailAttachments)
         {
             return true;
         }

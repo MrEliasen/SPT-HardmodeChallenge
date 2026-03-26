@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace HardmodeChallenge.Client.Services;
+namespace Vagabond.Client.Services;
 
 public sealed class NotificationService : MonoBehaviour
 {
@@ -24,7 +24,7 @@ public sealed class NotificationService : MonoBehaviour
         public float PanelSpacing = 12f;
 
         // Title
-        public string Title = "Hardmode Challenge";
+        public string Title = "Vagabond";
         public int TitleFontSize = 14;
         public float TitleHeight = 32f;
 
@@ -63,7 +63,7 @@ public sealed class NotificationService : MonoBehaviour
 
         _pendingSettings = settings ?? new UiSettings();
 
-        var go = new GameObject("HardmodeChallenge.NotificationService");
+        var go = new GameObject("Vagabond.NotificationService");
         if (parent != null)
             go.transform.SetParent(parent, false);
 

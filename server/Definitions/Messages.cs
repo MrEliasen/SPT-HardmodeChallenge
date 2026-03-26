@@ -1,7 +1,7 @@
-﻿using HardmodeChallenge.Server.Config;
-using HardmodeChallenge.Server.Models.Enums;
+﻿using Vagabond.Server.Config;
+using Vagabond.Server.Models.Enums;
 
-namespace HardmodeChallenge.Server.Definitions;
+namespace Vagabond.Server.Definitions;
 
 public static class Messages
 {
@@ -10,11 +10,11 @@ public static class Messages
         var mesage ="You complete a map by taking a transit exit to another map.\n"+
                  "If you take a v-ex, you go back to your stash, however the map is not counted towards your progression.\n";
         
-        if (HardmodeConfig._config.WipeStashOnEveryRaidEntry)
+        if (VagabondConfig._config.WipeStashOnEveryRaidEntry)
         {
             mesage +=
                 "\nWhen you enter a raid, all items left in the stash will be deleted. First time you enter a raid, any left over cash is removed.";
-        } else if (HardmodeConfig._config.WipeStashOnFirstRaidEntry)
+        } else if (VagabondConfig._config.WipeStashOnFirstRaidEntry)
         {
             mesage +=
                 "\nWhen you enter you your first raid, all items left in the stash will be deleted, including any left over cash.";
@@ -28,13 +28,13 @@ public static class Messages
 
     public static string CompletedChallenge()
     {
-        return "Congratulations!\nYou have completed the Hardmode Challenge!\n\nCurrently there is no rewards from completing the challenge, but the 'win' is recorded for the future should it be implemented.";
+        return "Congratulations!\nYou have completed the Vagabond Challenge!\n\nCurrently there is no rewards from completing the challenge, but the 'win' is recorded for the future should it be implemented.";
     }
 
     public static string Welcome(List<string> completedRaids)
     {
         return
-            "Welcome to the Hardmode Challenge!\n\n" +
+            "Welcome to the Vagabond Challenge!\n\n" +
             Rules() + "\n\n" +
             MapProgression(completedRaids);
     }
@@ -42,7 +42,7 @@ public static class Messages
     public static string ProfileReset(List<string> completedRaids)
     {
         return
-            "Your last Hardmode attempt has been reset, you can now go again.\n\n" +
+            "Your last Vagabond attempt has been reset, you can now go again.\n\n" +
             Rules() + "\n\n" +
             MapProgression(completedRaids);
     }
@@ -58,12 +58,12 @@ public static class Messages
 
             if (!completed)
             {
-                if (!HardmodeConfig._config.IsLabsRequired && raid.Key == HCLocation.Labs)
+                if (!VagabondConfig._config.IsLabsRequired && raid.Key == RaidLocations.Labs)
                 {
                     continue;
                 }
 
-                if (!HardmodeConfig._config.IsLabyrinthRequired && raid.Key == HCLocation.Labyrinth)
+                if (!VagabondConfig._config.IsLabyrinthRequired && raid.Key == RaidLocations.Labyrinth)
                 {
                     continue;
                 }

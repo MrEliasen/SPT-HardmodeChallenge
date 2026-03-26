@@ -3,12 +3,12 @@ using System.Reflection;
 using System.Threading.Tasks;
 using EFT;
 using EFT.UI;
-using HardmodeChallenge.Client.Services;
 using HarmonyLib;
 using JetBrains.Annotations;
 using SPT.Reflection.Patching;
+using Vagabond.Client.Services;
 
-namespace HardmodeChallenge.Client.Patches;
+namespace Vagabond.Client.Patches;
 
 internal class MenuShowPatch : ModulePatch
 {
@@ -28,21 +28,21 @@ internal class MenuShowPatch : ModulePatch
     [PatchPostfix]
     private static void Postfix()
     {
-        if (HardmodeChallenge.State.ChallengeActive && !HardmodeChallenge.State.HasShownWarningMessage && !HardmodeChallenge.State.HasEnteredFirstRaid)
+        if (Vagabond.State.ChallengeActive && !Vagabond.State.HasShownWarningMessage && !Vagabond.State.HasEnteredFirstRaid)
         {
             var message = "";
 
-            if (HardmodeChallenge.State.WipeEveryRaid)
+            if (Vagabond.State.WipeEveryRaid)
             {
                 message += "\nFirst time you enter a raid, any money you carry on you is removed.\n";
                 message += "Everything left in your stash is wiped every time you enter a raid. Carry with you what you want to keep.\n";
             }
-            else if (HardmodeChallenge.State.WipeFirstRaid)
+            else if (Vagabond.State.WipeFirstRaid)
             {
                 message += "\nFirst time you enter a raid, any money you carry on you is removed, and everything left in your stash gets wiped\n";
             }
 
-            if (HardmodeChallenge.State.LooseAccessToTraders)
+            if (Vagabond.State.LooseAccessToTraders)
             {
                 message += "\nOnce you enter your first raid, you will loose access to some of the traders.";
             }
@@ -50,40 +50,40 @@ internal class MenuShowPatch : ModulePatch
             if (message != "")
             {
                 NotificationService.Instance.ShowMessage("WARNING\n" + message);
-                HardmodeChallenge.State.HasShownWarningMessage = true;
+                Vagabond.State.HasShownWarningMessage = true;
             }
         }
 
-        if (HardmodeChallenge.State.IsRefreshing || (DateTime.UtcNow - HardmodeChallenge.State.LastRefreshUtc).TotalSeconds < 30)
+        if (Vagabond.State.IsRefreshing || (DateTime.UtcNow - Vagabond.State.LastRefreshUtc).TotalSeconds < 30)
         {
             return;
         }
 
-        HardmodeChallenge.State.IsRefreshing = true;
-        _ = RefreshHardmodeState();
+        Vagabond.State.IsRefreshing = true;
+        _ = RefreshVagabondState();
     }
    
     [CanBeNull]
-    private static async Task RefreshHardmodeState()
+    private static async Task RefreshVagabondState()
     {
         try
         {
-            var resp = await Networking.ApiClient.HydrateHardmodeState();
-            HardmodeChallenge.State.ChallengeActive = resp.ChallengeActive;
-            HardmodeChallenge.State.HasEnteredFirstRaid = resp.HasEnteredFirstRaid;
-            HardmodeChallenge.State.CompletedRaids = resp.CompletedRaids;
-            HardmodeChallenge.State.LastRefreshUtc = DateTime.UtcNow;
-            HardmodeChallenge.State.WipeEveryRaid = resp.WipeEveryRaid;
-            HardmodeChallenge.State.WipeFirstRaid = resp.WipeFirstRaid;
-            HardmodeChallenge.State.LooseAccessToTraders = resp.LooseAccessToTraders;
+            var resp = await Networking.ApiClient.HydrateVagabondState();
+            Vagabond.State.ChallengeActive = resp.ChallengeActive;
+            Vagabond.State.HasEnteredFirstRaid = resp.HasEnteredFirstRaid;
+            Vagabond.State.CompletedRaids = resp.CompletedRaids;
+            Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
+            Vagabond.State.WipeEveryRaid = resp.WipeEveryRaid;
+            Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
+            Vagabond.State.LooseAccessToTraders = resp.LooseAccessToTraders;
         }
         catch (Exception ex)
         {
-            HardmodeChallenge.LogError($"Failed to sync hardmode state: {ex}");
+            Vagabond.LogError($"Failed to sync Vagabond state: {ex}");
         }
         finally
         {
-            HardmodeChallenge.State.IsRefreshing = false;
+            Vagabond.State.IsRefreshing = false;
         }
     }
 }

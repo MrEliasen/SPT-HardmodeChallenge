@@ -1,4 +1,4 @@
-namespace HardmodeChallenge.Client;
+namespace Vagabond.Client;
 
 internal static class BuildInfo
 {
