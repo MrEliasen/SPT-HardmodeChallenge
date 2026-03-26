@@ -49,7 +49,7 @@ internal class MenuShowPatch : ModulePatch
 
             if (message != "")
             {
-                NotificationService.Instance.ShowMessage("WARNING\n" + message);
+                NotificationService.Instance.ShowMessage("Heads up!\n" + message);
                 Vagabond.State.HasShownWarningMessage = true;
             }
         }
