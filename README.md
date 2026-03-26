@@ -1,6 +1,8 @@
-# SPT Vagabond
+<p align="center">
+  <img src="logo.png" alt="Logo" width="400">
+</p> 
 
-This is a a mod which adds a light gameplay overhaul.
+Vagabond is a light gameplay overhaul mod for SPTarkov, with some rogue lite elements.
 You can only use transit and v-ex extractions, you start with limited gear and have to go through every map once to complete the challenge.
 
 You will only be able to start on maps you have already completed, and only once you transit from a map is it marked as completed.
@@ -36,6 +38,10 @@ This mod changes exfil points globally for the hosted raid, which affects both p
 Currently with this version, that is the quickest and simplest way I could find, without changing this server-side for all players.
 
 I might change this to merely affect actual exfil and leave the markers, but for now, just a heads up.
+
+### Win Rewards
+
+I have not made any rewards for complete the challenge yet, however I am sure we can think of something. I tried adding my own pockets... yea that didnt work. I have ideas but they are not yet implemented. However every time you successfully complete the challenge, it is saved against your profile so rewards could be retroactive in theory.
 
 ## Features
 
