@@ -21,7 +21,7 @@ namespace HardmodeChallenge.Server;
 
 public record ModMetadata : AbstractModMetadata
 {
-    public override string ModGuid { get; init; } = "dev.oogabooga.spt-hardmodechallenge.server";
+    public override string ModGuid { get; init; } = "dev.oogabooga.spt-hardmodechallenge";
     public override string Name { get; init; } = "HardmodeChallenge";
     public override string Author { get; init; } = "Oogabooga.dev";
     public override List<string>? Contributors { get; init; } = new() { "Oogabooga.dev" };
