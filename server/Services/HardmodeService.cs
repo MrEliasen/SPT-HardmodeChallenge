@@ -79,7 +79,7 @@ internal static class HardmodeService
             return;
         }
 
-        WipeItems(sessionId, pmc, state.ChallengesCompleted, true, true, false, keepSecureContainer);
+        WipeItems(sessionId, pmc, state.ChallengesCompleted, true, true, true, keepSecureContainer);
         AddMoney(sessionId, pmc);
         HardmodeLogger.Log($"ResetProfile: player profile reset {sessionId}.");
     }
@@ -175,7 +175,7 @@ internal static class HardmodeService
             }
 
             if (forceRemoveAllMoney &&
-                currencies.Any(x => string.Equals(x, item.Template, StringComparison.OrdinalIgnoreCase)) && (item.ParentId != null && item.ParentId != inventory.Stash))
+                currencies.Any(x => string.Equals(x, item.Template, StringComparison.OrdinalIgnoreCase)))
             {
                 idsToRemove.Add(item.Id);
                 continue;
