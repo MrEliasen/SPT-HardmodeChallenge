@@ -21,13 +21,13 @@ public sealed class MailAttachmentsPatch : AbstractPatch
             return true;
         }
 
-        if (VagabondConfig._config.StripMailAttachments)
+        if (!VagabondConfig._config.StripMailAttachments)
         {
             return true;
         }
 
         // Remove all attached items before SPT converts them into rewards
-        messageDetails.Items?.Clear();
+        messageDetails.Items = [];
         messageDetails.ItemsMaxStorageLifetimeSeconds = null;
         return true;
     }
