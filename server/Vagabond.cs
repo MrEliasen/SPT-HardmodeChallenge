@@ -9,6 +9,7 @@ using SPTarkov.Server.Core.Routers;
 using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Controllers;
+using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
@@ -38,7 +39,7 @@ public record ModMetadata : AbstractModMetadata
 public sealed class VagabondLoader : IOnLoad
 {
     public ModMetadata MetaData { get; } = new();
-    
+
     public VagabondLoader(ISptLogger<VagabondLoader> logger)
     {
         VagabondLogger.Init(logger);
@@ -48,7 +49,8 @@ public sealed class VagabondLoader : IOnLoad
     {
         VagabondConfig.Initialize();
 
-        new Patches.ProfileBootstrapPatch().Enable();;
+        new Patches.ProfileBootstrapPatch().Enable();
+        ;
         new Patches.ProfileCreatePatch().Enable();
         new Patches.RaidEndPatch().Enable();
         new Patches.RaidJoinPatch().Enable();
@@ -118,7 +120,7 @@ public class BarterTrader(
         {
             return Task.CompletedTask;
         }
-        
+
         var assembly = Assembly.GetExecutingAssembly();
         var pathToMod = modHelper.GetAbsolutePathToModFolder(assembly);
 
@@ -161,13 +163,19 @@ public class DifficultyChanges(DatabaseService databaseService) : IOnLoad
             Globals globals = databaseService.GetGlobals();
             globals.Configuration.RagFair.MinUserLevel = 99;
         }
-        
+
         return Task.CompletedTask;
     }
 }
 
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 5)]
-public class FenceTweaks(ConfigServer configServer) : IOnLoad
+[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 10)]
+public class FenceTweaks(
+    DatabaseService databaseService,
+    ConfigServer configServer,
+    TraderHelper traderHelper,
+    FenceBaseAssortGenerator fenceBaseAssortGenerator,
+    FenceService fenceService
+) : IOnLoad
 {
     public Task OnLoad()
     {
@@ -180,18 +188,18 @@ public class FenceTweaks(ConfigServer configServer) : IOnLoad
         traderConfig.Fence.DiscountOptions.AssortSize = 0;
         traderConfig.Fence.PresetPriceMult = 1.0;
         traderConfig.Fence.ItemPriceMult = 1.0;
-        
+
         // durability
         traderConfig.Fence.WeaponDurabilityPercentMinMax.Max.Min = 90;
         traderConfig.Fence.WeaponDurabilityPercentMinMax.Max.Max = 100;
         traderConfig.Fence.WeaponDurabilityPercentMinMax.Current.Min = 80;
         traderConfig.Fence.WeaponDurabilityPercentMinMax.Current.Max = 95;
-        
+
         traderConfig.Fence.ArmorMaxDurabilityPercentMinMax.Max.Min = 55;
         traderConfig.Fence.ArmorMaxDurabilityPercentMinMax.Max.Max = 85;
         traderConfig.Fence.ArmorMaxDurabilityPercentMinMax.Current.Min = 40;
-        traderConfig.Fence.ArmorMaxDurabilityPercentMinMax.Current.Max = 75; 
-        
+        traderConfig.Fence.ArmorMaxDurabilityPercentMinMax.Current.Max = 75;
+
         // refreshing
         traderConfig.Fence.PartialRefreshChangePercent = 0;
         traderConfig.Fence.PartialRefreshTimeSeconds = 600;
@@ -200,11 +208,11 @@ public class FenceTweaks(ConfigServer configServer) : IOnLoad
         {
             if (update.TraderId == "579dc571d53a0658a154fbec")
             {
-                update.Seconds.Min = 300;
-                update.Seconds.Max = 300;
+                update.Seconds.Min = 600;
+                update.Seconds.Max = 600;
             }
         }
-        
+
         // limits
         traderConfig.Fence.AmmoMaxPenLimit = 26;
         traderConfig.Fence.ItemStackSizeOverrideMinMax[BaseClasses.AMMO] = new MinMax<int>
@@ -218,46 +226,59 @@ public class FenceTweaks(ConfigServer configServer) : IOnLoad
             Min = 1,
             Max = 3
         };
-        
+
+        //  presets
+        traderConfig.Fence.DiscountOptions.AssortSize = 0;
+        traderConfig.Fence.WeaponPresetMinMax.Min = 20;
+        traderConfig.Fence.WeaponPresetMinMax.Max = 30;
+        traderConfig.Fence.EquipmentPresetMinMax.Min = 3;
+        traderConfig.Fence.EquipmentPresetMinMax.Max = 5;
+        traderConfig.Fence.AssortSize = 150;
+
         // pricing
-        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.AMMO] = 170;
+        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.AMMO] = 180;
         traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.WEAPON] = 40000;
-        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.BACKPACK] = 30000;
-        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.VEST] = 35000;
-        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.ARMORED_EQUIPMENT] = 45000;
-        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.MEDICAL] = 25000;
-        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.OPTIC_SCOPE] = 20000;
-        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.SILENCER] = 20000;
-        
+        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.BACKPACK] = 22000;
+        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.VEST] = 25000;
+        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.ARMORED_EQUIPMENT] = 30000;
+        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.MEDICAL] = 20000;
+        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.OPTIC_SCOPE] = 10000;
+        traderConfig.Fence.ItemCategoryRoublePriceLimit[BaseClasses.SILENCER] = 5000;
+
         // Weapons and ammo
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.AMMO] = 160;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.AMMO_BOX] = 110;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.MAGAZINE] = 80;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.PISTOL] = 10;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.SMG] = 3;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.SHOTGUN] = 4;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.AMMO] = 30;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.AMMO_BOX] = 15;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.MAGAZINE] = 15;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.PISTOL] = 5;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.SMG] = 5;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.SHOTGUN] = 5;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.ASSAULT_RIFLE] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.ASSAULT_CARBINE] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.MARKSMAN_RIFLE] = 0;
-        
+
         // equipment
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.BACKPACK] = 5;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.VEST] = 5;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.ARMORED_EQUIPMENT] = 4;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.HEADWEAR] = 4;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.BACKPACK] = 4;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.VEST] = 3;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.ARMORED_EQUIPMENT] = 2;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.HEADWEAR] = 1;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.HEADPHONES] = 1;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.FACE_COVER] = 0;
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.ARMOR_PLATE] = 1; 
-        
+
         // misc
-        traderConfig.Fence.ItemTypeLimits[BaseClasses.MEDICAL] = 8;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.MEDICAL] = 4;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.HANDGUARD] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.MUZZLE] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.FLASHLIGHT] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.FUNCTIONAL_MOD] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.MOUNT] = 0;
-        
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.DRINK] = 1;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.FOOD] = 1;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.FOOD_DRINK] = 1;
+
         // stuff we dont want to sell
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.SIMPLE_CONTAINER] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.MOB_CONTAINER] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.LOOT_CONTAINER] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.GEAR_MOD] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.RECEIVER] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.PISTOL_GRIP] = 0;
@@ -279,14 +300,26 @@ public class FenceTweaks(ConfigServer configServer) : IOnLoad
         traderConfig.Fence.ItemTypeLimits[BaseClasses.CHARGE] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.BIPOD] = 0;
         traderConfig.Fence.ItemTypeLimits[BaseClasses.LAUNCHER] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.HOUSEHOLD_GOODS] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.KEY] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.KEY_MECHANICAL] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.KEYCARD] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.MULTITOOLS] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.SPEC_ITEM] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.THERMAL_VISION] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.TOOL] = 0;
+        traderConfig.Fence.ItemTypeLimits[BaseClasses.VISORS] = 0;
 
-        //  restocks and presets
-        traderConfig.Fence.DiscountOptions.AssortSize = 0;
-        traderConfig.Fence.WeaponPresetMinMax.Min = 35;
-        traderConfig.Fence.WeaponPresetMinMax.Max = 40;
-        traderConfig.Fence.EquipmentPresetMinMax.Min = 3;
-        traderConfig.Fence.EquipmentPresetMinMax.Max = 5;
-        traderConfig.Fence.AssortSize = 290;
+        // resock
+        fenceBaseAssortGenerator.GenerateFenceBaseAssorts();
+        fenceService.GenerateFenceAssorts();
+
+        var traders = databaseService.GetTraders();
+        if (traders.TryGetValue("579dc571d53a0658a154fbec", out var fence))
+        {
+            fence.Base.NextResupply = (int)traderHelper.GetNextUpdateTimestamp(fence.Base.Id);
+            fence.Base.RefreshTraderRagfairOffers = true;
+        }
 
         return Task.CompletedTask;
     }
