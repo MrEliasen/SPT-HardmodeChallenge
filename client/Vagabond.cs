@@ -27,7 +27,7 @@ public class Vagabond : BaseUnityPlugin
         _logger = Logger;
         State = new VagabondState();
         new ExfiltrationPointPatch().Enable();
-        new MatchMakerLocationSelectionPatch().Enable();
+        new MatchMakerLocationFilterPatch().Enable();
         new MenuShowPatch().Enable();
         NotificationService.Create(transform);
         Log("loaded");

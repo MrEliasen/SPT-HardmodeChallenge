@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using EFT;
@@ -71,7 +72,7 @@ internal class MenuShowPatch : ModulePatch
             var resp = await Networking.ApiClient.HydrateVagabondState();
             Vagabond.State.ChallengeActive = resp.ChallengeActive;
             Vagabond.State.HasEnteredFirstRaid = resp.HasEnteredFirstRaid;
-            Vagabond.State.CompletedRaids = resp.CompletedRaids;
+            Vagabond.State.CompletedRaids = resp.CompletedRaids.ToHashSet(StringComparer.OrdinalIgnoreCase);
             Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
             Vagabond.State.WipeEveryRaid = resp.WipeEveryRaid;
             Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
