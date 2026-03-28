@@ -9,6 +9,7 @@
   "StripMailAttachments": true, // still allows mail, but removed all attachments from messages.
   "EnableDifficultyChanges": true, // currently just disabled newbie ground zero.
   "PreventStarterTraderAccessAfterFirstRaidEntry": true,
+  "RememberLastLocation": true, // if true, players can only join the last map they extracted from. If they died, it gets reset to the first map they completed.
   "StarterTraders": [
     // add ID's of traders here.
     // access will be removed after player enters first raid, if setting is enabled

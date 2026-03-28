@@ -52,14 +52,20 @@ public sealed class RaidEndPatch : AbstractPatch
                 return;
             }
 
-            if (isDead)
+            var state = VagabondState.GetState(sessionId);
+            if (!state.ProfileInitialized)
             {
                 return;
             }
 
-            var state = VagabondState.GetState(sessionId);
-            if (!state.ProfileInitialized)
+            state.LastLocation = locationName;
+            VagabondState.SaveState(sessionId, state);
+
+            if (isDead)
             {
+                state.LastLocation = state.CompletedRaids.Count > 0 ? state.CompletedRaids.First() : "";
+                VagabondState.SaveState(sessionId, state);
+                MailerService.SendMail(sessionId, Messages.YouDied());
                 return;
             }
 
