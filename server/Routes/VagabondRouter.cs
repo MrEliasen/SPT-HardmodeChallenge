@@ -59,6 +59,13 @@ public class VagabondRouter(
             RaidLocations.TryParse(raidName, true, out raidNameE);
             if (raidNameE != RaidLocations.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
             {
+                if (state.LastLocation != "" && VagabondConfig._config.RememberLastLocation && string.Equals(state.LastLocation, raidName, StringComparison.OrdinalIgnoreCase))
+                {
+                    response.CompletedRaids.Clear();
+                    response.CompletedRaids.AddRange(mapIds);
+                    break;
+                }
+                
                 response.CompletedRaids.AddRange(mapIds);
             }
         }

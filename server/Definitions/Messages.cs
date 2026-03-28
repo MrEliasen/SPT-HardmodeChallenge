@@ -25,6 +25,11 @@ public static class Messages
             
         return mesage;
     }
+    
+    public static string YouDied()
+    {
+        return "Because you died, your last location has been reset back to the first raid you entered. Your completion progress remains the same.";
+    }
 
     public static string CompletedChallenge()
     {

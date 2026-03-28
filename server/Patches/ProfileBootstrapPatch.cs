@@ -39,6 +39,13 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
                 return;
             }
 
+            // attempt to apply to old profiles
+            if (VagabondConfig._config.RememberLastLocation && state.LastLocation == "" && state.CompletedRaids.Count > 0)
+            {
+                state.LastLocation = state.CompletedRaids.Last();
+                VagabondState.SaveState(sessionId, state);
+            }
+
             if (state.ResetProfile || state.CompletedChallenge)
             {
                 var completed = state.CompletedChallenge;

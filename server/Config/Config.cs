@@ -12,19 +12,22 @@ public sealed class VagabondConfig
     public bool EnableDifficultyChanges { get; set; } = true;
     public bool DisableFlea { get; set; } = true;
     public bool StripMailAttachments { get; set; } = true;
-    public bool AlsoWipeCarriedMoneyOnFirstRaid{ get; set; } = true;
+    public bool AlsoWipeCarriedMoneyOnFirstRaid { get; set; } = true;
     public bool WipeStashOnEveryRaidEntry { get; set; } = false;
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
     public bool ResetProfileOnWin { get; set; } = true;
+    public bool RememberLastLocation { get; set; } = true;
     public bool PreventStarterTraderAccessAfterFirstRaidEntry { get; set; } = true;
-    public List<string> StarterTraders { get; set; } = new() {};
+    public List<string> StarterTraders { get; set; } = new() { };
+
     public List<string> PermanentTraders { get; set; } = new()
     {
         "579dc571d53a0658a154fbec"
     };
+
     public bool IsLabsRequired { get; set; } = true;
     public bool IsLabyrinthRequired { get; set; } = false;
-    public List<string> IgnoredProfiles { get; set; } = new() {};
+    public List<string> IgnoredProfiles { get; set; } = new() { };
     public Dictionary<string, Dictionary<string, int>> SpectatorTraderAssortment { get; set; } = new();
 
     // internal

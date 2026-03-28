@@ -13,6 +13,7 @@ public sealed class VagabondState
     public bool HasEnteredFirstRaid { get; set; }
     public int RaidEntryCount { get; set; }
     public int ChallengesCompleted { get; set; }
+    public required string LastLocation { get; set; }
     public bool CompletedChallenge{ get; set; }
     public required List<string> CompletedRaids { get; set; }
     public bool ResetProfile { get; set; }
@@ -21,6 +22,7 @@ public sealed class VagabondState
     public VagabondState()
     {
         CompletedRaids = new List<string>();
+        LastLocation = "";
     }
     
     public static VagabondState GetState(MongoId sessionId)
