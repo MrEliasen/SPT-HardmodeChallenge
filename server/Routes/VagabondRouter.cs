@@ -15,14 +15,16 @@ namespace Vagabond.Server.Routes;
 [Injectable]
 public class VagabondRouter(
     JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
-    
     new RouteAction<EmptyRequestData>(
-        "/vagabond/sync", (_, _, sessionID, _) =>
+        "/vagabond/sync",
+        (_, _, sessionID, _) =>
         {
-            return ValueTask.FromResult(jsonUtil.Serialize(HandleRoute(sessionID)) ?? throw new NullReferenceException("Could not serialize sync response"));
+            return ValueTask.FromResult(jsonUtil.Serialize(HandleRoute(sessionID)) ??
+                                        throw new NullReferenceException("Could not serialize sync response"));
         }
     ),
-]) {
+])
+{
     private static SyncStateResponse HandleRoute(MongoId sessionId)
     {
         var response = new SyncStateResponse
@@ -30,7 +32,7 @@ public class VagabondRouter(
             ChallengeActive = false,
             CompletedRaids = [],
         };
-        
+
         if (!VagabondService.ShouldApplyVagabondRules(sessionId))
         {
             return response;
@@ -47,29 +49,47 @@ public class VagabondRouter(
         response.HasEnteredFirstRaid = state.HasEnteredFirstRaid;
         response.WipeEveryRaid = VagabondConfig._config.WipeStashOnEveryRaidEntry;
         response.WipeFirstRaid = VagabondConfig._config.WipeStashOnFirstRaidEntry;
-        response.LooseAccessToTraders = VagabondConfig._config.PreventStarterTraderAccessAfterFirstRaidEntry && VagabondConfig._config.StarterTraders.Count > 0;
-        
-        var profile = VagabondService.GetPmcProfile(sessionId);
-        var pocket = profile?.CharacterData?.PmcData?.Inventory?.Items?
-            .FirstOrDefault(x => string.Equals(x.SlotId, "Pockets", StringComparison.OrdinalIgnoreCase));
+        response.LooseAccessToTraders = VagabondConfig._config.PreventStarterTraderAccessAfterFirstRaidEntry &&
+                                        VagabondConfig._config.StarterTraders.Count > 0;
+
+        if (VagabondConfig._config.RememberLastLocation)
+        {
+            var raidNameE = GetCurrentRaidName(state);
+            if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+            {
+                response.CompletedRaids.AddRange(mapIds);
+            }
+
+            return response;
+        }
 
         foreach (var raidName in state.CompletedRaids)
         {
-            RaidLocations raidNameE;
-            RaidLocations.TryParse(raidName, true, out raidNameE);
-            if (raidNameE != RaidLocations.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+            RaidLocation raidNameE = LocationData.NormaliseMapName(raidName);
+            if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
             {
-                if (state.LastLocation != "" && VagabondConfig._config.RememberLastLocation && string.Equals(state.LastLocation, raidName, StringComparison.OrdinalIgnoreCase))
-                {
-                    response.CompletedRaids.Clear();
-                    response.CompletedRaids.AddRange(mapIds);
-                    break;
-                }
-                
                 response.CompletedRaids.AddRange(mapIds);
             }
         }
 
         return response;
+    }
+
+
+    private static RaidLocation GetCurrentRaidName(VagabondState state)
+    {
+        var mapName = state.TransitState?.ToMap;
+
+        if (string.IsNullOrWhiteSpace(mapName))
+        {
+            mapName = state.LastExitMap;
+        }
+
+        if (string.IsNullOrWhiteSpace(mapName))
+        {
+            return RaidLocation.Nil;
+        }
+
+        return LocationData.NormaliseMapName(mapName);
     }
 }

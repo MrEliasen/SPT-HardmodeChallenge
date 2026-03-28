@@ -49,13 +49,13 @@ public sealed class VagabondLoader : IOnLoad
     {
         VagabondConfig.Initialize();
 
+        new Patches.MailAttachmentsPatch().Enable();
         new Patches.ProfileBootstrapPatch().Enable();
-        ;
         new Patches.ProfileCreatePatch().Enable();
         new Patches.RaidEndPatch().Enable();
         new Patches.RaidJoinPatch().Enable();
         new Patches.RaidLocationsPatch().Enable();
-        new Patches.MailAttachmentsPatch().Enable();
+        new Patches.StartLocalRaidPatch().Enable();
         return Task.CompletedTask;
     }
 }

@@ -57,13 +57,10 @@ public sealed class RaidEndPatch : AbstractPatch
             {
                 return;
             }
-
-            state.LastLocation = locationName;
-            VagabondState.SaveState(sessionId, state);
-
+            
             if (isDead)
             {
-                state.LastLocation = state.CompletedRaids.Count > 0 ? state.CompletedRaids.First() : "";
+                state.LastExitMap = state.CompletedRaids.Count > 0 ? state.CompletedRaids.First() : "";
                 VagabondState.SaveState(sessionId, state);
                 MailerService.SendMail(sessionId, Messages.YouDied());
                 return;
@@ -74,15 +71,26 @@ public sealed class RaidEndPatch : AbstractPatch
                 return;
             }
 
+            var LocationMapE = LocationData.NormaliseMapName(locationName);
+            var LocationMapStr = LocationMapE.ToString();
+            state.LastExitMap = LocationMapStr;
+
             if (isTransfer)
             {
                 // add the map to the list if they have not already been there
-                if (!VagabondService.IsMapCompleted(state.CompletedRaids, locationName))
+                if (!VagabondService.IsMapCompleted(state.CompletedRaids, LocationMapE))
                 {
-                    state.CompletedRaids.Add(locationName);
-                    VagabondState.SaveState(sessionId, state);
+                    state.CompletedRaids.Add(state.LastExitMap);
                 }
+
+                state.TransitState = new TransitState
+                {
+                    FromMap =  LocationMapStr,
+                    ToMap = LocationData.NormaliseMapName(request?.LocationTransit?.Location).ToString()
+                };
             }
+
+            VagabondState.SaveState(sessionId, state);
 
             if (request.Results.TookCarExtract([]))
             {

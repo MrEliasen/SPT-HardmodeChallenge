@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 namespace Vagabond.Server.Models.Enums;
 
-public enum RaidLocations
+public enum RaidLocation
 {
     Nil,
     Factory,

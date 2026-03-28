@@ -18,10 +18,10 @@ internal static class VagabondService
     public const string Roubles = "5449016a4bdc2d6f028b456f";
     public const string SpectatorTraderID = "686172646d6f647472616465";
 
-    public static bool IsMapCompleted(List<string> completedRaids, string locationName)
+    public static bool IsMapCompleted(List<string> completedRaids, RaidLocation location)
     {
-        LocationData.LookupTable.TryGetValue(locationName, out var mapRef);
-        return completedRaids.Any(x => string.Equals(x, mapRef.ToString(), StringComparison.OrdinalIgnoreCase));
+        var str = location.ToString();
+        return completedRaids.Any(x => string.Equals(x, str, StringComparison.OrdinalIgnoreCase));
     }
 
     public static bool HasCompletedAllMaps(List<string> completedRaids)
@@ -30,12 +30,12 @@ internal static class VagabondService
         {
             if (!completedRaids.Any(x => string.Equals(x, raid.Key.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
-                if (!VagabondConfig._config.IsLabsRequired && raid.Key == RaidLocations.Labs)
+                if (!VagabondConfig._config.IsLabsRequired && raid.Key == RaidLocation.Labs)
                 {
                     continue;
                 }
 
-                if (!VagabondConfig._config.IsLabyrinthRequired && raid.Key == RaidLocations.Labyrinth)
+                if (!VagabondConfig._config.IsLabyrinthRequired && raid.Key == RaidLocation.Labyrinth)
                 {
                     continue;
                 }
