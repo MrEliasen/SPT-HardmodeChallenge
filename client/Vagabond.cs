@@ -29,6 +29,9 @@ public class Vagabond : BaseUnityPlugin
         new ExfiltrationPointPatch().Enable();
         new MatchMakerLocationFilterPatch().Enable();
         new MenuShowPatch().Enable();
+        new SkipInsuranceScreenPatch().Enable();
+        new DisableInsuranceBackNavigationPatch().Enable();
+        
         NotificationService.Create(transform);
         Log("loaded");
     }
