@@ -1,6 +1,3 @@
-using System.Reflection;
-using System.Text.Json;
-
 namespace Vagabond.Server.Services;
 
 internal static class ReflectionUtil
@@ -53,19 +50,5 @@ internal static class ReflectionUtil
             ServicesByName[baseType.Name] = service;
             baseType = baseType.BaseType;
         }
-    }
-    
-    private static readonly MethodInfo MemberwiseCloneMethod =
-        typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic)
-        ?? throw new InvalidOperationException("Could not find MemberwiseClone.");
-
-    public static T ShallowClone<T>(T source) where T : class
-    {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        return (T)MemberwiseCloneMethod.Invoke(source, null)!;
     }
 }

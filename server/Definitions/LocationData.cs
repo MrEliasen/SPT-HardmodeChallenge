@@ -20,6 +20,57 @@ public class LocationData
         [RaidLocation.Labyrinth] = ["6733700029c367a3d40b02af"],
     };
 
+    public static Dictionary<RaidLocation, string[]> InverseLookupTable = new()
+    {
+        [RaidLocation.Factory] = new[]
+        {
+            "factory4_day",
+            "factory4_night",
+            "Factory4Day",
+            "Factory4Night",
+        },
+        [RaidLocation.GroundZero] = new[]
+        {
+            "SandboxHigh",
+        },
+        [RaidLocation.Streets] = new[]
+        {
+            "tarkovstreets",
+        },
+        [RaidLocation.Woods] = new[]
+        {
+            "woods",
+        },
+        [RaidLocation.Customs] = new[]
+        {
+            "bigmap",
+        },
+        [RaidLocation.Interchange] = new[]
+        {
+            "interchange",
+        },
+        [RaidLocation.Lighthouse] = new[]
+        {
+            "lighthouse",
+        },
+        [RaidLocation.Reserve] = new[]
+        {
+            "rezervbase",
+        },
+        [RaidLocation.Shoreline] = new[]
+        {
+            "shoreline",
+        },
+        [RaidLocation.Labs] = new[]
+        {
+            "laboratory",
+        },
+        [RaidLocation.Labyrinth] = new[]
+        {
+            "labyrinth",
+        },
+    };
+
     public static Dictionary<string, RaidLocation> LookupTable = new(StringComparer.OrdinalIgnoreCase)
     {
         //EFT

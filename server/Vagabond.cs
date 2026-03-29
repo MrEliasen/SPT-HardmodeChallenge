@@ -14,6 +14,7 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
+using SPTarkov.Server.Core.Utils;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 using Path = System.IO.Path;
@@ -69,6 +70,7 @@ public sealed class VagabondDbLoader : IOnLoad
     private readonly SaveServer _saveServer;
     private readonly InventoryHelper _invHelper;
     private readonly EventOutputHolder _eventOutputHolder;
+    private readonly DatabaseService _databaseService;
     private readonly MailSendService _mailSendService;
     private readonly LocationController _locationController;
 
@@ -77,12 +79,14 @@ public sealed class VagabondDbLoader : IOnLoad
     public VagabondDbLoader(
         IServiceProvider services,
         ProfileDataService profileDataService,
+        DatabaseService databaseService,
         SaveServer saveServer,
         InventoryHelper invHelper,
         EventOutputHolder eventOutputHolder,
         MailSendService mailSendService,
         LocationController locationController,
-        ISptLogger<VagabondDbLoader> logger)
+        ISptLogger<VagabondDbLoader> logger,
+        JsonUtil jsonUtil)
     {
         _services = services;
         _profileDataService = profileDataService;
@@ -92,6 +96,8 @@ public sealed class VagabondDbLoader : IOnLoad
         _eventOutputHolder = eventOutputHolder;
         _mailSendService = mailSendService;
         _locationController = locationController;
+        _databaseService = databaseService;
+        CopyUtil.Init(jsonUtil);
     }
 
     public Task OnLoad()
@@ -103,6 +109,8 @@ public sealed class VagabondDbLoader : IOnLoad
         ReflectionUtil.Register(_eventOutputHolder);
         ReflectionUtil.Register(_mailSendService);
         ReflectionUtil.Register(_locationController);
+        ReflectionUtil.Register(_databaseService);
+        ExfilService.Apply(_databaseService);
         
         if (FikaAdapter.Init(_services))
         {
