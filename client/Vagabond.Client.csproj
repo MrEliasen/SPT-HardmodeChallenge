@@ -7,7 +7,7 @@
     <Nullable>disable</Nullable>
     
     <!-- Output -->
-    <OutputPath>..\\build\\client\\$(Configuration)\\$(RootNamespace)\\$(AssemblyName)\\</OutputPath>
+    <OutputPath>..\\build\\client\\$(Configuration)\\$(AssemblyName)\\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     
     <!-- Build Settings -->
@@ -15,6 +15,10 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageId>Vagabond</PackageId>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\\common\\Vagabond.Common.csproj" />
+  </ItemGroup>
 
   <PropertyGroup>
     <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT\</TarkovDir>
@@ -96,8 +100,15 @@
     <ItemGroup>
       <OutputDLL Include="$(ProjectDir)$(OutDir)$(TargetName).dll" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <PluginFiles Include="$(ProjectDir)$(OutDir)$(TargetName).dll" />
+      <PluginFiles Include="$(ProjectDir)$(OutDir)Vagabond.Common.dll" />
+    </ItemGroup>
 
     <!-- Copy to Tarkov plugin directory -->
-    <Copy SourceFiles="@(OutputDLL)" DestinationFolder="$(TarkovDir)BepInEx\plugins\$(AssemblyName)\" />
+    <Copy SourceFiles="@(PluginFiles)"
+          DestinationFolder="$(TarkovDir)BepInEx\plugins\$(AssemblyName)\"
+          SkipUnchangedFiles="true" />
   </Target>
 </Project>

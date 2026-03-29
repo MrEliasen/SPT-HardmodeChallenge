@@ -4,9 +4,9 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Services;
-using Vagabond.Server.Definitions;
+using Vagabond.Common.Definitions;
+using Vagabond.Common.Enums;
 using Vagabond.Server.Models;
-using Vagabond.Server.Models.Enums;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 

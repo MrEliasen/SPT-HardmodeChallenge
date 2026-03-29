@@ -1,4 +1,6 @@
-﻿namespace Vagabond.Server.Models;
+﻿using Vagabond.Common.Enums;
+
+namespace Vagabond.Common.Models;
 
 public class SyncStateResponse
 {
@@ -8,4 +10,5 @@ public class SyncStateResponse
     public bool WipeFirstRaid{ get; set; }
     public bool LooseAccessToTraders{ get; set; }
     public List<string> CompletedRaids { get; set; } = new();
+    public Dictionary<RaidLocation, HashSet<string>> CustomExfils { get; set; } = new();
 }

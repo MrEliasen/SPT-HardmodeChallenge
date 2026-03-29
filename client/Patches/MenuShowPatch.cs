@@ -77,6 +77,7 @@ internal class MenuShowPatch : ModulePatch
             Vagabond.State.WipeEveryRaid = resp.WipeEveryRaid;
             Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
             Vagabond.State.LooseAccessToTraders = resp.LooseAccessToTraders;
+            Vagabond.State.CustomExfils = resp.CustomExfils;
         }
         catch (Exception ex)
         {

@@ -1,5 +1,6 @@
-﻿using Vagabond.Server.Config;
-using Vagabond.Server.Models.Enums;
+﻿using Vagabond.Common.Definitions;
+using Vagabond.Common.Enums;
+using Vagabond.Server.Config;
 
 namespace Vagabond.Server.Definitions;
 

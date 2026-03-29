@@ -3,10 +3,11 @@ using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Utils;
+using Vagabond.Common.Definitions;
+using Vagabond.Common.Enums;
+using Vagabond.Common.Models;
 using Vagabond.Server.Config;
-using Vagabond.Server.Definitions;
 using Vagabond.Server.Models;
-using Vagabond.Server.Models.Enums;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -49,8 +50,10 @@ public class VagabondRouter(
         response.HasEnteredFirstRaid = state.HasEnteredFirstRaid;
         response.WipeEveryRaid = VagabondConfig._config.WipeStashOnEveryRaidEntry;
         response.WipeFirstRaid = VagabondConfig._config.WipeStashOnFirstRaidEntry;
+        response.CustomExfils = ExfilService.CustomExfils;
         response.LooseAccessToTraders = VagabondConfig._config.PreventStarterTraderAccessAfterFirstRaidEntry &&
                                         VagabondConfig._config.StarterTraders.Count > 0;
+        
 
         if (VagabondConfig._config.RememberLastLocation)
         {

@@ -29,6 +29,11 @@ internal static class CopyUtil
     public static T DeepClone<T>(T source)
     {
         var json = jsonUtil.Serialize(source);
-        return jsonUtil.Deserialize<T>(json)!;
+        return jsonUtil.Deserialize<T>(jsonUtil.Serialize(source))!;
+    }
+    
+    public static string? ToJson<T>(T source)
+    {
+        return jsonUtil.Serialize(source);
     }
 }

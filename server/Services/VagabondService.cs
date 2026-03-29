@@ -7,8 +7,8 @@ using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Routers;
 using SPTarkov.Server.Core.Servers;
 using Vagabond.Server.Config;
-using Vagabond.Server.Definitions;
-using Vagabond.Server.Models.Enums;
+using Vagabond.Common.Definitions;
+using Vagabond.Common.Enums;
 using Vagabond.Server.State;
 
 namespace Vagabond.Server.Services;

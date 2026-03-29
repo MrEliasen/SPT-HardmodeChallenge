@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Vagabond.Server.Models.Enums;
+namespace Vagabond.Common.Enums;
 
 public enum RaidLocation
 {

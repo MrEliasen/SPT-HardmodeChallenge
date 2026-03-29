@@ -1,6 +1,6 @@
-﻿using Vagabond.Server.Models.Enums;
+﻿using Vagabond.Common.Enums;
 
-namespace Vagabond.Server.Definitions;
+namespace Vagabond.Common.Definitions;
 
 public class LocationData
 {
@@ -31,7 +31,10 @@ public class LocationData
         },
         [RaidLocation.GroundZero] = new[]
         {
-            "SandboxHigh",
+            "sandbox_high",
+            "sandbox",
+            "sandbox_start",
+            "SandboxHigh"
         },
         [RaidLocation.Streets] = new[]
         {
@@ -101,7 +104,7 @@ public class LocationData
             return RaidLocation.Nil;
         }
 
-        if (LookupTable.TryGetValue(mapName, out var mapped))
+        if (LookupTable.TryGetValue(mapName.ToLower(), out var mapped))
         {
             return mapped;
         }

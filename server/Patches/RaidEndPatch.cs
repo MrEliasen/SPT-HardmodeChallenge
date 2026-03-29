@@ -6,6 +6,7 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
+using Vagabond.Common.Definitions;
 using Vagabond.Server.Config;
 using Vagabond.Server.Definitions;
 using Vagabond.Server.Services;

@@ -3,8 +3,8 @@ using System.Text.Json.Nodes;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Callbacks;
 using SPTarkov.Server.Core.Models.Common;
-using Vagabond.Server.Definitions;
-using Vagabond.Server.Models.Enums;
+using Vagabond.Common.Definitions;
+using Vagabond.Common.Enums;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 

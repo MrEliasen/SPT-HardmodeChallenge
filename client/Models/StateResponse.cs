@@ -10,5 +10,6 @@ namespace Vagabond.Client.Models
         public bool WipeFirstRaid { get; set; }
         public bool LooseAccessToTraders { get; set; }
         public List<string> CompletedRaids { get; set; } = new();
+        public Dictionary<string, HashSet<string>> CustomExfils { get; set; } = new();
     }
 }
