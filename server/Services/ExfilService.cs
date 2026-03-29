@@ -25,8 +25,6 @@ internal static class ExfilService
 
     private static void AddShorelineExfils(Location location)
     { 
-        VagabondLogger.Log($"ADDING SHORELINE EXFILS");
-        
         List<Transit> transits = location.Base.Transits?.ToList() ?? new();
         List<AllExtractsExit> allExtracts = location.AllExtracts?.ToList() ?? new();
        
@@ -41,7 +39,6 @@ internal static class ExfilService
             Events = false,
             HideIfNoKey = false,
         };
-        VagabondLogger.Log($"ADDING NEW TRANSIT: {newTransit.Name}");
         CustomExfils[RaidLocation.Shoreline].Add(newTransit.Name);
         transits.Add(newTransit);
 
@@ -69,7 +66,6 @@ internal static class ExfilService
             RequirementTip = "",
             Side = "Pmc"
         };
-        VagabondLogger.Log($"ADDING ALL NEW TRANSIT: {newAllExit.Name}");
         CustomExfils[RaidLocation.Shoreline].Add(newAllExit.Name);
         allExtracts.Add(newAllExit);
        
