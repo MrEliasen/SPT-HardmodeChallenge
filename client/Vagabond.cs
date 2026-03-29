@@ -37,7 +37,6 @@ public class Vagabond : BaseUnityPlugin
         State = new VagabondState();
         new ExfiltrationPointPatch().Enable();
         new MatchMakerLocationFilterPatch().Enable();
-        new BotSpawnConflictionPatch().Enable();
         
         if (IsHeadless())
         {

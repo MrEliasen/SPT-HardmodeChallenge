@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using SPTarkov.Reflection.Patching;
-using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
@@ -21,24 +20,26 @@ public sealed class StartLocalRaidPatch : AbstractPatch
     }
 
     [PatchPostfix]
-    public static void Postfix(MongoId sessionId, StartLocalRaidRequestData request,
-        ref StartLocalRaidResponseData __result)
+    public static void Postfix(MongoId sessionId, StartLocalRaidRequestData request, ref StartLocalRaidResponseData __result)
     {
         try
         {
-            if (!VagabondService.ShouldApplyVagabondRules(sessionId))
+            var serverOwnerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionId);
+            VagabondLogger.Error($"Raid Owner SessionId: {serverOwnerSessionId}");
+            if (!VagabondService.ShouldApplyVagabondRules(serverOwnerSessionId))
             {
                 return;
             }
 
-            var state = VagabondState.GetState(sessionId);
+            var state = VagabondState.GetState(serverOwnerSessionId);
             var transitState = state.TransitState;
             if (transitState == null)
             {
                 return;
             }
-            
-            if (string.IsNullOrWhiteSpace(request.Location) || LocationData.NormaliseMapName(request.Location) != LocationData.NormaliseMapName(transitState.ToMap))
+
+            if (string.IsNullOrWhiteSpace(request.Location) || LocationData.NormaliseMapName(request.Location) !=
+                LocationData.NormaliseMapName(transitState.ToMap))
             {
                 return;
             }
@@ -50,18 +51,15 @@ public sealed class StartLocalRaidPatch : AbstractPatch
 
             if (forcedSpawn == null)
             {
-                VagabondLogger.Log(
-                    $"No transit spawn found for {transitState.FromMap} -> {transitState.ToMap}");
-
-                state.TransitState = null;
-                VagabondState.SaveState(sessionId, state);
-                return;
+                VagabondLogger.Log($"No transit spawn found for {transitState.FromMap} -> {transitState.ToMap}");
+            }
+            else
+            {
+                ApplyForcedSpawn(__result, forcedSpawn);
             }
 
-            VagabondLogger.Error($"Setting forced spawn {forcedSpawn}");
-            __result.LocationLoot.SpawnPointParams = [forcedSpawn];
             state.TransitState = null;
-            VagabondState.SaveState(sessionId, state);
+            VagabondState.SaveState(serverOwnerSessionId, state);
         }
         catch (Exception ex)
         {
@@ -69,7 +67,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         }
     }
 
-    private static SpawnPointParam? GetSpawnLocation(
+    private static ManualSpawnPoint? GetSpawnLocation(
         TransitState transitState,
         StartLocalRaidResponseData response)
     {
@@ -83,13 +81,111 @@ public sealed class StartLocalRaidPatch : AbstractPatch
             return null;
         }
 
-        var point = GetTransitionArrivalPoint(transitState);
-        if (point == null)
+        var from = LocationData.NormaliseMapName(transitState.FromMap);
+        var to = LocationData.NormaliseMapName(transitState.ToMap);
+
+        return (from, to) switch
         {
-            return null;
+            // Customs
+            (RaidLocation.Interchange, RaidLocation.Customs) => new ManualSpawnPoint
+                { X = -338.961f, Y = 0.793f, Z = -194.769f, Rotation = 30.629f },
+            (RaidLocation.Shoreline, RaidLocation.Customs) => new ManualSpawnPoint
+                { X = 9.094f, Y = -1.048f, Z = 126.674f, Rotation = 166.027f },
+            (RaidLocation.Reserve, RaidLocation.Customs) => new ManualSpawnPoint
+                { X = 650.311f, Y = 0.39f, Z = 116.193f, Rotation = 196.06f },
+            (RaidLocation.Factory, RaidLocation.Customs) => new ManualSpawnPoint
+                { X = 353.939f, Y = 1.123f, Z = -189.197f, Rotation = 3.389f },
+            (RaidLocation.Woods, RaidLocation.Customs) => new ManualSpawnPoint
+                { X = -4.414f, Y = 1.104f, Z = -136.337f, Rotation = 352.916f },
+            // Streets
+            (RaidLocation.Labs, RaidLocation.Streets) => new ManualSpawnPoint
+                { X = 210.119f, Y = -8.291f, Z = 82.166f, Rotation = 88.696f },
+            (RaidLocation.GroundZero, RaidLocation.Streets) => new ManualSpawnPoint
+                { X = -248.599f, Y = 2.245f, Z = 98.421f, Rotation = 19.081f },
+            (RaidLocation.Interchange, RaidLocation.Streets) => new ManualSpawnPoint
+                { X = 288.596f, Y = 3.469f, Z = 489.124f, Rotation = 227.398f },
+            // Ground Zero
+            (RaidLocation.Streets, RaidLocation.GroundZero) => new ManualSpawnPoint
+                { X = 229.93f, Y = 16.229f, Z = 84.142f, Rotation = 259.496f },
+            // Interchange
+            (RaidLocation.Streets, RaidLocation.Interchange) => new ManualSpawnPoint
+                { X = 269.422f, Y = 21.401f, Z = -445.558f, Rotation = 339.283f },
+            (RaidLocation.Customs, RaidLocation.Interchange) => new ManualSpawnPoint
+                { X = 289.967f, Y = 21.341f, Z = 377.473f, Rotation = 274.522f },
+            // Reserve
+            (RaidLocation.Customs, RaidLocation.Reserve) => new ManualSpawnPoint
+                { X = -200.731f, Y = -5.986f, Z = -107.305f, Rotation = 134.331f },
+            (RaidLocation.Woods, RaidLocation.Reserve) => new ManualSpawnPoint
+                { X = 35.423f, Y = -7.003f, Z = -221.638f, Rotation = 349.134f }, // exit to woods
+            //(RaidLocation.Woods, RaidLocation.Reserve) => new ManualSpawnPoint { X = 216.246f, Y = -7.007f, Z = -176.805f, Rotation = 211.995f }, // woods exfil
+            (RaidLocation.Lighthouse, RaidLocation.Reserve) => new ManualSpawnPoint
+                { X = 216.246f, Y = -7.007f, Z = -176.805f, Rotation = 211.995f },
+            // Woods
+            (RaidLocation.Factory, RaidLocation.Woods) => new ManualSpawnPoint
+                { X = -355.201f, Y = -0.268f, Z = 362.391f, Rotation = 161.997f },
+            (RaidLocation.Customs, RaidLocation.Woods) => new ManualSpawnPoint
+                { X = -139.908f, Y = -1.504f, Z = 417.126f, Rotation = 212.588f },
+            (RaidLocation.Reserve, RaidLocation.Woods) => new ManualSpawnPoint
+                { X = 252.936f, Y = -9.516f, Z = 354.375f, Rotation = 135.734f },
+            (RaidLocation.Lighthouse, RaidLocation.Woods) => new ManualSpawnPoint
+                { X = 498.298f, Y = -17.483f, Z = 348.645f, Rotation = 231.116f },
+            // Lighthouse
+            (RaidLocation.Shoreline, RaidLocation.Lighthouse) => new ManualSpawnPoint
+                { X = -343.76f, Y = 8.158f, Z = -160.048f, Rotation = 109.296f },
+            (RaidLocation.Reserve, RaidLocation.Lighthouse) => new ManualSpawnPoint
+                { X = -313.705f, Y = 15.432f, Z = -773.452f, Rotation = 122.249f },
+            (RaidLocation.Woods, RaidLocation.Lighthouse) => new ManualSpawnPoint
+                { X = 104.531f, Y = 4.642f, Z = -959.373f, Rotation = 5.686f },
+            // Shoreline
+            (RaidLocation.Customs, RaidLocation.Shoreline) => new ManualSpawnPoint
+                { X = -848.76f, Y = -42.364f, Z = 2.421f, Rotation = 29.018f },
+            (RaidLocation.Lighthouse, RaidLocation.Shoreline) => new ManualSpawnPoint
+                { X = 418.876f, Y = -57.395f, Z = -191.697f, Rotation = 298.845f },
+            // Factory
+            // Labs
+            _ => null
+        };
+    }
+
+    private static SpawnPointParam? GetSpawnPointTemplate(IEnumerable<SpawnPointParam>? spawnPoints,
+        ManualSpawnPoint point)
+    {
+        return spawnPoints?
+            .Where(sp =>
+                (sp.Categories?.Any(c => string.Equals(c, "Player", StringComparison.OrdinalIgnoreCase)) ?? false) &&
+                (sp.Sides?.Any(s => string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false) &&
+                sp.Position != null)
+            .OrderBy(sp =>
+            {
+                var dx = sp.Position!.X - point.X;
+                var dy = sp.Position!.Y - point.Y;
+                var dz = sp.Position!.Z - point.Z;
+                return dx * dx + dy * dy + dz * dz;
+            })
+            .FirstOrDefault();
+    }
+
+    private static void ApplyForcedSpawn(StartLocalRaidResponseData response, ManualSpawnPoint point)
+    {
+        var all = response.LocationLoot?.SpawnPointParams?.ToList();
+        if (all == null || all.Count == 0)
+        {
+            VagabondLogger.Error("No map spawn points found");
+            return;
         }
 
-        return template with
+        bool IsPmcPlayerSpawn(SpawnPointParam sp) =>
+            (sp.Categories?.Any(c => string.Equals(c, "Player", StringComparison.OrdinalIgnoreCase)) ?? false) &&
+            (sp.Sides?.Any(s => string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false);
+
+        var template = GetSpawnPointTemplate(all, point);
+        if (template == null)
+        {
+            VagabondLogger.Error("Could not find PMC player spawn template");
+            return;
+        }
+
+        var forced = template with
         {
             Position = new XYZ
             {
@@ -97,56 +193,16 @@ public sealed class StartLocalRaidPatch : AbstractPatch
                 Y = point.Y,
                 Z = point.Z
             },
-            Rotation = point.Rotation,
-            Infiltration = template.Infiltration
+            Rotation = point.Rotation
         };
-    }
 
-    private static ManualSpawnPoint? GetTransitionArrivalPoint(TransitState transitState)
-    {
-        var from = LocationData.NormaliseMapName(transitState.FromMap);
-        var to = LocationData.NormaliseMapName(transitState.ToMap);
-        
-        VagabondLogger.Log(
-            $" {from} -> {to}");
+        var kept = all
+            .Where(sp => !IsPmcPlayerSpawn(sp))
+            .ToList();
 
-        return (from, to) switch
-        {
-            // Customs
-            (RaidLocation.Interchange, RaidLocation.Customs) => new ManualSpawnPoint { X = -338.961f, Y = 0.793f, Z = -194.769f, Rotation = 30.629f },
-            (RaidLocation.Shoreline, RaidLocation.Customs) => new ManualSpawnPoint { X = 9.094f, Y = -1.048f, Z = 126.674f, Rotation = 166.027f },
-            (RaidLocation.Reserve, RaidLocation.Customs) => new ManualSpawnPoint { X = 650.311f, Y = 0.39f, Z = 116.193f, Rotation = 196.06f },
-            (RaidLocation.Factory, RaidLocation.Customs) => new ManualSpawnPoint {X = 353.939f, Y = 1.123f, Z = -189.197f, Rotation = 3.389f},
-            (RaidLocation.Woods, RaidLocation.Customs) => new ManualSpawnPoint { X = -4.414f, Y = 1.104f, Z = -136.337f, Rotation = 352.916f },
-            // Streets
-            (RaidLocation.Labs, RaidLocation.Streets) => new ManualSpawnPoint { X = 210.119f, Y = -8.291f, Z = 82.166f, Rotation = 88.696f },
-            (RaidLocation.GroundZero, RaidLocation.Streets) => new ManualSpawnPoint { X = -248.599f, Y = 2.245f, Z = 98.421f, Rotation = 19.081f },
-            (RaidLocation.Interchange, RaidLocation.Streets) => new ManualSpawnPoint { X = 288.596f, Y = 3.469f, Z = 489.124f, Rotation = 227.398f },
-            // Ground Zero
-            (RaidLocation.Streets, RaidLocation.GroundZero) => new ManualSpawnPoint { X = 229.93f, Y = 16.229f, Z = 84.142f, Rotation = 259.496f },
-            // Interchange
-            (RaidLocation.Streets, RaidLocation.Interchange) => new ManualSpawnPoint { X = 269.422f, Y = 21.401f, Z = -445.558f, Rotation = 339.283f },
-            (RaidLocation.Customs, RaidLocation.Interchange) => new ManualSpawnPoint { X = 289.967f, Y = 21.341f, Z = 377.473f, Rotation = 274.522f },
-            // Reserve
-            (RaidLocation.Customs, RaidLocation.Reserve) => new ManualSpawnPoint { X = -200.731f, Y = -5.986f, Z = -107.305f, Rotation = 134.331f },
-            (RaidLocation.Woods, RaidLocation.Reserve) => new ManualSpawnPoint { X = 35.423f, Y = -7.003f, Z = -221.638f, Rotation = 349.134f }, // exit to woods
-            //(RaidLocation.Woods, RaidLocation.Reserve) => new ManualSpawnPoint { X = 216.246f, Y = -7.007f, Z = -176.805f, Rotation = 211.995f }, // woods exfil
-            (RaidLocation.Lighthouse, RaidLocation.Reserve) => new ManualSpawnPoint { X = 216.246f, Y = -7.007f, Z = -176.805f, Rotation = 211.995f },
-            // Woods
-            (RaidLocation.Factory, RaidLocation.Woods) => new ManualSpawnPoint { X = -355.201f, Y = -0.268f, Z = 362.391f, Rotation = 161.997f },
-            (RaidLocation.Customs, RaidLocation.Woods) => new ManualSpawnPoint { X = -139.908f, Y = -1.504f, Z = 417.126f, Rotation = 212.588f },
-            (RaidLocation.Reserve, RaidLocation.Woods) => new ManualSpawnPoint { X = 252.936f, Y = -9.516f, Z = 354.375f, Rotation = 135.734f },
-            (RaidLocation.Lighthouse, RaidLocation.Woods) => new ManualSpawnPoint { X = 498.298f, Y = -17.483f, Z = 348.645f, Rotation = 231.116f },
-            // Lighthouse
-            (RaidLocation.Shoreline, RaidLocation.Lighthouse) => new ManualSpawnPoint { X = -343.76f, Y = 8.158f, Z = -160.048f, Rotation = 109.296f },
-            (RaidLocation.Reserve, RaidLocation.Lighthouse) => new ManualSpawnPoint { X = -313.705f, Y = 15.432f, Z = -773.452f, Rotation = 122.249f },
-            (RaidLocation.Woods, RaidLocation.Lighthouse) => new ManualSpawnPoint { X = 104.531f, Y = 4.642f, Z = -959.373f, Rotation = 5.686f },
-            // Shoreline
-            (RaidLocation.Customs, RaidLocation.Shoreline) => new ManualSpawnPoint { X = -848.76f, Y = -42.364f, Z = 2.421f, Rotation = 29.018f },
-            (RaidLocation.Lighthouse, RaidLocation.Shoreline) => new ManualSpawnPoint { X = 418.876f, Y = -57.395f, Z = -191.697f, Rotation = 298.845f },
-            // Factory
-            // Labs
-            _ => null
-        };
+        kept.Add(forced);
+        response.LocationLoot!.SpawnPointParams = kept;
+
+        //VagabondLogger.Log($"Forced PMC player spawn applied. Original total: {all.Count}, new total: {kept.Count}, kept non-player/non-PMC entries: {kept.Count - 1}");
     }
 }

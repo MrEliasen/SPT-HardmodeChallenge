@@ -56,6 +56,7 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.RaidJoinPatch().Enable();
         new Patches.RaidLocationsPatch().Enable();
         new Patches.StartLocalRaidPatch().Enable();
+                
         return Task.CompletedTask;
     }
 }
@@ -63,6 +64,7 @@ public sealed class VagabondLoader : IOnLoad
 [Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 1)]
 public sealed class VagabondDbLoader : IOnLoad
 {
+    private readonly IServiceProvider _services;
     private readonly ProfileDataService _profileDataService;
     private readonly SaveServer _saveServer;
     private readonly InventoryHelper _invHelper;
@@ -73,6 +75,7 @@ public sealed class VagabondDbLoader : IOnLoad
     private readonly ISptLogger<VagabondDbLoader> _logger;
 
     public VagabondDbLoader(
+        IServiceProvider services,
         ProfileDataService profileDataService,
         SaveServer saveServer,
         InventoryHelper invHelper,
@@ -81,6 +84,7 @@ public sealed class VagabondDbLoader : IOnLoad
         LocationController locationController,
         ISptLogger<VagabondDbLoader> logger)
     {
+        _services = services;
         _profileDataService = profileDataService;
         _saveServer = saveServer;
         _logger = logger;
@@ -92,12 +96,18 @@ public sealed class VagabondDbLoader : IOnLoad
 
     public Task OnLoad()
     {
+        ReflectionUtil.Register(_services);
         ReflectionUtil.Register(_profileDataService);
         ReflectionUtil.Register(_saveServer);
         ReflectionUtil.Register(_invHelper);
         ReflectionUtil.Register(_eventOutputHolder);
         ReflectionUtil.Register(_mailSendService);
         ReflectionUtil.Register(_locationController);
+        
+        if (FikaAdapter.Init(_services))
+        {
+           _logger.Success("[Vagabond] Fika detected.");
+        }
 
         _logger.Success($"[Vagabond] modules loaded.");
         return Task.CompletedTask;
