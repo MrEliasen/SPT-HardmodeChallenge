@@ -6,6 +6,7 @@ using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Vagabond.Client.Patches;
 using Vagabond.Client.Services;
 using Vagabond.Client.State;
@@ -36,10 +37,17 @@ public class Vagabond : BaseUnityPlugin
         State = new VagabondState();
         new ExfiltrationPointPatch().Enable();
         new MatchMakerLocationFilterPatch().Enable();
+        new BotSpawnConflictionPatch().Enable();
+        
+        if (IsHeadless())
+        {
+            Log($"Loaded in headless mode");
+            return;
+        }
+        
         new MenuShowPatch().Enable();
         new SkipInsuranceScreenPatch().Enable();
         new DisableInsuranceBackNavigationPatch().Enable();
-        
         NotificationService.Create(transform);
         
         _dumpHotkey = Config.Bind(
@@ -57,6 +65,11 @@ public class Vagabond : BaseUnityPlugin
 
     private void Update()
     {
+        if (IsHeadless())
+        {
+            return;
+        }
+        
         if (!_dumpHotkey.Value.IsDown())
         {
             return;
@@ -92,5 +105,11 @@ public class Vagabond : BaseUnityPlugin
         {
             Logger.LogError($"Failed to dump location: {ex}");
         }
+    }
+    
+    public static bool IsHeadless()
+    {
+        return Application.isBatchMode
+               || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
     }
 }
