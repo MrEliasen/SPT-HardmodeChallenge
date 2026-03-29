@@ -12,7 +12,6 @@ internal class ExfiltrationPointPatch : ModulePatch
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(typeof(ExfiltrationPoint), nameof(ExfiltrationPoint.LoadSettings));
-        
     }
 
     [PatchPostfix]
