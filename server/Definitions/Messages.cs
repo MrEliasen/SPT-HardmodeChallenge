@@ -63,12 +63,12 @@ public static class Messages
 
             if (!completed)
             {
-                if (!VagabondConfig._config.IsLabsRequired && raid.Key == RaidLocations.Labs)
+                if (!VagabondConfig._config.IsLabsRequired && raid.Key == RaidLocation.Labs)
                 {
                     continue;
                 }
 
-                if (!VagabondConfig._config.IsLabyrinthRequired && raid.Key == RaidLocations.Labyrinth)
+                if (!VagabondConfig._config.IsLabyrinthRequired && raid.Key == RaidLocation.Labyrinth)
                 {
                     continue;
                 }

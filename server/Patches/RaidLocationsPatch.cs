@@ -71,10 +71,8 @@ public sealed class RaidLocationsPatch : AbstractPatch
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
         foreach (var raidName in state.CompletedRaids)
         {
-            RaidLocations raidNameE;
-            RaidLocations.TryParse(raidName, true, out raidNameE);
-
-            if (raidNameE != RaidLocations.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+            RaidLocation raidNameE = LocationData.NormaliseMapName(raidName);
+            if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
             {
                 foreach (var mapId in mapIds)
                 {

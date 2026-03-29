@@ -8,13 +8,14 @@ namespace Vagabond.Server.State;
 public sealed class VagabondState
 {
     private const string ModKey = "dev.oogabooga.spt-vagabond";
-    
+
     public bool ProfileInitialized { get; set; }
     public bool HasEnteredFirstRaid { get; set; }
     public int RaidEntryCount { get; set; }
     public int ChallengesCompleted { get; set; }
-    public required string LastLocation { get; set; }
-    public bool CompletedChallenge{ get; set; }
+    public required string LastExitMap { get; set; }
+    public bool CompletedChallenge { get; set; }
+    public TransitState? TransitState { get; set; }
     public required List<string> CompletedRaids { get; set; }
     public bool ResetProfile { get; set; }
 
@@ -22,9 +23,9 @@ public sealed class VagabondState
     public VagabondState()
     {
         CompletedRaids = new List<string>();
-        LastLocation = "";
+        LastExitMap = "";
     }
-    
+
     public static VagabondState GetState(MongoId sessionId)
     {
         var profileDataService = ReflectionUtil.GetService<ProfileDataService>();

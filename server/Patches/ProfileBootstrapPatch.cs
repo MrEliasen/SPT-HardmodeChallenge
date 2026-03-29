@@ -40,9 +40,9 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             }
 
             // attempt to apply to old profiles
-            if (VagabondConfig._config.RememberLastLocation && state.LastLocation == "" && state.CompletedRaids.Count > 0)
+            if (VagabondConfig._config.RememberLastLocation && state.LastExitMap == "" && state.CompletedRaids.Count > 0)
             {
-                state.LastLocation = state.CompletedRaids.Last();
+                state.LastExitMap = state.CompletedRaids.Last();
                 VagabondState.SaveState(sessionId, state);
             }
 
