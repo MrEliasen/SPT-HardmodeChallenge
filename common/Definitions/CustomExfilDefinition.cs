@@ -68,5 +68,4 @@ public sealed class CustomExfilDefinition
     public float Z { get; set; }
     public float RotationY { get; set; }
     public List<CustomExtractRequirementDefinition> Requirements { get; set; } = new();
-    public string RequirementsDescription { get; set; }
 }

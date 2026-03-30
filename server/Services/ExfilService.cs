@@ -34,19 +34,19 @@ internal static class ExfilService
         }
         
         var locations = databaseService.GetLocations();
-        AddExtractions(locations.Bigmap, new ExfilsCustoms()); 
-        AddExtractions(locations.Bigmap, new ExfilsFactoryDay()); 
-        AddExtractions(locations.Bigmap, new ExfilsFactoryNight()); 
-        AddExtractions(locations.Bigmap, new ExfilsGroundZero()); 
-        AddExtractions(locations.Bigmap, new ExfilsInterchange()); 
-        AddExtractions(locations.Bigmap, new ExfilsLighthouse()); 
-        AddExtractions(locations.Bigmap, new ExfilsReserve()); 
-        AddExtractions(locations.Bigmap, new ExfilsShoreline()); 
-        AddExtractions(locations.Bigmap, new ExfilsStreets()); 
-        AddExtractions(locations.Bigmap, new ExfilsWoods());
+        AddExtractions(9000, locations.Bigmap, new ExfilsCustoms()); 
+        AddExtractions(9100, locations.Factory4Day, new ExfilsFactoryDay()); 
+        AddExtractions(9200,locations.Factory4Night, new ExfilsFactoryNight()); 
+        AddExtractions(9300,locations.SandboxHigh, new ExfilsGroundZero()); 
+        AddExtractions(9400,locations.Interchange, new ExfilsInterchange()); 
+        AddExtractions(9500,locations.Lighthouse, new ExfilsLighthouse()); 
+        AddExtractions(9600,locations.RezervBase, new ExfilsReserve()); 
+        AddExtractions(9700,locations.Shoreline, new ExfilsShoreline()); 
+        AddExtractions(9800,locations.TarkovStreets, new ExfilsStreets()); 
+        AddExtractions(9900,locations.Woods, new ExfilsWoods());
     }
 
-    private static void AddExtractions(Location location, ICustomExtilData data)
+    private static void AddExtractions(int pointIdOffset, Location location, ICustomExtilData data)
     {
         var pmcEntryPoints = GetPmcEntryPoints(location);
 
@@ -60,7 +60,7 @@ internal static class ExfilService
         var i = 1;
         foreach (var transit in data.Transits)
         {
-            transit.TransitPointId = 9000 + i;
+            transit.TransitPointId = pointIdOffset + i;
             CustomExfils[data.Raid][data.MapName].Add(transit);
             AddOrReplaceTransit(location, transit);
             i++;

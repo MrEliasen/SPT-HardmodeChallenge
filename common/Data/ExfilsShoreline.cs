@@ -26,7 +26,7 @@ public class ExfilsShoreline : ICustomExtilData
             Description = "",
             ExfiltrationTime = 20f,
             ActivateAfterSeconds = 60,
-            IsActive = false,
+            IsActive = true,
             Events = false,
             HideIfNoKey = false,
             X = -855.903f,
@@ -45,14 +45,13 @@ public class ExfilsShoreline : ICustomExtilData
             Description = "",
             ExfiltrationTime = 20f,
             ActivateAfterSeconds = 60,
-            IsActive = false,
+            IsActive = true,
             Events = false,
             HideIfNoKey = false,
             X = -199.952f,
             Y = -12.753f,
             Z = -356.269f,
             RotationY = 23.539f,
-            RequirementsDescription = "Requires Red Rebel + Paracord",
             Requirements = new() // Only works for extractions for now.. need to make a custom patch .. later keep as reminder
             {
                 new CustomExtractRequirementDefinition
@@ -73,8 +72,8 @@ public class ExfilsShoreline : ICustomExtilData
         },
         new CustomExfilDefinition
         {
-            Identifier = "Shoreline_to_lighthouse",
-            DisplayName = "Transit To Lighthouse",
+            Identifier = "Shoreline_to_lighthouse_south",
+            DisplayName = "Transit To Lighthouse (South)",
             IsTransit = true,
             TransitPointId = 0,// gets auto generated
             DestinationLocation = LocationData.InverseLookupTable[RaidLocation.Lighthouse].First(),
@@ -82,7 +81,7 @@ public class ExfilsShoreline : ICustomExtilData
             Description = "",
             ExfiltrationTime = 20f,
             ActivateAfterSeconds = 60,
-            IsActive = false,
+            IsActive = true,
             Events = false,
             HideIfNoKey = false,
             X = 364.809f,

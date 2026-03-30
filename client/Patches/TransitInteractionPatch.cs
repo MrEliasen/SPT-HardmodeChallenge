@@ -44,6 +44,7 @@ internal class TransitInteractionPatch : ModulePatch
             return true;
         }
 
+        var c = 0;
         foreach (var req in definition.Requirements)
         {
             switch (req.Type)
@@ -54,10 +55,16 @@ internal class TransitInteractionPatch : ModulePatch
                     var count = items.ToList()?.Count(x => x.TemplateId == req.Id);
                     if (count < req.Count)
                     {
-                        failReason = string.IsNullOrWhiteSpace(req.RequirementTip)
-                            ? "Missing required item"
-                            : req.RequirementTip;
-                        return false;
+                        c++;
+                        if (failReason == string.Empty)
+                        {
+                            failReason = "Missing required item:";
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(req.RequirementTip))
+                        {
+                            failReason += $"{(c > 0 ? " & " : " ")}{req.RequirementTip}";
+                        }
                     }
                     break;
                 }
@@ -66,7 +73,7 @@ internal class TransitInteractionPatch : ModulePatch
                 {
                     if (!Enum.TryParse<EquipmentSlot>(req.RequiredSlot, true, out var slot))
                     {
-                        failReason = $"Invalid slot '{req.RequiredSlot}'";
+                        failReason = $"Invalid '{req.RequiredSlot}' slot";
                         return false;
                     }
 
@@ -74,13 +81,18 @@ internal class TransitInteractionPatch : ModulePatch
                     if (item != null)
                     {
                         failReason = string.IsNullOrWhiteSpace(req.RequirementTip)
-                            ? $"Slot {req.RequiredSlot} must be empty"
+                            ? $"{req.RequiredSlot} slot must be empty"
                             : req.RequirementTip;
                         return false;
                     }
                     break;
                 }
             }
+        }
+        
+        if (!string.IsNullOrWhiteSpace(failReason))
+        {
+            return false;
         }
 
         return true;

@@ -211,7 +211,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
     {
         clone.Controller = controller;
         clone.Enabled = true;
-        clone.IsActive = definition.IsActive;
+        clone.IsActive = definition.ActivateAfterSeconds <= 0;
         clone.parameters = new LocationSettingsClass.Location.TransitParameters
         {
             id = definition.TransitPointId!.Value,
@@ -394,6 +394,8 @@ internal class CustomExfilCleanupPatch : ModulePatch
     {
         CustomExfilPlacementPatch.TransitsAppliedThisRaid = false;
         CustomExfilPlacementPatch.ExtractsAppliedThisRaid = false;
+        CustomExfilPlacementPatch.CustomTransitDefinitions.Clear();
+        Vagabond.Log("Cleaned up custom transits.");
     }
 }
 

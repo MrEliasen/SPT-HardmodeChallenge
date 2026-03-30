@@ -51,7 +51,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
 
             if (forcedSpawn == null)
             {
-                VagabondLogger.Log($"No transit spawn found for {transitState.FromMap} -> {transitState.ToMap}");
+                VagabondLogger.Log($"Did not find a PMC spawn template to clone from");
             }
             else
             {

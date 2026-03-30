@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using EFT;
 using EFT.UI;
 using HarmonyLib;
-using JetBrains.Annotations;
 using SPT.Reflection.Patching;
 using Vagabond.Client.Services;
 
@@ -13,6 +12,7 @@ namespace Vagabond.Client.Patches;
 
 internal class MenuShowPatch : ModulePatch
 {
+    private static bool _headlessUpdated = false;
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(
@@ -29,6 +29,16 @@ internal class MenuShowPatch : ModulePatch
     [PatchPostfix]
     private static void Postfix()
     {
+        if (Vagabond.IsHeadless())
+        {
+            if (!_headlessUpdated)
+            {
+                _headlessUpdated = true;
+                _ = RefreshVagabondState();
+            }
+            return;
+        }
+        
         if (Vagabond.State.ChallengeActive && !Vagabond.State.HasShownWarningMessage && !Vagabond.State.HasEnteredFirstRaid)
         {
             var message = "";
@@ -64,7 +74,6 @@ internal class MenuShowPatch : ModulePatch
         _ = RefreshVagabondState();
     }
 
-    [CanBeNull]
     public static async Task RefreshVagabondState()
     {
         try
