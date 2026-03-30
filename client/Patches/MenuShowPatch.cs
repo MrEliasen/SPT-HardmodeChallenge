@@ -78,6 +78,15 @@ internal class MenuShowPatch : ModulePatch
             Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
             Vagabond.State.LooseAccessToTraders = resp.LooseAccessToTraders;
             Vagabond.State.CustomExfils = resp.CustomExfils;
+
+            foreach (var raid in resp.CustomExfils)
+            {
+                Vagabond.LogError($"{raid.Key}");
+                foreach (var loc  in raid.Value)
+                {
+                    Vagabond.LogError($" => {loc}");
+                }
+            }
         }
         catch (Exception ex)
         {

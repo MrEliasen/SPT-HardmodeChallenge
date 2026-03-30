@@ -59,6 +59,8 @@ internal class CustomExfilPlacementPatch : ModulePatch
         
         AppliedThisRaid = true;
         
+        //var scavExfils = game.ExfiltrationController.ScavExfiltrationPoints;
+        //var secretExfils = game.ExfiltrationController.SecretExfiltrationPoints;
         var pmcExfils = __instance.ExfiltrationController.ExfiltrationPoints;
         var point = pmcExfils.Where(x => !IsCustomExfil(x, raid, true))?.First();
         
@@ -110,6 +112,85 @@ internal class CustomExfilPlacementPatch : ModulePatch
         return Vagabond.State.CustomExfils.TryGetValue(raid, out var exfils)
                && exfils.Contains(exfil.name);
     }
+    
+    // if (IsCustomExfil(settings))
+    // {
+    //     __instance.name = settings.Name;
+    //     __instance.transform.position = new UnityEngine.Vector3(-848.76f, -42.364f, 2.421f);
+    //     __instance.transform.rotation = UnityEngine.Quaternion.Euler(0f, 30f, 0f);
+    //
+    //     var collider = __instance.GetComponent<UnityEngine.Collider>();
+    //     collider.isTrigger = true;
+    //     return;
+    // }
+    
+
+   
+    // var rawSceneName = locationScene.gameObject.scene.name.ToLowerInvariant();
+    //
+    // if (!ProcessedScenes.Add(rawSceneName))
+    // {
+    //     return;
+    // }
+    //
+    // var mapName = rawSceneName.Replace("_scripts", "");
+    // var raidLocation = LocationData.NormaliseMapName(mapName);
+    //
+    // Vagabond.Log($"Scene '{rawSceneName}' mapped to '{raidLocation}'");
+    //
+    // if (!Vagabond.State.CustomExfils.TryGetValue(raidLocation, out var customExfils))
+    // {
+    //     Vagabond.Log($"No custom exfils for map: {raidLocation}");
+    //     return;
+    // }
+    //
+    // Vagabond.Log($"Custom exfils found: {customExfils.Count}");
+    
+    // Find an existing exfil to use as a template
+    // var template = pmcExfils.FirstOrDefault(x => x.name.Contains("Road", System.StringComparison.OrdinalIgnoreCase));
+    //
+    // if (template == null)
+    // {
+    //     Logger.LogError("No template ExfiltrationPoint found");
+    //     return;
+    // }
+    //
+    // // Avoid duplicates if scene reloads
+    // if (existingPoints.Any(x =>
+    //         x != null &&
+    //         x.name.Equals("TransitToCustoms", System.StringComparison.OrdinalIgnoreCase)))
+    // {
+    //     return;
+    // }
+    //
+    // var clone = Object.Instantiate(template, template.transform.parent);
+    // clone.name = "TransitToCustoms";
+    //
+    // // Set the world position for the trigger
+    // clone.transform.position = new Vector3(458.0f, 12.5f, -312.0f);
+    // clone.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+    //
+    // // Optional: resize trigger if needed
+    // var collider = clone.GetComponent<Collider>();
+    // if (collider != null)
+    // {
+    //     collider.isTrigger = true;
+    // }
+    //
+    // Try to retarget the runtime settings name so it matches server-side AllExtracts/Transit name
+    // This field/property name may differ slightly depending on EFT/SPT version
+    // var settingsField = AccessTools.Field(clone.GetType(), "_settings");
+    // if (settingsField?.GetValue(clone) is LocationExitClass settings)
+    // {
+    //     settings.Name = "TransitToCustoms";
+    //     settings.ExfiltrationTime = 20;
+    //     settings.ExfiltrationTimePVE = 20;
+    //     settings.PassageRequirement = EPassageRequirement.None;
+    //     settings.ExfiltrationType = EExfiltrationType.Individual;
+    // }
+    
+    // Ensure your visibility patch allows it
+    //Vagabond.State.CustomExfils.Add("TransitToCustoms");
 }
 
 internal class CustomExfilCleanupPatch : ModulePatch
