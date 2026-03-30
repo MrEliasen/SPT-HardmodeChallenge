@@ -6,6 +6,6 @@ namespace Vagabond.Common;
 public interface ICustomExtilData {
     string MapName { get; }
     RaidLocation Raid { get; }
-    List<CustomExfilDefinition> Extracts { get; }
-    List<CustomExfilDefinition> Transits { get; }
+    List<CustomExfil> Extracts { get; }
+    List<CustomExfil> Transits { get; }
 }

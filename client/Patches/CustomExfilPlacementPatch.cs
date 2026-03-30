@@ -17,7 +17,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 {
     public static bool ExtractsAppliedThisRaid;
     public static bool TransitsAppliedThisRaid;
-    public static readonly Dictionary<int, CustomExfilDefinition> CustomTransitDefinitions = new();
+    public static readonly Dictionary<int, CustomExfil> CustomTransitDefinitions = new();
     
     private static readonly FieldInfo TransitPointLookupField =
         AccessTools.Field(typeof(TransitControllerAbstractClass), "Dictionary_0");
@@ -67,7 +67,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         ApplyCustomTransits(gameWorld.TransitController, raid, definitions.Where(x => x.IsTransit).ToList());
     }
     
-    public static void ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid, List<CustomExfilDefinition> definitions)
+    public static void ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid, List<CustomExfil> definitions)
     {
         if (ExtractsAppliedThisRaid)
         {
@@ -127,7 +127,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         ExtractsAppliedThisRaid = true;
     }
 
-    public static void ApplyCustomTransits(TransitControllerAbstractClass transitController, RaidLocation raid, List<CustomExfilDefinition> definitions)
+    public static void ApplyCustomTransits(TransitControllerAbstractClass transitController, RaidLocation raid, List<CustomExfil> definitions)
     {
         if (TransitsAppliedThisRaid)
         {
@@ -207,7 +207,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         TransitsAppliedThisRaid = true;
     }
 
-    private static void ConfigureTransitClone(TransitPoint clone, TransitControllerAbstractClass controller, TransitPoint template, CustomExfilDefinition definition)
+    private static void ConfigureTransitClone(TransitPoint clone, TransitControllerAbstractClass controller, TransitPoint template, CustomExfil definition)
     {
         clone.Controller = controller;
         clone.Enabled = true;
@@ -243,7 +243,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         }
     }
     
-    private static void ConfigureExtractClone(ExfiltrationPoint clone, ExfiltrationPoint template, CustomExfilDefinition definition, int idOffset)
+    private static void ConfigureExtractClone(ExfiltrationPoint clone, ExfiltrationPoint template, CustomExfil definition, int idOffset)
     {
         var eligibleEntryPoints = BuildEligibleEntryPoints(definition, template);
         var settings = new LocationExitClass
@@ -287,7 +287,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         clone.SetStatusLogged(EExfiltrationStatus.RegularMode, "Vagabond.CustomExfilPlacementPatch");
     }
 
-    private static string[] BuildEligibleEntryPoints(CustomExfilDefinition definition, ExfiltrationPoint template)
+    private static string[] BuildEligibleEntryPoints(CustomExfil definition, ExfiltrationPoint template)
     {
         var eligible = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -316,7 +316,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         return eligible.ToArray();
     }
     
-    private static ExfiltrationRequirement[] BuildRequirements(CustomExfilDefinition definition, ExfiltrationPoint point)
+    private static ExfiltrationRequirement[] BuildRequirements(CustomExfil definition, ExfiltrationPoint point)
     {
         if (definition.Requirements == null || definition.Requirements.Count == 0)
         {
@@ -363,7 +363,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         return TransitPointLookupField?.GetValue(controller) as Dictionary<int, TransitPoint>;
     }
 
-    private static bool IsCustomExtract(ExfiltrationPoint exfil, List<CustomExfilDefinition> definitions)
+    private static bool IsCustomExtract(ExfiltrationPoint exfil, List<CustomExfil> definitions)
     {
         return !string.IsNullOrWhiteSpace(exfil?.Settings?.Name)
                && definitions

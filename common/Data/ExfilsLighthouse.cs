@@ -6,16 +6,16 @@ namespace Vagabond.Common.Data;
 public class ExfilsLighthouse : ICustomExtilData
 {
     public string MapName => _mapName;
-    public List<CustomExfilDefinition> Extracts => _extracts;
-    public List<CustomExfilDefinition> Transits => _transits;
+    public List<CustomExfil> Extracts => _extracts;
+    public List<CustomExfil> Transits => _transits;
     
     private static RaidLocation _raid = RaidLocation.Lighthouse;
     public RaidLocation Raid => _raid;
 
-    private static string _mapName = "lighthouse";
-    private static List<CustomExfilDefinition> _extracts = [];
-    private static  List<CustomExfilDefinition>_transits = [
-        new CustomExfilDefinition
+    private static string _mapName = "Lighthouse";
+    private static List<CustomExfil> _extracts = [];
+    private static  List<CustomExfil>_transits = [
+        new CustomExfil
         {
             Identifier = "VGB_LH_SL",
             IsTransit = true,

@@ -35,7 +35,7 @@ internal class TransitInteractionPatch : ModulePatch
         return false;
     }
     
-    private static bool MeetsTransitRequirements(Player player, CustomExfilDefinition definition, out string failReason)
+    private static bool MeetsTransitRequirements(Player player, CustomExfil definition, out string failReason)
     {
         failReason = string.Empty;
 

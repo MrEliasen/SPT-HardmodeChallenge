@@ -12,7 +12,7 @@ namespace Vagabond.Server.Services;
 
 internal static class ExfilService
 {
-    public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfilDefinition>>> CustomExfils = new();
+    public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils = new();
 
     public static void Apply(DatabaseService databaseService)
     {
@@ -22,12 +22,12 @@ internal static class ExfilService
             {
                 continue;
             }
-
+            
             LocationData.InverseLookupTable.TryGetValue(loc, out var maps);
-            var ent = new Dictionary<string, List<CustomExfilDefinition>>();
+            var ent = new Dictionary<string, List<CustomExfil>>();
             foreach (var map in maps)
             {
-                ent.Add(map, new List<CustomExfilDefinition>());
+                ent.Add(map, new List<CustomExfil>());
             }
             
             CustomExfils.Add(loc, ent);
@@ -79,7 +79,7 @@ internal static class ExfilService
                       || string.Equals(x.Identifier, name, StringComparison.OrdinalIgnoreCase));
     }
 
-    private static void AddOrReplaceExtract(Location location, CustomExfilDefinition definition)
+    private static void AddOrReplaceExtract(Location location, CustomExfil definition)
     {
         var allExtracts = location.AllExtracts?.ToList() ?? new List<AllExtractsExit>();
         allExtracts.RemoveAll(x => string.Equals(x.Name, definition.ExtractDisplayName, StringComparison.OrdinalIgnoreCase)
@@ -93,11 +93,15 @@ internal static class ExfilService
         location.Base.Exits = baseExits;
     }
 
-    private static void AddOrReplaceTransit(Location location, CustomExfilDefinition definition)
+    private static void AddOrReplaceTransit(Location location, CustomExfil definition)
     {
         var transits = location.Base.Transits?.ToList() ?? new List<Transit>();
-        transits.RemoveAll(x => string.Equals(x.Name, definition.ExtractDisplayName, StringComparison.OrdinalIgnoreCase)
-                                || (definition.TransitPointId.HasValue && x.Id == definition.TransitPointId.Value));
+
+        transits.RemoveAll(x =>
+            string.Equals(x.Name, definition.Identifier, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(x.Name, definition.ExtractDisplayName, StringComparison.OrdinalIgnoreCase)
+            || (definition.TransitPointId.HasValue && x.Id == definition.TransitPointId.Value));
+        
         transits.Add(new Transit
         {
             Name = definition.Identifier,
@@ -116,7 +120,7 @@ internal static class ExfilService
         location.Base.Transits = transits;
     }
 
-    private static AllExtractsExit CreateExit(CustomExfilDefinition definition)
+    private static AllExtractsExit CreateExit(CustomExfil definition)
     {
         return new AllExtractsExit
         {

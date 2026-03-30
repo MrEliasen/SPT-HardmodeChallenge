@@ -6,13 +6,13 @@ namespace Vagabond.Common.Data;
 public class ExfilsFactoryDay : ICustomExtilData
 {
     public string MapName => _mapName;
-    public List<CustomExfilDefinition> Extracts => _extracts;
-    public List<CustomExfilDefinition> Transits => _transits;
+    public List<CustomExfil> Extracts => _extracts;
+    public List<CustomExfil> Transits => _transits;
     
     private static RaidLocation _raid = RaidLocation.Factory;
     public RaidLocation Raid => _raid;
 
     private static readonly string _mapName = "factory4_day";
-    private static readonly List<CustomExfilDefinition> _extracts = [];
-    private static  readonly List<CustomExfilDefinition>_transits = [];
+    private static readonly List<CustomExfil> _extracts = [];
+    private static  readonly List<CustomExfil>_transits = [];
 }

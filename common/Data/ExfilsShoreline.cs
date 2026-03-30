@@ -6,16 +6,16 @@ namespace Vagabond.Common.Data;
 public class ExfilsShoreline : ICustomExtilData
 {
     public string MapName => _mapName;
-    public List<CustomExfilDefinition> Extracts => _extracts;
-    public List<CustomExfilDefinition> Transits => _transits;
+    public List<CustomExfil> Extracts => _extracts;
+    public List<CustomExfil> Transits => _transits;
     
     private static RaidLocation _raid = RaidLocation.Shoreline;
     public RaidLocation Raid => _raid;
     
-    private static string _mapName = "shoreline";
-    private static List<CustomExfilDefinition> _extracts = [];
-    private static  List<CustomExfilDefinition>_transits = [
-        new CustomExfilDefinition
+    private static string _mapName = "Shoreline";
+    private static List<CustomExfil> _extracts = [];
+    private static  List<CustomExfil>_transits = [
+        new CustomExfil
         {
             Identifier = "VGB_SL_CU",
             IsTransit = true,
@@ -33,7 +33,7 @@ public class ExfilsShoreline : ICustomExtilData
             Z = 10.129f,
             RotationY = 7.715f
         },
-        new CustomExfilDefinition
+        new CustomExfil
         {
             Identifier = "VGB_SL_RS",
             IsTransit = true,
@@ -68,7 +68,7 @@ public class ExfilsShoreline : ICustomExtilData
                 }
             }
         },
-        new CustomExfilDefinition
+        new CustomExfil
         {
             Identifier = "VGB_SL_LH",
             IsTransit = true,

@@ -1,6 +1,6 @@
 namespace Vagabond.Common.Definitions;
 
-public sealed class CustomExfilDefinition
+public sealed class CustomExfil
 {
     /// <summary>
     /// Stable internal key for this custom point. Use this for logs, scene object names and save data.
