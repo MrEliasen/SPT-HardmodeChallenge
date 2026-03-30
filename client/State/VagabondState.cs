@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vagabond.Common.Enums;
+using Vagabond.Common.Models;
 
 namespace Vagabond.Client.State;
 
@@ -11,9 +12,9 @@ public sealed class VagabondState
     public bool ChallengeActive { get; set; }
     public bool HasShownWarningMessage { get; set; }
     public bool HasEnteredFirstRaid { get; set; }
-    public HashSet<string> CompletedRaids { get; set; }
+    public HashSet<string> CompletedRaids { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public bool WipeEveryRaid{ get; set; }
     public bool WipeFirstRaid{ get; set; }
     public bool LooseAccessToTraders { get; set; }
-    public Dictionary<RaidLocation, HashSet<string>> CustomExfils { get; set; }
+    public Dictionary<RaidLocation, List<CustomExfilDefinition>> CustomExfils { get; set; } = new();
 }

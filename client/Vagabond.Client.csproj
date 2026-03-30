@@ -26,7 +26,13 @@
     <TarkovManagedDir>$(TarkovDir)EscapeFromTarkov_Data\Managed\</TarkovManagedDir>
     <TarkovBepInExCoreDir>$(TarkovDir)BepInEx\core\</TarkovBepInExCoreDir>
   </PropertyGroup>
-
+  
+  <ItemDefinitionGroup>
+    <Reference>
+      <Private>false</Private>
+    </Reference>
+  </ItemDefinitionGroup>
+  
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>$(TarkovBepInExCoreDir)0Harmony.dll</HintPath>

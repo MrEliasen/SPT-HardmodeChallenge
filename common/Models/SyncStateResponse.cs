@@ -10,5 +10,5 @@ public class SyncStateResponse
     public bool WipeFirstRaid{ get; set; }
     public bool LooseAccessToTraders{ get; set; }
     public List<string> CompletedRaids { get; set; } = new();
-    public Dictionary<RaidLocation, HashSet<string>> CustomExfils { get; set; } = new();
+    public Dictionary<RaidLocation, List<CustomExfilDefinition>> CustomExfils { get; set; } = new();
 }

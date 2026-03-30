@@ -77,14 +77,14 @@ internal class MenuShowPatch : ModulePatch
             Vagabond.State.WipeEveryRaid = resp.WipeEveryRaid;
             Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
             Vagabond.State.LooseAccessToTraders = resp.LooseAccessToTraders;
-            Vagabond.State.CustomExfils = resp.CustomExfils;
+            Vagabond.State.CustomExfils = resp.CustomExfils ?? new();
 
-            foreach (var raid in resp.CustomExfils)
+            foreach (var raid in Vagabond.State.CustomExfils)
             {
-                Vagabond.LogError($"{raid.Key}");
-                foreach (var loc  in raid.Value)
+                Vagabond.Log($"Custom exfils for {raid.Key}:");
+                foreach (var exfil in raid.Value)
                 {
-                    Vagabond.LogError($" => {loc}");
+                    Vagabond.Log($" => {exfil.DisplayName} [{exfil.Identifier}]");
                 }
             }
         }

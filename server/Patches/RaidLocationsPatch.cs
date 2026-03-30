@@ -81,7 +81,6 @@ public sealed class RaidLocationsPatch : AbstractPatch
             }
         }
 
-        // remove locations the player has no access to
         foreach (string locationKey in locations.Select(kv => kv.Key).ToList())
         {
             if (!allowedMapIds.Contains(locationKey))
@@ -91,11 +90,9 @@ public sealed class RaidLocationsPatch : AbstractPatch
                 {
                     location["enabled"] = false;
                 }
-
             }
         }
 
-        // remove all non v-ex
         foreach (string locationKey in locations.Select(x => x.Key).ToList())
         {
             JsonObject? location = locations[locationKey]?.AsObject();
@@ -117,7 +114,7 @@ public sealed class RaidLocationsPatch : AbstractPatch
                     continue;
                 }
 
-                if (!IsVehicleExfil(exfil))
+                if (!IsVehicleExfil(exfil) && !IsCustomExfil(exfil))
                 {
                     exits.RemoveAt(i);
                 }
@@ -143,5 +140,12 @@ public sealed class RaidLocationsPatch : AbstractPatch
                && string.Equals(id, VagabondService.Roubles, StringComparison.OrdinalIgnoreCase)
                && string.Equals(requirementTip, "EXFIL_Item", StringComparison.OrdinalIgnoreCase)
                && (count > 0 || countPve > 0);
+    }
+
+    private static bool IsCustomExfil(JsonObject exfil)
+    {
+        string? name = exfil["Name"]?.GetValue<string>();
+        string? sptName = exfil["SptName"]?.GetValue<string>();
+        return ExfilService.IsCustomExfilName(name) || ExfilService.IsCustomExfilName(sptName);
     }
 }
