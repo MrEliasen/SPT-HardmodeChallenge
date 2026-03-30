@@ -10,6 +10,8 @@ using UnityEngine.Rendering;
 using Vagabond.Client.Patches;
 using Vagabond.Client.Services;
 using Vagabond.Client.State;
+using Vagabond.Common.Definitions;
+using Vagabond.Common.Enums;
 
 namespace Vagabond.Client;
     
@@ -19,7 +21,11 @@ public class Vagabond : BaseUnityPlugin
     private static ManualLogSource _logger;
     public static VagabondState State { get; private set; } = new();
     private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
+    private ConfigEntry<KeyboardShortcut> _dumpCustomExtractHotkey = null!;
+    private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;
     private string _LocationDumpPath = null!;
+    private string _customExtractDumpPath = null!;
+    private string _customTransitDumpPath = null!;
     
     public static void Log(string message)
     {
@@ -58,8 +64,24 @@ public class Vagabond : BaseUnityPlugin
             "Press in raid to dump current map, position and yaw to file."
         );
 
+        _dumpCustomExtractHotkey = Config.Bind(
+            "Generate Extraction From Location (Dev)",
+            "Dump Custom Extract Snippet Hotkey",
+            new KeyboardShortcut(KeyCode.F9),
+            "Press in raid to dump a copy/paste ready custom extract snippet using the current player position"
+        );
+
+        _dumpCustomTransitHotkey = Config.Bind(
+            "Generate Transit From Location (Dev)",
+            "Dump Custom Transit Snippet Hotkey",
+            new KeyboardShortcut(KeyCode.F10),
+            "Press in raid to dump a copy/paste ready custom transit snippet using the current player position"
+        );
+
         var pluginDir = Path.GetDirectoryName(Info.Location);
         _LocationDumpPath = Path.Combine(pluginDir, "dumped_locations.txt");
+        _customExtractDumpPath = Path.Combine(pluginDir, "dumped_custom_extracts.txt");
+        _customTransitDumpPath = Path.Combine(pluginDir, "dumped_custom_transits.txt");
         
         Log("loaded");
     }
@@ -71,12 +93,26 @@ public class Vagabond : BaseUnityPlugin
             return;
         }
         
-        if (!_dumpHotkey.Value.IsDown())
+        if (_dumpHotkey.Value.IsDown())
         {
-            return;
+            DumpCurrentLocation();
         }
 
-        DumpCurrentLocation();
+        if (_dumpHotkey.Value.IsDown())
+        {
+            DumpCurrentLocation();
+        }
+
+        if (_dumpCustomExtractHotkey.Value.IsDown())
+        {
+            DumpCustomExtractDefinition();
+        }
+
+        if (_dumpCustomTransitHotkey.Value.IsDown())
+        {
+            DumpCustomTransitDefinition();
+        }
+
     }
 
     private void DumpCurrentLocation()
@@ -112,5 +148,107 @@ public class Vagabond : BaseUnityPlugin
     {
         return Application.isBatchMode
                || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
+    }
+    
+    private void DumpCustomExtractDefinition()
+    {
+        try
+        {
+            if (!TryGetCurrentSnapshot(out var snapshot))
+            {
+                return;
+            }
+
+            File.AppendAllText(_customExtractDumpPath, string.Join(Environment.NewLine, new[]
+            {
+                $"new CustomExfilDefinition",
+                "{",
+                $"    Identifier = \"unique_identifier\",",
+                $"    DisplayName = \"Human Readable Label\",",
+                "    IsTransit = false,",
+                "    TemplateExitName = \"REPLACE_WITH_TEMPLATE_EXIT_NAME\",",
+                "    EntryPoints = \"\",",
+                "    ExfiltrationTime = 20f,",
+                $"    X = {snapshot.Position.x:0.###}f,",
+                $"    Y = {snapshot.Position.y:0.###}f,",
+                $"    Z = {snapshot.Position.z:0.###}f,",
+                $"    RotationY = {snapshot.Yaw:0.###}f,",
+                "    Side = \"Pmc\"",
+                "},;"
+            }));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Failed to dump custom extract snippet: {ex}");
+        }
+    }
+
+    private void DumpCustomTransitDefinition()
+    {
+        try
+        {
+            if (!TryGetCurrentSnapshot(out var snapshot))
+            {
+                return;
+            }
+
+            File.AppendAllText(_customTransitDumpPath, string.Join(Environment.NewLine, new[]
+            {
+                "new CustomExfilDefinition",
+                "{",
+                $"    Identifier = \"unique_identifier\",",
+                $"    DisplayName = \"Human Readable Label\",",
+                "    IsTransit = true,",
+                $"    TransitPointId = 0,// gets auto generated",
+                "    DestinationLocation = LocationData.InverseLookupTable[RaidLocation.<DESTINATION>].First(),",
+                "    TargetLocation = LocationData.InverseLookupTable[RaidLocation.<DESTINATION>].First(),",
+                "    Description = \"Human readable description\",",
+                "    ExfiltrationTime = 20f,",
+                "    ActivateAfterSeconds = 60,",
+                "    IsActive = true,",
+                "    Events = false,",
+                "    HideIfNoKey = false,",
+                $"    X = {snapshot.Position.x:0.###}f,",
+                $"    Y = {snapshot.Position.y:0.###}f,",
+                $"    Z = {snapshot.Position.z:0.###}f,",
+                $"    RotationY = {snapshot.Yaw:0.###}f",
+                "},"
+            }));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Failed to dump custom transit snippet: {ex}");
+        }
+    }
+
+    private static bool TryGetCurrentSnapshot(out LocationSnapshot snapshot)
+    {
+        snapshot = default;
+
+        var gameWorld = Singleton<GameWorld>.Instance;
+        var player = gameWorld?.MainPlayer;
+
+        if (player == null)
+        {
+            return false;
+        }
+
+        snapshot = new LocationSnapshot(
+            player.Position,
+            player.Transform.eulerAngles.y
+        );
+        return true;
+    }
+
+    private struct LocationSnapshot
+    {
+        public Vector3 Position;
+        public float Yaw;
+
+        public LocationSnapshot(Vector3 position, float yaw)
+        {
+            Position = position;
+            Yaw = yaw;
+        }
     }
 }
