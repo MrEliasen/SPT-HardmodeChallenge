@@ -114,7 +114,7 @@ public sealed class RaidLocationsPatch : AbstractPatch
                     continue;
                 }
 
-                if (!IsVehicleExfil(exfil) && !IsCustomExfil(exfil))
+                if (!IsVehicleExfil(exfil) && !IsCustomExtract(exfil))
                 {
                     exits.RemoveAt(i);
                 }
@@ -142,10 +142,10 @@ public sealed class RaidLocationsPatch : AbstractPatch
                && (count > 0 || countPve > 0);
     }
 
-    private static bool IsCustomExfil(JsonObject exfil)
+    private static bool IsCustomExtract(JsonObject exfil)
     {
         string? name = exfil["Name"]?.GetValue<string>();
         string? sptName = exfil["SptName"]?.GetValue<string>();
-        return ExfilService.IsCustomExfilName(name) || ExfilService.IsCustomExfilName(sptName);
+        return ExfilService.IsCustomExtractName(name) || ExfilService.IsCustomExtractName(sptName);
     }
 }

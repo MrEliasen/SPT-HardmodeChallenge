@@ -25,7 +25,7 @@ internal class MenuShowPatch : ModulePatch
                 typeof(ESessionMode)
             });
     }
-    
+
     [PatchPostfix]
     private static void Postfix()
     {
@@ -63,7 +63,7 @@ internal class MenuShowPatch : ModulePatch
         Vagabond.State.IsRefreshing = true;
         _ = RefreshVagabondState();
     }
-   
+
     [CanBeNull]
     private static async Task RefreshVagabondState()
     {
@@ -81,10 +81,12 @@ internal class MenuShowPatch : ModulePatch
 
             foreach (var raid in Vagabond.State.CustomExfils)
             {
-                Vagabond.Log($"Custom exfils for {raid.Key}:");
+                Vagabond.Log($"Custom extractions for {raid.Key}:");
                 foreach (var exfil in raid.Value)
                 {
-                    Vagabond.Log($" => {exfil.DisplayName} [{exfil.Identifier}]");
+                    var kind = exfil.IsTransit ? "Transit" : "Extract";
+                    var destination = exfil.IsTransit ? $" -> {exfil.DestinationLocation}" : string.Empty;
+                    Vagabond.Log($" => [{kind}] {exfil.DisplayName} [{exfil.Identifier}]{destination}");
                 }
             }
         }

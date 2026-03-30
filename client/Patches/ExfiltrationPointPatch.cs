@@ -19,15 +19,15 @@ internal class ExfiltrationPointPatch : ModulePatch
     [PatchPostfix]
     static void Postfix(ExfiltrationPoint __instance, LocationExitClass settings)
     {
-        // if (IsVehicleExfil(settings) || IsCustomExfil(settings))
-        // {
-        //     return;
-        // }
-        //
-        // __instance.Reusable = false;
-        // __instance.Status = EExfiltrationStatus.NotPresent;
-        // __instance.Disable();
-        // __instance.DisableInteraction();
+        if (IsVehicleExfil(settings) || IsCustomExfil(settings))
+        {
+            return;
+        }
+        
+        __instance.Reusable = false;
+        __instance.Status = EExfiltrationStatus.NotPresent;
+        __instance.Disable();
+        __instance.DisableInteraction();
     }
 
     private static bool IsVehicleExfil(LocationExitClass settings)

@@ -17,6 +17,9 @@ namespace Vagabond.Client.Patches;
 internal class CustomExfilPlacementPatch : ModulePatch
 {
     public static bool AppliedThisRaid;
+    
+    private static readonly FieldInfo TransitPointLookupField =
+        AccessTools.Field(typeof(TransitControllerAbstractClass), "Dictionary_0");
 
     protected override MethodBase GetTargetMethod()
     {
@@ -43,20 +46,29 @@ internal class CustomExfilPlacementPatch : ModulePatch
         {
             return;
         }
-
+        
         if (!Vagabond.State.CustomExfils.TryGetValue(raid, out var definitions) || definitions == null || definitions.Count == 0)
         {
             return;
         }
 
-        var pmcExfils = __instance.ExfiltrationPoints?.Where(x => x != null).ToList();
-        if (pmcExfils == null || pmcExfils.Count == 0)
+        ApplyCustomExtracts(__instance, raid, definitions.Where(x => !x.IsTransit).ToList());
+        ApplyCustomTransits(gameWorld, raid, definitions.Where(x => x.IsTransit).ToList());
+        AppliedThisRaid = true;
+    }
+    
+    private static void ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid, List<CustomExfilDefinition> definitions)
+    {
+        if (definitions.Count == 0)
         {
-            Vagabond.LogError($"No PMC exfils available to clone for {raid}.");
             return;
         }
 
-        AppliedThisRaid = true;
+        var pmcExfils = controller?.ExfiltrationPoints?.Where(x => x != null).ToList();
+        if (pmcExfils == null || pmcExfils.Count == 0)
+        {
+            return;
+        }
 
         foreach (var definition in definitions)
         {
@@ -66,7 +78,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             }
 
             var template = pmcExfils.FirstOrDefault(x => string.Equals(x.Settings?.Name, definition.TemplateExitName, StringComparison.OrdinalIgnoreCase))
-                           ?? pmcExfils.FirstOrDefault(x => !IsCustomExfil(x));
+                           ?? pmcExfils.FirstOrDefault(x => !IsCustomExtract(x));
 
             if (template == null)
             {
@@ -89,20 +101,125 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 continue;
             }
 
-            ConfigureClone(clone, template, definition, pmcExfils.Count + 1);
+            ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
             pmcExfils.Add(clone);
 
-            var player = gameWorld?.MainPlayer;
-            Vagabond.Log(
-                $"Added custom exfil '{definition.DisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'. " +
-                $"active={clone.isActiveAndEnabled}, match={(player != null && clone.InfiltrationMatch(player))}, " +
-                $"playerEntry='{player?.Profile?.Info?.EntryPoint}', eligible=[{string.Join(",", clone.EligibleEntryPoints)}]");
+            Vagabond.Log($"Added custom extract '{definition.DisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
         }
 
-        __instance.ExfiltrationPoints = pmcExfils.ToArray();
+        controller.ExfiltrationPoints = pmcExfils.ToArray();
     }
 
-    private static void ConfigureClone(ExfiltrationPoint clone, ExfiltrationPoint template, CustomExfilDefinition definition, int idOffset)
+    private static void ApplyCustomTransits(GameWorld gameWorld, RaidLocation raid, List<CustomExfilDefinition> definitions)
+    {
+        if (definitions.Count == 0)
+        {
+            return;
+        }
+
+        var transitController = gameWorld.TransitController;
+        if (transitController == null)
+        {
+            Vagabond.LogError($"Transit controller is null on {raid}; cannot place custom transit points.");
+            return;
+        }
+
+        var lookup = GetTransitLookup(transitController);
+        if (lookup == null)
+        {
+            Vagabond.LogError("Unable to resolve transit point lookup on TransitControllerAbstractClass.");
+            return;
+        }
+
+        var existingTransitPoints = LocationScene.GetAllObjects<TransitPoint>(false).Where(x => x != null).ToList();
+        if (existingTransitPoints.Count == 0)
+        {
+            Vagabond.LogError($"No TransitPoint template exists in the {raid} scene.");
+            return;
+        }
+
+        foreach (var definition in definitions)
+        {
+            if (!definition.TransitPointId.HasValue)
+            {
+                Vagabond.LogError($"Custom transit '{definition.Identifier}' is missing TransitPointId.");
+                continue;
+            }
+
+            if (lookup.ContainsKey(definition.TransitPointId.Value)
+                || existingTransitPoints.Any(x => x.parameters != null && x.parameters.id == definition.TransitPointId.Value))
+            {
+                continue;
+            }
+
+            var template = existingTransitPoints.FirstOrDefault(x => definition.TemplateTransitId.HasValue && x.parameters != null && x.parameters.id == definition.TemplateTransitId.Value)
+                           ?? existingTransitPoints.FirstOrDefault();
+
+            if (template == null)
+            {
+                Vagabond.LogError($"No transit template found for '{definition.Identifier}' on {raid}.");
+                continue;
+            }
+
+            var cloneObject = LocationScene.Instantiate(template.gameObject);
+            cloneObject.name = definition.Identifier;
+            cloneObject.SetActive(true);
+            cloneObject.transform.SetParent(template.transform.parent, true);
+            cloneObject.transform.position = new Vector3(definition.X, definition.Y, definition.Z);
+            cloneObject.transform.rotation = Quaternion.Euler(0f, definition.RotationY, 0f);
+
+            var clone = cloneObject.GetComponent<TransitPoint>();
+            if (clone == null)
+            {
+                Vagabond.LogError($"Cloned object for '{definition.Identifier}' does not contain TransitPoint.");
+                UnityEngine.Object.Destroy(cloneObject);
+                continue;
+            }
+
+            ConfigureTransitClone(clone, transitController, template, definition);
+            lookup[definition.TransitPointId.Value] = clone;
+
+            Vagabond.Log($"Added custom transit '{definition.DisplayName}' (identifier '{definition.Identifier}') to '{definition.DestinationLocation}'.");
+        }
+    }
+
+    private static void ConfigureTransitClone(TransitPoint clone, TransitControllerAbstractClass controller, TransitPoint template, CustomExfilDefinition definition)
+    {
+        clone.Controller = controller;
+        clone.Enabled = true;
+        clone.IsActive = definition.IsActive;
+        clone.parameters = new LocationSettingsClass.Location.TransitParameters
+        {
+            id = definition.TransitPointId!.Value,
+            active = definition.IsActive,
+            name = definition.DisplayName,
+            description = string.IsNullOrWhiteSpace(definition.Description) ? definition.DisplayName : definition.Description,
+            conditions = string.Empty,
+            activateAfterSec = definition.ActivateAfterSeconds,
+            time = (ushort)Mathf.Clamp(Mathf.RoundToInt(definition.ExfiltrationTime), 1, ushort.MaxValue),
+            target = string.IsNullOrWhiteSpace(definition.TargetLocation) ? definition.DestinationLocation : definition.TargetLocation,
+            location = definition.DestinationLocation,
+            events = definition.Events,
+            hideIfNoKey = definition.HideIfNoKey,
+            eventsEnable = definition.Events
+        };
+
+        var collider = clone.GetComponent<Collider>();
+        if (collider != null)
+        {
+            collider.enabled = true;
+            collider.isTrigger = true;
+        }
+
+        var templateCollider = template.GetComponent<Collider>();
+        if (collider is BoxCollider box && templateCollider is BoxCollider templateBox)
+        {
+            box.center = templateBox.center;
+            box.size = templateBox.size;
+        }
+    }
+    
+    private static void ConfigureExtractClone(ExfiltrationPoint clone, ExfiltrationPoint template, CustomExfilDefinition definition, int idOffset)
     {
         var eligibleEntryPoints = BuildEligibleEntryPoints(definition, template);
         var settings = new LocationExitClass
@@ -127,12 +244,12 @@ internal class CustomExfilPlacementPatch : ModulePatch
         clone.QueuedPlayers.Clear();
         clone.LoadSettings(template.Id.Add(idOffset + 1000), settings, true);
 
-        // EFT matches scene exfils by Settings.Name, not by the object name.
-        // LoadSettings does not retarget Settings.Name, so it must be set manually.
+        // EFT matches scene exfils by Settings.Name, not by the Unity object name.
+        // LoadSettings does not retarget Settings.Name, so it must be fixed manually.
         clone.Settings.Name = definition.DisplayName;
         clone.Settings.EntryPoints = settings.EntryPoints;
         clone.EligibleEntryPoints = eligibleEntryPoints;
-        clone.Reusable = false;
+        clone.Reusable = true;
 
         var collider = clone.GetComponent<Collider>();
         if (collider != null)
@@ -165,7 +282,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             }
         }
 
-        // DynamicMaps fix
+        // dynamic maps fix.
         var currentEntry = Singleton<GameWorld>.Instance?.MainPlayer?.Profile?.Info?.EntryPoint;
         if (!string.IsNullOrWhiteSpace(currentEntry))
         {
@@ -175,11 +292,17 @@ internal class CustomExfilPlacementPatch : ModulePatch
         return eligible.ToArray();
     }
 
-    private static bool IsCustomExfil(ExfiltrationPoint exfil)
+    private static Dictionary<int, TransitPoint>? GetTransitLookup(TransitControllerAbstractClass controller)
+    {
+        return TransitPointLookupField?.GetValue(controller) as Dictionary<int, TransitPoint>;
+    }
+
+    private static bool IsCustomExtract(ExfiltrationPoint exfil)
     {
         return !string.IsNullOrWhiteSpace(exfil?.Settings?.Name)
                && Vagabond.State.CustomExfils.Values
                    .SelectMany(x => x)
+                   .Where(x => !x.IsTransit)
                    .Any(x => string.Equals(x.DisplayName, exfil.Settings.Name, StringComparison.OrdinalIgnoreCase));
     }
 }
