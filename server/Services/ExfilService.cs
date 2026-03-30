@@ -1,6 +1,9 @@
-﻿using SPTarkov.Server.Core.Models.Eft.Common;
+﻿using System.Collections;
+using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Services;
+using Vagabond.Common;
+using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
 using Vagabond.Common.Models;
@@ -10,99 +13,71 @@ namespace Vagabond.Server.Services;
 
 internal static class ExfilService
 {
-    public static Dictionary<RaidLocation, List<CustomExfilDefinition>> CustomExfils = new();
+    public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfilDefinition>>> CustomExfils = new();
 
     public static void Apply(DatabaseService databaseService)
     {
         foreach (var loc in Enum.GetValues(typeof(RaidLocation)).Cast<RaidLocation>())
         {
-            CustomExfils[loc] = new();
-        }
+            if (loc ==  RaidLocation.Nil)
+            {
+                continue;
+            }
 
+            LocationData.InverseLookupTable.TryGetValue(loc, out var maps);
+            var ent = new Dictionary<string, List<CustomExfilDefinition>>();
+            foreach (var map in maps)
+            {
+                ent.Add(map, new List<CustomExfilDefinition>());
+            }
+            
+            CustomExfils.Add(loc, ent);
+        }
+        
         var locations = databaseService.GetLocations();
-        AddShorelineExamples(locations.Shoreline);
-        VagabondLogger.Log(CopyUtil.ToJson(CustomExfils));
+        AddExtractions(locations.Bigmap, new ExfilsCustoms()); 
+        AddExtractions(locations.Bigmap, new ExfilsFactoryDay()); 
+        AddExtractions(locations.Bigmap, new ExfilsFactoryNight()); 
+        AddExtractions(locations.Bigmap, new ExfilsGroundZero()); 
+        AddExtractions(locations.Bigmap, new ExfilsInterchange()); 
+        AddExtractions(locations.Bigmap, new ExfilsLighthouse()); 
+        AddExtractions(locations.Bigmap, new ExfilsReserve()); 
+        AddExtractions(locations.Bigmap, new ExfilsShoreline()); 
+        AddExtractions(locations.Bigmap, new ExfilsStreets()); 
+        AddExtractions(locations.Bigmap, new ExfilsWoods());
     }
 
-    public static bool IsCustomExtractName(string? name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return false;
-        }
-
-        return CustomExfils.Values
-            .SelectMany(x => x)
-            .Where(x => !x.IsTransit)
-            .Any(x => string.Equals(x.DisplayName, name, StringComparison.OrdinalIgnoreCase)
-                      || string.Equals(x.Identifier, name, StringComparison.OrdinalIgnoreCase));
-    }
-
-    public static bool IsCustomTransitName(string? name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return false;
-        }
-
-        return CustomExfils.Values
-            .SelectMany(x => x)
-            .Where(x => x.IsTransit)
-            .Any(x => string.Equals(x.DisplayName, name, StringComparison.OrdinalIgnoreCase)
-                      || string.Equals(x.Identifier, name, StringComparison.OrdinalIgnoreCase));
-    }
-
-    private static void AddShorelineExamples(Location location)
+    private static void AddExtractions(Location location, ICustomExtilData data)
     {
         var pmcEntryPoints = GetPmcEntryPoints(location);
-        var customsLocation = LocationData.InverseLookupTable[RaidLocation.Customs].First();
 
-        var customExtract = new CustomExfilDefinition
+        foreach (var ext in data.Extracts)
         {
-            Identifier = "vagabond_shoreline_cliff_vex",
-            DisplayName = "Vagabond Cliff V-Ex",
-            IsTransit = false,
-            TemplateExitName = "Road to Customs",
-            EntryPoints = pmcEntryPoints,
-            ExfiltrationTime = 20f,
-            X = -848.76f,
-            Y = -42.364f,
-            Z = 2.421f,
-            RotationY = 30f,
-            Side = "Pmc"
-        };
+            ext.EntryPoints = pmcEntryPoints;
+            CustomExfils[data.Raid][data.MapName].Add(ext);
+            AddOrReplaceExtract(location, ext);
+        }
 
-        var customTransit = new CustomExfilDefinition
+        var i = 1;
+        foreach (var transit in data.Transits)
         {
-            Identifier = "vagabond_shoreline_to_customs",
-            DisplayName = "Vagabond Transit to Customs",
-            IsTransit = true,
-            TransitPointId = 9001,
-            DestinationLocation = customsLocation,
-            TargetLocation = customsLocation,
-            Description = "Move from Shoreline to Customs",
-            ExfiltrationTime = 20f,
-            ActivateAfterSeconds = 60,
-            IsActive = true,
-            Events = false,
-            HideIfNoKey = false,
-            X = -861.50f,
-            Y = -42.364f,
-            Z = 8.250f,
-            RotationY = 65f
-        };
+            transit.TransitPointId = 9000 + i;
+            CustomExfils[data.Raid][data.MapName].Add(transit);
+            AddOrReplaceTransit(location, transit);
+            i++;
+        }
+    }
 
-        CustomExfils[RaidLocation.Shoreline].RemoveAll(x =>
-            string.Equals(x.Identifier, customExtract.Identifier, StringComparison.OrdinalIgnoreCase)
-            || string.Equals(x.Identifier, customTransit.Identifier, StringComparison.OrdinalIgnoreCase)
-            || string.Equals(x.DisplayName, customExtract.DisplayName, StringComparison.OrdinalIgnoreCase)
-            || string.Equals(x.DisplayName, customTransit.DisplayName, StringComparison.OrdinalIgnoreCase));
+    public static bool IsCustomExtractName(string? name, RaidLocation raid, string mapName)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return false;
+        }
 
-        CustomExfils[RaidLocation.Shoreline].Add(customExtract);
-        CustomExfils[RaidLocation.Shoreline].Add(customTransit);
-
-        AddOrReplaceExtract(location, customExtract);
-        AddOrReplaceTransit(location, customTransit);
+        return CustomExfils[raid][mapName]
+            .Any(x => string.Equals(x.DisplayName, name, StringComparison.OrdinalIgnoreCase)
+                      || string.Equals(x.Identifier, name, StringComparison.OrdinalIgnoreCase));
     }
 
     private static void AddOrReplaceExtract(Location location, CustomExfilDefinition definition)

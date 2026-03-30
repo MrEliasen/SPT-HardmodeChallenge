@@ -35,19 +35,24 @@ internal class CustomExfilPlacementPatch : ModulePatch
         }
 
         var gameWorld = Singleton<GameWorld>.Instance;
-        var locationId = gameWorld?.LocationId;
+        var locationId = gameWorld?.LocationId.ToLower();
         if (string.IsNullOrWhiteSpace(locationId))
         {
             return;
         }
 
+        if (!LocationData.LookupTable.ContainsKey(locationId))
+        {
+            return;
+        }
+        
         var raid = LocationData.NormaliseMapName(locationId);
         if (raid == RaidLocation.Nil)
         {
             return;
         }
         
-        if (!Vagabond.State.CustomExfils.TryGetValue(raid, out var definitions) || definitions == null || definitions.Count == 0)
+        if (!Vagabond.State.CustomExfils[raid].TryGetValue(locationId, out var definitions) || definitions == null || definitions.Count == 0)
         {
             return;
         }
@@ -78,7 +83,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             }
 
             var template = pmcExfils.FirstOrDefault(x => string.Equals(x.Settings?.Name, definition.TemplateExitName, StringComparison.OrdinalIgnoreCase))
-                           ?? pmcExfils.FirstOrDefault(x => !IsCustomExtract(x));
+                           ?? pmcExfils.FirstOrDefault(x => !IsCustomExtract(x, definitions));
 
             if (template == null)
             {
@@ -297,11 +302,10 @@ internal class CustomExfilPlacementPatch : ModulePatch
         return TransitPointLookupField?.GetValue(controller) as Dictionary<int, TransitPoint>;
     }
 
-    private static bool IsCustomExtract(ExfiltrationPoint exfil)
+    private static bool IsCustomExtract(ExfiltrationPoint exfil, List<CustomExfilDefinition> definitions)
     {
         return !string.IsNullOrWhiteSpace(exfil?.Settings?.Name)
-               && Vagabond.State.CustomExfils.Values
-                   .SelectMany(x => x)
+               && definitions
                    .Where(x => !x.IsTransit)
                    .Any(x => string.Equals(x.DisplayName, exfil.Settings.Name, StringComparison.OrdinalIgnoreCase));
     }

@@ -16,5 +16,5 @@ public sealed class VagabondState
     public bool WipeEveryRaid{ get; set; }
     public bool WipeFirstRaid{ get; set; }
     public bool LooseAccessToTraders { get; set; }
-    public Dictionary<RaidLocation, List<CustomExfilDefinition>> CustomExfils { get; set; } = new();
+    public Dictionary<RaidLocation, Dictionary<string, List<CustomExfilDefinition>>> CustomExfils { get; set; } = new();
 }

@@ -82,11 +82,15 @@ internal class MenuShowPatch : ModulePatch
             foreach (var raid in Vagabond.State.CustomExfils)
             {
                 Vagabond.Log($"Custom extractions for {raid.Key}:");
-                foreach (var exfil in raid.Value)
+                foreach (var map in raid.Value)
                 {
-                    var kind = exfil.IsTransit ? "Transit" : "Extract";
-                    var destination = exfil.IsTransit ? $" -> {exfil.DestinationLocation}" : string.Empty;
-                    Vagabond.Log($" => [{kind}] {exfil.DisplayName} [{exfil.Identifier}]{destination}");
+                    Vagabond.Log($"Specific Map: {map.Key}:");
+                    foreach (var exfil in map.Value)
+                    {
+                        var kind = exfil.IsTransit ? "Transit" : "Extract";
+                        var destination = exfil.IsTransit ? $" -> {exfil.DestinationLocation}" : string.Empty;
+                        Vagabond.Log($" => [{kind}] {exfil.DisplayName} [{exfil.Identifier}]{destination}");
+                    }
                 }
             }
         }

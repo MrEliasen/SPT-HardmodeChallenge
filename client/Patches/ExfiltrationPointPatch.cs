@@ -40,6 +40,7 @@ internal class ExfiltrationPointPatch : ModulePatch
         return !string.IsNullOrWhiteSpace(settings?.Name)
                && Vagabond.State.CustomExfils.Values
                    .SelectMany(x => x)
-                   .Any(x => string.Equals(x.DisplayName, settings.Name, StringComparison.OrdinalIgnoreCase));
+                   .Any(x => x.Value.Any(x =>
+                       string.Equals(x.DisplayName, settings.Name, StringComparison.OrdinalIgnoreCase)));
     }
 }
