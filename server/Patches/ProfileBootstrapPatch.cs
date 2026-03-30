@@ -57,7 +57,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
                 
                 if (!completed)
                 {
-                    MailerService.SendMail(sessionId, Messages.ProfileReset(state.CompletedRaids));
+                    ChallengeService.ResetNotification(sessionId);
                 }
                 return;
             }

@@ -37,12 +37,21 @@ public static class Messages
         return "Congratulations!\nYou have completed the Vagabond Challenge!\n\nCurrently there is no rewards from completing the challenge, but the 'win' is recorded for the future should it be implemented.";
     }
 
-    public static string Welcome(List<string> completedRaids)
+    public static string WelcomeChallenge()
     {
         return
             "Welcome to the Vagabond Challenge!\n\n" +
             Rules() + "\n\n" +
-            MapProgression(completedRaids);
+            MapProgression([]);
+    }
+
+    public static string WelcomeOpenWorld()
+    {
+        return
+            "Welcome to the Vagabond!\n" +
+            "Your start out with some money and limited access to traders. Once you deploy you will need to scavenge for food and water, move between maps and try to stay alive.\n\n" +
+            "Vehicle extracts is the only way to get back to your stash once you are out there.\n\n"+
+            "Good Luck!";
     }
 
     public static string ProfileReset(List<string> completedRaids)
@@ -52,6 +61,13 @@ public static class Messages
             Rules() + "\n\n" +
             MapProgression(completedRaids);
     }
+    public static string ProfileResetGeneric()
+    {
+        return
+            "Your Vagabond profile has been reset.\n\n" +
+            WelcomeOpenWorld();
+    }
+    
 
     public static string MapProgression(List<string> completedRaids)
     {

@@ -58,8 +58,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
         VagabondState.SaveState(sessionId, state);
         VagabondService.ApplyTraderRestrictions(pmc.CharacterData.PmcData, true);
         VagabondService.PersistProfileIfPossible(sessionId);
-        MailerService.SendMail(sessionId, Messages.Welcome(state.CompletedRaids));
-
+        ChallengeService.WelcomePlayer(sessionId);
         VagabondLogger.Success($"activated Vagabond profile for {sessionId}.");
     }
 
