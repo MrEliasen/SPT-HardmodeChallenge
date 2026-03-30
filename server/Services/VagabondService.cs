@@ -257,8 +257,7 @@ internal static class VagabondService
                 return false;
             }
 
-            var isHeadless = pmc.ProfileInfo.Username?.StartsWith("headless_") ?? false;
-            return !isHeadless;
+            return !(pmc.ProfileInfo.Username?.StartsWith("headless_") ?? false);
         }
         catch
         {

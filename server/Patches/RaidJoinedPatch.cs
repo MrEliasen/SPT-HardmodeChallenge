@@ -19,7 +19,8 @@ public sealed class RaidJoinPatch : AbstractPatch
     [PatchPrefix]
     public static void Prefix(MongoId sessionId, StartLocalRaidRequestData request)
     {
-        HandleRaidEntry(sessionId, request);
+        var serverOwnerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionId);
+        HandleRaidEntry(serverOwnerSessionId, request);
     }
 
     public static void HandleRaidEntry(MongoId sessionId, StartLocalRaidRequestData request)

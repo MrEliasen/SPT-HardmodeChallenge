@@ -80,6 +80,6 @@ internal class ExfiltrationPointPatch : ModulePatch
                    .SelectMany(x => x)
                    .Any(mapDefs => mapDefs.Value.Any(def =>
                        !def.IsTransit &&
-                       string.Equals(def.DisplayName, settings.Name, StringComparison.OrdinalIgnoreCase)));
+                       string.Equals(def.ExtractDisplayName, settings.Name, StringComparison.OrdinalIgnoreCase)));
     }
 }

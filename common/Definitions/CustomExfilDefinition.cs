@@ -13,7 +13,7 @@ public sealed class CustomExfilDefinition
     /// For ExfiltrationPoint this must end up in Settings.Name.
     /// For TransitPoint this must end up in parameters.name.
     /// </summary>
-    public string DisplayName { get; set; } = string.Empty;
+    public string ExtractDisplayName { get; set; } = string.Empty;
 
     /// <summary>
     /// False = custom extract (ExfiltrationPoint), true = custom transit (TransitPoint).

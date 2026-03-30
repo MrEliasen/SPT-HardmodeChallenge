@@ -65,7 +65,8 @@ internal static class ChallengeService
             state.TransitState = new TransitState
             {
                 FromMap =  LocationMapStr,
-                ToMap = LocationData.NormaliseMapName(request?.LocationTransit?.Location).ToString()
+                ToMap = LocationData.NormaliseMapName(request?.LocationTransit?.Location).ToString(),
+                ExitName = request?.Results?.ExitName,
             };
         }
 

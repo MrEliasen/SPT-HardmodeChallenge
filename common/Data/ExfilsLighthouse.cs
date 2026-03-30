@@ -17,13 +17,12 @@ public class ExfilsLighthouse : ICustomExtilData
     private static  List<CustomExfilDefinition>_transits = [
         new CustomExfilDefinition
         {
-            Identifier = "lighthouse_to_shoreline",
-            DisplayName = "Transit To Shoreline (South-West)",
+            Identifier = "VGB_LH_SL",
             IsTransit = true,
             TransitPointId = 0,// gets auto generated
             DestinationLocation = LocationData.InverseLookupTable[RaidLocation.Shoreline].First(),
             TargetLocation = LocationData.InverseLookupTable[RaidLocation.Shoreline].First(),
-            Description = "",
+            Description = "Transit to Shoreline",
             ExfiltrationTime = 20f,
             ActivateAfterSeconds = 60,
             IsActive = true,

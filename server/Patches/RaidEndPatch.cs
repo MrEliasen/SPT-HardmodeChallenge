@@ -39,7 +39,8 @@ public sealed class RaidEndPatch : AbstractPatch
     public static void Prefix(MongoId sessionId, SptProfile fullServerProfile, bool isDead, bool isTransfer,
         EndLocalRaidRequestData request, string locationName)
     {
-        HandleRaidEnd(sessionId, fullServerProfile, isDead, isTransfer, request, locationName);
+        var serverOwnerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionId);
+        HandleRaidEnd(serverOwnerSessionId, fullServerProfile, isDead, isTransfer, request, locationName);
     }
 
     public static void HandleRaidEnd(MongoId sessionId, SptProfile profile, bool isDead, bool isTransfer,
@@ -55,6 +56,8 @@ public sealed class RaidEndPatch : AbstractPatch
         {
             return;
         }
+        
+        state.TransitState = null;
 
         if (ChallengeService.HandleExfil(sessionId, locationName, state, request, isDead, isTransfer, request.Results.TookCarExtract([])))
         {
@@ -64,7 +67,6 @@ public sealed class RaidEndPatch : AbstractPatch
         var LocationMapE = LocationData.NormaliseMapName(locationName);
         var LocationMapStr = LocationMapE.ToString();
         state.LastExitMap = LocationMapStr;
-        state.TransitState = null;
         
         if (isDead)
         {

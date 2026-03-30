@@ -5,7 +5,7 @@
   "WipeStashOnFirstRaidEntry": true,
   "AlsoWipeCarriedMoneyOnFirstRaid": true, // this only works if one of the other wipe options are enabled
   "DisableFlea": true,
-  "EnableChallenge": true, // disabling this will only disable the progression/challenge part of the mod, allowing you to play this mod more as an "open world" / PTT-esque.
+  "EnableChallenge": false, // Toggle on to enable the progression/challenge part of the mod. If false, it allows you to play this mod as an "open world" game.
   "ResetProfileOnWin": true, // if you want to play this challenge more as a continuous experience, disable this.
   "StripMailAttachments": true, // still allows mail, but removed all attachments from messages.
   "EnableDifficultyChanges": true, // currently just disabled newbie ground zero.

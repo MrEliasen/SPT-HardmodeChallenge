@@ -18,9 +18,10 @@ public sealed class RaidLocationsPatch : AbstractPatch
     }
 
     [PatchPostfix]
-    public static void Postfix(MongoId? sessionID, ref ValueTask<string> __result)
+    public static void Postfix(MongoId sessionID, ref ValueTask<string> __result)
     {
-        __result = RewriteResponseAsync(sessionID ?? "", __result);
+        var serverOwnerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionID);
+        __result = RewriteResponseAsync(serverOwnerSessionId, __result);
     }
 
     private static async ValueTask<string> RewriteResponseAsync(MongoId sessionId, ValueTask<string> originalResult)
@@ -35,7 +36,6 @@ public sealed class RaidLocationsPatch : AbstractPatch
 
         if (!VagabondService.ShouldApplyVagabondRules(sessionId))
         {
-            VagabondLogger.Error($"Ignoring for session {sessionId}.");
             return jsonString;
         }
 

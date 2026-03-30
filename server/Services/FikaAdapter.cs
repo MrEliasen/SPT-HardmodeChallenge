@@ -79,6 +79,7 @@ public static class FikaAdapter
             return sessionId;
         }
 
+        VagabondLogger.Success($"Raid Owner SessionId: {requesterSessionId}");
         return new MongoId(requesterSessionId);
     }
 }

@@ -25,7 +25,6 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         try
         {
             var serverOwnerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionId);
-            VagabondLogger.Success($"Raid Owner SessionId: {serverOwnerSessionId}");
             if (!VagabondService.ShouldApplyVagabondRules(serverOwnerSessionId))
             {
                 return;

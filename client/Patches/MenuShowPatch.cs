@@ -98,7 +98,7 @@ internal class MenuShowPatch : ModulePatch
                     {
                         var kind = exfil.IsTransit ? "Transit" : "Extract";
                         var destination = exfil.IsTransit ? $" -> {exfil.DestinationLocation}" : string.Empty;
-                        Vagabond.Log($" => [{kind}] {exfil.DisplayName} [{exfil.Identifier}]{destination}");
+                        Vagabond.Log($" => [{kind}] {exfil.ExtractDisplayName} [{exfil.Identifier}]{destination}");
                     }
                 }
             }

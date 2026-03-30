@@ -207,7 +207,7 @@ public class Vagabond : BaseUnityPlugin
                 "    Description = \"Description\",",
                 "    ExfiltrationTime = 20f,",
                 "    ActivateAfterSeconds = 60,",
-                "    IsActive = false,",
+                "    IsActive = true,",
                 "    Events = false,",
                 "    HideIfNoKey = false,",
                 $"    X = {snapshot.Position.x:0.###}f,",

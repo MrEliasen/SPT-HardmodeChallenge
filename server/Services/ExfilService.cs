@@ -75,20 +75,20 @@ internal static class ExfilService
         }
 
         return CustomExfils[raid][mapName]
-            .Any(x => string.Equals(x.DisplayName, name, StringComparison.OrdinalIgnoreCase)
+            .Any(x => string.Equals(x.ExtractDisplayName, name, StringComparison.OrdinalIgnoreCase)
                       || string.Equals(x.Identifier, name, StringComparison.OrdinalIgnoreCase));
     }
 
     private static void AddOrReplaceExtract(Location location, CustomExfilDefinition definition)
     {
         var allExtracts = location.AllExtracts?.ToList() ?? new List<AllExtractsExit>();
-        allExtracts.RemoveAll(x => string.Equals(x.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase)
+        allExtracts.RemoveAll(x => string.Equals(x.Name, definition.ExtractDisplayName, StringComparison.OrdinalIgnoreCase)
                                    || string.Equals(x.SptName, definition.Identifier, StringComparison.OrdinalIgnoreCase));
         allExtracts.Add(CreateExit(definition));
         location.AllExtracts = allExtracts;
 
         var baseExits = location.Base.Exits?.ToList() ?? new List<Exit>();
-        baseExits.RemoveAll(x => string.Equals(x.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase));
+        baseExits.RemoveAll(x => string.Equals(x.Name, definition.ExtractDisplayName, StringComparison.OrdinalIgnoreCase));
         baseExits.Add(CreateExit(definition));
         location.Base.Exits = baseExits;
     }
@@ -96,11 +96,11 @@ internal static class ExfilService
     private static void AddOrReplaceTransit(Location location, CustomExfilDefinition definition)
     {
         var transits = location.Base.Transits?.ToList() ?? new List<Transit>();
-        transits.RemoveAll(x => string.Equals(x.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase)
+        transits.RemoveAll(x => string.Equals(x.Name, definition.ExtractDisplayName, StringComparison.OrdinalIgnoreCase)
                                 || (definition.TransitPointId.HasValue && x.Id == definition.TransitPointId.Value));
         transits.Add(new Transit
         {
-            Name = definition.DisplayName,
+            Name = definition.Identifier,
             Description = definition.Description,
             Conditions = string.Empty,
             Id = definition.TransitPointId,
@@ -120,7 +120,7 @@ internal static class ExfilService
     {
         return new AllExtractsExit
         {
-            Name = definition.DisplayName,
+            Name = definition.ExtractDisplayName,
             SptName = definition.Identifier,
             Chance = 100,
             ChancePVE = 100,

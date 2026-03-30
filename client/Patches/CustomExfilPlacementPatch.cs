@@ -88,7 +88,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         foreach (var definition in definitions)
         {
-            if (pmcExfils.Any(x => string.Equals(x.Settings?.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase)))
+            if (pmcExfils.Any(x => string.Equals(x.Settings?.Name, definition.ExtractDisplayName, StringComparison.OrdinalIgnoreCase)))
             {
                 continue;
             }
@@ -120,7 +120,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
             pmcExfils.Add(clone);
 
-            Vagabond.Log($"Added custom extract '{definition.DisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
+            Vagabond.Log($"Added custom extract '{definition.ExtractDisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
         }
 
         controller.ExfiltrationPoints = pmcExfils.ToArray();
@@ -201,7 +201,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             lookup[definition.TransitPointId.Value] = clone;
             CustomTransitDefinitions[definition.TransitPointId.Value] = definition;
 
-            Vagabond.Log($"Added custom transit '{definition.DisplayName}' (identifier '{definition.Identifier}') to '{definition.DestinationLocation}'.");
+            Vagabond.Log($"Added custom transit '{definition.ExtractDisplayName}' (identifier '{definition.Identifier}') to '{definition.DestinationLocation}'.");
         }
         
         TransitsAppliedThisRaid = true;
@@ -211,13 +211,13 @@ internal class CustomExfilPlacementPatch : ModulePatch
     {
         clone.Controller = controller;
         clone.Enabled = true;
-        clone.IsActive = definition.ActivateAfterSeconds <= 0;
+        clone.IsActive = definition.IsActive;
         clone.parameters = new LocationSettingsClass.Location.TransitParameters
         {
             id = definition.TransitPointId!.Value,
             active = definition.IsActive,
-            name = definition.DisplayName,
-            description = string.IsNullOrWhiteSpace(definition.Description) ? definition.DisplayName : definition.Description,
+            name = definition.Identifier,
+            description = string.IsNullOrWhiteSpace(definition.Description) ? definition.ExtractDisplayName : definition.Description,
             conditions = string.Empty,
             activateAfterSec = definition.ActivateAfterSeconds,
             time = (ushort)Mathf.Clamp(Mathf.RoundToInt(definition.ExfiltrationTime), 1, ushort.MaxValue),
@@ -248,7 +248,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         var eligibleEntryPoints = BuildEligibleEntryPoints(definition, template);
         var settings = new LocationExitClass
         {
-            Name = definition.DisplayName,
+            Name = definition.ExtractDisplayName,
             EntryPoints = string.Join(",", eligibleEntryPoints),
             ExfiltrationTime = definition.ExfiltrationTime,
             ExfiltrationType = EExfiltrationType.Individual,
@@ -270,7 +270,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         // EFT matches scene exfils by Settings.Name, not by the Unity object name.
         // LoadSettings does not retarget Settings.Name, so it must be fixed manually.
-        clone.Settings.Name = definition.DisplayName;
+        clone.Settings.Name = definition.Identifier;
         clone.Settings.EntryPoints = settings.EntryPoints;
         clone.EligibleEntryPoints = eligibleEntryPoints;
         clone.Reusable = true;
@@ -368,7 +368,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         return !string.IsNullOrWhiteSpace(exfil?.Settings?.Name)
                && definitions
                    .Where(x => !x.IsTransit)
-                   .Any(x => string.Equals(x.DisplayName, exfil.Settings.Name, StringComparison.OrdinalIgnoreCase));
+                   .Any(x => string.Equals(x.ExtractDisplayName, exfil.Settings.Name, StringComparison.OrdinalIgnoreCase));
     }
     
     private static ERequirementState MapRequirementType(CustomExfilRequirementType type)

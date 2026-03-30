@@ -17,13 +17,12 @@ public class ExfilsShoreline : ICustomExtilData
     private static  List<CustomExfilDefinition>_transits = [
         new CustomExfilDefinition
         {
-            Identifier = "shoreline_to_customs",
-            DisplayName = "Transit To Customs",
+            Identifier = "VGB_SL_CU",
             IsTransit = true,
             TransitPointId = 0,// gets auto generated
             DestinationLocation = LocationData.InverseLookupTable[RaidLocation.Customs].First(),
             TargetLocation = LocationData.InverseLookupTable[RaidLocation.Customs].First(),
-            Description = "",
+            Description = "Transit to Customs",
             ExfiltrationTime = 20f,
             ActivateAfterSeconds = 60,
             IsActive = true,
@@ -36,13 +35,12 @@ public class ExfilsShoreline : ICustomExtilData
         },
         new CustomExfilDefinition
         {
-            Identifier = "shoreline_to_reserver",
-            DisplayName = "Transit To Reserve",
+            Identifier = "VGB_SL_RS",
             IsTransit = true,
             TransitPointId = 0,// gets auto generated
             DestinationLocation = LocationData.InverseLookupTable[RaidLocation.Reserve].First(),
             TargetLocation = LocationData.InverseLookupTable[RaidLocation.Reserve].First(),
-            Description = "",
+            Description = "Transit to Reserve",
             ExfiltrationTime = 20f,
             ActivateAfterSeconds = 60,
             IsActive = true,
@@ -72,13 +70,12 @@ public class ExfilsShoreline : ICustomExtilData
         },
         new CustomExfilDefinition
         {
-            Identifier = "Shoreline_to_lighthouse_south",
-            DisplayName = "Transit To Lighthouse (South)",
+            Identifier = "VGB_SL_LH",
             IsTransit = true,
             TransitPointId = 0,// gets auto generated
             DestinationLocation = LocationData.InverseLookupTable[RaidLocation.Lighthouse].First(),
             TargetLocation = LocationData.InverseLookupTable[RaidLocation.Lighthouse].First(),
-            Description = "",
+            Description = "Transit to Lighthouse",
             ExfiltrationTime = 20f,
             ActivateAfterSeconds = 60,
             IsActive = true,
