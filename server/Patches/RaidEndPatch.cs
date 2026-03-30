@@ -40,36 +40,37 @@ public sealed class RaidEndPatch : AbstractPatch
         EndLocalRaidRequestData request, string locationName)
     {
         var serverOwnerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionId);
+        VagabondLogger.Log($"========= {serverOwnerSessionId} ============");
         HandleRaidEnd(serverOwnerSessionId, fullServerProfile, isDead, isTransfer, request, locationName);
     }
 
     public static void HandleRaidEnd(MongoId sessionId, SptProfile profile, bool isDead, bool isTransfer,
         EndLocalRaidRequestData request, string locationName)
     {
+        VagabondLogger.Log("========= A ============");
         if (!VagabondService.ShouldApplyVagabondRules(sessionId))
         {
+            VagabondLogger.Log("========= B ============");
             return;
         }
 
         var state = VagabondState.GetState(sessionId);
         if (!state.ProfileInitialized)
         {
+            VagabondLogger.Log("========= C ============");
             return;
         }
         
         state.TransitState = null;
-
-        if (ChallengeService.HandleExfil(sessionId, locationName, state, request, isDead, isTransfer, request.Results.TookCarExtract([])))
-        {
-            return;
-        }
         
+        VagabondLogger.Log("========= D ============");
         var LocationMapE = LocationData.NormaliseMapName(locationName);
         var LocationMapStr = LocationMapE.ToString();
         state.LastExitMap = LocationMapStr;
         
         if (isDead)
         {
+            VagabondLogger.Log("========= E ============");
             state.LastExitMap = RaidLocation.Streets.ToString();
             VagabondState.SaveState(sessionId, state);
             return;
@@ -77,14 +78,20 @@ public sealed class RaidEndPatch : AbstractPatch
         
         if (isTransfer)
         {
+            VagabondLogger.Log("========= F ============");
             state.TransitState = new TransitState
             {
                 FromMap =  LocationMapStr,
                 ToMap = LocationData.NormaliseMapName(request?.LocationTransit?.Location).ToString(),
                 ExitName = request?.Results?.ExitName,
             };
+            VagabondLogger.Log("========= G ============");
         }
         
+        VagabondLogger.Log("========= H ============");
+        VagabondLogger.Log($"FromMap: {state.TransitState.FromMap}");
+        VagabondLogger.Log($"ToMap: {state.TransitState.ToMap}");
+        VagabondLogger.Log($"ExitName: {state.TransitState.ExitName}");
         VagabondState.SaveState(sessionId, state);
     }
 }

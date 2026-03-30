@@ -12,7 +12,6 @@ public sealed class VagabondConfig
     public bool EnableDifficultyChanges { get; set; } = true;
     public bool DisableFlea { get; set; } = true;
     public bool StripMailAttachments { get; set; } = true;
-    public bool EnableChallenge  { get; set; } = false;
     public bool AlsoWipeCarriedMoneyOnFirstRaid { get; set; } = true;
     public bool WipeStashOnEveryRaidEntry { get; set; } = false;
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;

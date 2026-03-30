@@ -79,7 +79,7 @@ internal static class VagabondService
             return;
         }
 
-        WipeItems(sessionId, pmc, state.ChallengesCompleted, true, true, true, keepSecureContainer);
+        WipeItems(sessionId, pmc, true, true, true, keepSecureContainer);
         AddMoney(sessionId, pmc);
         VagabondLogger.Log($"ResetProfile: player profile reset {sessionId}.");
     }
@@ -113,7 +113,7 @@ internal static class VagabondService
         }
     }
 
-    public static void WipeItems(MongoId sessionId, PmcData pmc,int hcLevel, bool wipeEquipment = false,
+    public static void WipeItems(MongoId sessionId, PmcData pmc, bool wipeEquipment = false,
         bool wipeStash = false, bool forceRemoveAllMoney = false, bool keepSecureContainer = false)
     {
         var inventory = pmc.Inventory;

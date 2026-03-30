@@ -62,7 +62,7 @@ public sealed class RaidJoinPatch : AbstractPatch
         if (VagabondConfig._config.WipeStashOnEveryRaidEntry ||
             VagabondConfig._config.WipeStashOnFirstRaidEntry && state.RaidEntryCount == 1)
         {
-            VagabondService.WipeItems(sessionId, pmc.CharacterData.PmcData, state.ChallengesCompleted, false, true,
+            VagabondService.WipeItems(sessionId, pmc.CharacterData.PmcData, false, true,
                 VagabondConfig._config.AlsoWipeCarriedMoneyOnFirstRaid && state.RaidEntryCount == 1);
         }
 

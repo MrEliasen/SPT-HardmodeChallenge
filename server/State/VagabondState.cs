@@ -12,9 +12,7 @@ public sealed class VagabondState
     public bool ProfileInitialized { get; set; }
     public bool HasEnteredFirstRaid { get; set; }
     public int RaidEntryCount { get; set; }
-    public int ChallengesCompleted { get; set; }
     public required string LastExitMap { get; set; }
-    public bool CompletedChallenge { get; set; }
     public TransitState? TransitState { get; set; }
     public required List<string> CompletedRaids { get; set; }
     public bool ResetProfile { get; set; }

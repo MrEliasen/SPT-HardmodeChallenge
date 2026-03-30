@@ -270,7 +270,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         // EFT matches scene exfils by Settings.Name, not by the Unity object name.
         // LoadSettings does not retarget Settings.Name, so it must be fixed manually.
-        clone.Settings.Name = definition.Identifier;
+        clone.Settings.Name = definition.ExtractDisplayName;
         clone.Settings.EntryPoints = settings.EntryPoints;
         clone.EligibleEntryPoints = eligibleEntryPoints;
         clone.Reusable = true;

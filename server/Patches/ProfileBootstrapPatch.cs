@@ -46,19 +46,13 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
                 VagabondState.SaveState(sessionId, state);
             }
 
-            if (state.ResetProfile || state.CompletedChallenge)
+            if (state.ResetProfile)
             {
-                var completed = state.CompletedChallenge;
                 state.ResetProfile = false;
-                state.CompletedChallenge = false;
                 VagabondState.SaveState(sessionId, state);
                 VagabondService.ResetProfile(sessionId, pmc, true, !VagabondConfig._config.ResetProfileOnWin);
                 VagabondService.PersistProfileIfPossible(sessionId);
-                
-                if (!completed)
-                {
-                    ChallengeService.ResetNotification(sessionId);
-                }
+                MailerService.SendMail(sessionId, Messages.ProfileResetGeneric());
                 return;
             }
 
