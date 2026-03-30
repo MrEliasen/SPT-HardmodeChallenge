@@ -1,4 +1,4 @@
-namespace Vagabond.Common.Models;
+namespace Vagabond.Common.Definitions;
 
 public sealed class CustomExfilDefinition
 {
@@ -56,7 +56,7 @@ public sealed class CustomExfilDefinition
     /// Ignored for TransitPoint.
     /// </summary>
     public string EntryPoints { get; set; } = string.Empty;
-
+    
     public string Side { get; set; } = "Pmc";
     public float ExfiltrationTime { get; set; } = 20f;
     public int ActivateAfterSeconds { get; set; } = 60;
@@ -67,4 +67,6 @@ public sealed class CustomExfilDefinition
     public float Y { get; set; }
     public float Z { get; set; }
     public float RotationY { get; set; }
+    public List<CustomExtractRequirementDefinition> Requirements { get; set; } = new();
+    public string RequirementsDescription { get; set; }
 }

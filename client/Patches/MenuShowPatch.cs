@@ -65,7 +65,7 @@ internal class MenuShowPatch : ModulePatch
     }
 
     [CanBeNull]
-    private static async Task RefreshVagabondState()
+    public static async Task RefreshVagabondState()
     {
         try
         {

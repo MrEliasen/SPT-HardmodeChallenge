@@ -6,7 +6,6 @@ using Vagabond.Common;
 using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
-using Vagabond.Common.Models;
 using Location = SPTarkov.Server.Core.Models.Eft.Common.Location;
 
 namespace Vagabond.Server.Services;

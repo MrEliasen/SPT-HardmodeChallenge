@@ -45,6 +45,8 @@ public class Vagabond : BaseUnityPlugin
         new MatchMakerLocationFilterPatch().Enable();
         new CustomExfilPlacementPatch().Enable();
         new CustomExfilCleanupPatch().Enable();
+        new CustomTransitRetryPatch().Enable();
+        new MenuShowPatch().Enable();
         
         if (IsHeadless())
         {
@@ -52,7 +54,7 @@ public class Vagabond : BaseUnityPlugin
             return;
         }
         
-        new MenuShowPatch().Enable();
+        new TransitInteractionPatch().Enable();
         new SkipInsuranceScreenPatch().Enable();
         new DisableInsuranceBackNavigationPatch().Enable();
         NotificationService.Create(transform);
@@ -197,15 +199,15 @@ public class Vagabond : BaseUnityPlugin
                 "new CustomExfilDefinition",
                 "{",
                 $"    Identifier = \"unique_identifier\",",
-                $"    DisplayName = \"Human Readable Label\",",
+                $"    DisplayName = \"Label\",",
                 "    IsTransit = true,",
                 $"    TransitPointId = 0,// gets auto generated",
-                "    DestinationLocation = LocationData.InverseLookupTable[RaidLocation.<DESTINATION>].First(),",
-                "    TargetLocation = LocationData.InverseLookupTable[RaidLocation.<DESTINATION>].First(),",
-                "    Description = \"Human readable description\",",
+                "    DestinationLocation = LocationData.InverseLookupTable[RaidLocation.DESTINATION].First(),",
+                "    TargetLocation = LocationData.InverseLookupTable[RaidLocation.DESTINATION].First(),",
+                "    Description = \"Description\",",
                 "    ExfiltrationTime = 20f,",
                 "    ActivateAfterSeconds = 60,",
-                "    IsActive = true,",
+                "    IsActive = false,",
                 "    Events = false,",
                 "    HideIfNoKey = false,",
                 $"    X = {snapshot.Position.x:0.###}f,",

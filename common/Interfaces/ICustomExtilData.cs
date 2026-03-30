@@ -1,5 +1,5 @@
 ﻿using Vagabond.Common.Enums;
-using Vagabond.Common.Models;
+using Vagabond.Common.Definitions;
 
 namespace Vagabond.Common;
 

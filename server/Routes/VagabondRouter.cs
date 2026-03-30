@@ -5,7 +5,6 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Utils;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
-using Vagabond.Common.Models;
 using Vagabond.Server.Config;
 using Vagabond.Server.Models;
 using Vagabond.Server.Services;
@@ -28,50 +27,43 @@ public class VagabondRouter(
 {
     private static SyncStateResponse HandleRoute(MongoId sessionId)
     {
-        var response = new SyncStateResponse
-        {
-            ChallengeActive = false,
-            CompletedRaids = [],
-        };
-
-        if (!VagabondService.ShouldApplyVagabondRules(sessionId))
-        {
-            return response;
-        }
-
-        var pmc = VagabondService.GetPmcProfile(sessionId);
-        if (pmc == null)
-        {
-            return response;
-        }
-
-        var state = VagabondState.GetState(sessionId);
-        response.ChallengeActive = state.ProfileInitialized;
-        response.HasEnteredFirstRaid = state.HasEnteredFirstRaid;
-        response.WipeEveryRaid = VagabondConfig._config.WipeStashOnEveryRaidEntry;
-        response.WipeFirstRaid = VagabondConfig._config.WipeStashOnFirstRaidEntry;
+        var response = new SyncStateResponse();
         response.CustomExfils = ExfilService.CustomExfils;
-        response.LooseAccessToTraders = VagabondConfig._config.PreventStarterTraderAccessAfterFirstRaidEntry &&
-                                        VagabondConfig._config.StarterTraders.Count > 0;
         
-
-        if (VagabondConfig._config.RememberLastLocation)
+        if (VagabondService.ShouldApplyVagabondRules(sessionId))
         {
-            var raidNameE = GetCurrentRaidName(state);
-            if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+            var pmc = VagabondService.GetPmcProfile(sessionId);
+            if (pmc == null)
             {
-                response.CompletedRaids.AddRange(mapIds);
+                return response;
+            }
+            
+            var state = VagabondState.GetState(sessionId);
+            response.ChallengeActive = state.ProfileInitialized;
+            response.HasEnteredFirstRaid = state.HasEnteredFirstRaid;
+            response.WipeEveryRaid = VagabondConfig._config.WipeStashOnEveryRaidEntry;
+            response.WipeFirstRaid = VagabondConfig._config.WipeStashOnFirstRaidEntry;
+            response.LooseAccessToTraders = VagabondConfig._config.PreventStarterTraderAccessAfterFirstRaidEntry &&
+                                            VagabondConfig._config.StarterTraders.Count > 0;
+
+            if (VagabondConfig._config.RememberLastLocation)
+            {
+                var raidNameE = GetCurrentRaidName(state);
+                if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+                {
+                    response.CompletedRaids.AddRange(mapIds);
+                }
+
+                return response;
             }
 
-            return response;
-        }
-
-        foreach (var raidName in state.CompletedRaids)
-        {
-            RaidLocation raidNameE = LocationData.NormaliseMapName(raidName);
-            if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+            foreach (var raidName in state.CompletedRaids)
             {
-                response.CompletedRaids.AddRange(mapIds);
+                RaidLocation raidNameE = LocationData.NormaliseMapName(raidName);
+                if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+                {
+                    response.CompletedRaids.AddRange(mapIds);
+                }
             }
         }
 

@@ -64,6 +64,7 @@ public sealed class RaidEndPatch : AbstractPatch
         var LocationMapE = LocationData.NormaliseMapName(locationName);
         var LocationMapStr = LocationMapE.ToString();
         state.LastExitMap = LocationMapStr;
+        state.TransitState = null;
         
         if (isDead)
         {

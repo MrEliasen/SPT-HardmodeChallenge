@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vagabond.Common.Enums;
-using Vagabond.Common.Models;
+using Vagabond.Common.Definitions;
 
 namespace Vagabond.Client.State;
 

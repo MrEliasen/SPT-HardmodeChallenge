@@ -1,6 +1,6 @@
 ﻿using Vagabond.Common.Enums;
 
-namespace Vagabond.Common.Models;
+namespace Vagabond.Common.Definitions;
 
 public class SyncStateResponse
 {

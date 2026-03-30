@@ -25,7 +25,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         try
         {
             var serverOwnerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionId);
-            VagabondLogger.Error($"Raid Owner SessionId: {serverOwnerSessionId}");
+            VagabondLogger.Success($"Raid Owner SessionId: {serverOwnerSessionId}");
             if (!VagabondService.ShouldApplyVagabondRules(serverOwnerSessionId))
             {
                 return;
@@ -58,7 +58,6 @@ public sealed class StartLocalRaidPatch : AbstractPatch
                 ApplyForcedSpawn(__result, forcedSpawn);
             }
 
-            state.TransitState = null;
             VagabondState.SaveState(serverOwnerSessionId, state);
         }
         catch (Exception ex)
