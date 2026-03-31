@@ -3,22 +3,12 @@
   "StartingRoubles": 135000, // The amount of money a player starts with
   "EnableFenceChanges": true, // makes fence less random and useful as a starter vendor - recommend removing other traders
   "DisableFlea": true,
-  "FixProfiles": false, // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful for removing the old Spectator trader which is no longer in this mod
+  "FixProfiles": false, // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful if you used older versions of this mod.
   "StripMailAttachments": true, // still allows mail, but removed all attachments from messages.
-  "AlsoWipeCarriedMoneyOnFirstRaid": true, // this only works if "WipeStashOnFirstRaidEntry" is enabled
   "WipeStashOnFirstRaidEntry": true,
-  "StarterTraders": [
-    // add ID's of traders here.
-    // access will be removed after player enters first raid, if setting is enabled
-    // I recommend trying with just Fence and the fence changes first.
-  ],
-  "PermanentTraders": [
-    // add ID's of traders here.
-    // these are permanently available, regardless of how many raids the player has done
-    "579dc571d53a0658a154fbec" // fence
-  ],
+  "AlsoWipeCarriedMoneyOnFirstRaid": true, // this only works if "WipeStashOnFirstRaidEntry" is enabled
+  "AdjustRaidTimeMins": 60, // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
   "IgnoredProfiles": [
-    // Enter IDs of profiles you don't want getting affected (too much) by this mod
-    // Note: trader changes will still affect these profilers, but everything else should be toggled off.
+    // Enter IDs of profiles you don't want getting affected too much by this mod (not 100% isolation)
   ]
 }

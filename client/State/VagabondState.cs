@@ -14,5 +14,6 @@ public sealed class VagabondState
     public bool PermaDeath { get; set; }
     public string CurrentMap { get; set; }
     public bool WipeFirstRaid { get; set; }
+    public bool WipeFirstMoney { get; set; }
     public Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils { get; set; } = new();
 }

@@ -3,7 +3,7 @@ using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
-using Vagabond.Server.Definitions;
+using Vagabond.Common.Data;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -54,7 +54,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
         var state = VagabondState.GetState(sessionId);
         state.ProfileInitialized = true;
         VagabondState.SaveState(sessionId, state);
-        VagabondService.ApplyTraderRestrictions(pmc.CharacterData.PmcData, true);
+        VagabondService.ApplyTraderRestrictions(pmc.CharacterData.PmcData);
         VagabondService.PersistProfileIfPossible(sessionId);
         MailerService.SendMail(sessionId, Messages.WelcomeOpenWorld());
         VagabondLogger.Success($"activated Vagabond profile for {sessionId}.");

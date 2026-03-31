@@ -12,8 +12,6 @@ namespace Vagabond.Client.Patches;
 
 internal class ExfiltrationPointPatch : ModulePatch
 {
-    private const string Roubles = "5449016a4bdc2d6f028b456f";
-
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(typeof(ExfiltrationControllerClass),
@@ -43,7 +41,7 @@ internal class ExfiltrationPointPatch : ModulePatch
                 continue;
             }
 
-            if (IsVehicleExfil(exfil.Requirements) || IsCustomExfil(exfil.Settings))
+            if (IsCustomExfil(exfil.Settings))
             {
                 kept.Add(exfil);
                 continue;
@@ -76,16 +74,6 @@ internal class ExfiltrationPointPatch : ModulePatch
         }
 
         exfil.gameObject.SetActive(false);
-    }
-
-    private static bool IsVehicleExfil(ExfiltrationRequirement[] settings)
-    {
-        if (settings.Length == 0)
-        {
-            return false;
-        }
-
-        return settings.Any(x => x.Count > 0 && x.Id == Roubles);
     }
 
     private static bool IsCustomExfil(ExitTriggerSettings settings)

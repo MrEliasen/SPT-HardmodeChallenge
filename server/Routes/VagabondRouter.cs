@@ -41,6 +41,7 @@ public class VagabondRouter(
             response.VagabondModeEnabled = true;
             response.PermaDeath = VagabondConfig.Config.PermaDeath;
             response.WipeFirstRaid = VagabondConfig.Config.WipeStashOnFirstRaidEntry;
+            response.WipeFirstMoney = VagabondConfig.Config.AlsoWipeCarriedMoneyOnFirstRaid;
             response.CurrentMap = VagabondService.GetCurrentRaidId(state);
         }
 

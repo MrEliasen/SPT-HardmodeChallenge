@@ -6,6 +6,7 @@ using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using Vagabond.Client.Services;
+using Vagabond.Common.Data;
 
 namespace Vagabond.Client.Patches;
 
@@ -42,21 +43,10 @@ internal class MenuShowPatch : ModulePatch
 
         if (!Vagabond.State.HasShownWarningMessage && Vagabond.State.CurrentMap.IsNullOrEmpty())
         {
-            var message = "";
-
-            if (Vagabond.State.PermaDeath)
-            {
-                message += "\nWARNING: Perma-death is enabled. If you die for any reason, your profile is wiped.\n";
-            }
-            else if (Vagabond.State.WipeFirstRaid)
-            {
-                message +=
-                    "\nFirst time you enter a raid, any money you carry on you is removed, and everything left in your stash gets wiped\n";
-            }
-
+            var message = Messages.FirstWarning(Vagabond.State.WipeFirstRaid,  Vagabond.State.WipeFirstMoney, Vagabond.State.PermaDeath);
             if (message != "")
             {
-                NotificationService.Instance.ShowMessage("Heads up!\n" + message);
+                NotificationService.Instance.ShowMessage("New Character Warning!\n" + message);
                 Vagabond.State.HasShownWarningMessage = true;
             }
         }
@@ -78,21 +68,21 @@ internal class MenuShowPatch : ModulePatch
             Vagabond.State.VagabondModeEnabled = resp.VagabondModeEnabled;
             Vagabond.State.PermaDeath = resp.PermaDeath;
             Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
+            Vagabond.State.WipeFirstMoney = resp.WipeFirstMoney;
             Vagabond.State.CurrentMap = resp.CurrentMap;
             Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
             Vagabond.State.CustomExfils = resp.CustomExfils ?? new();
 
+            Vagabond.Log($"Loading Custom Extractions");
             foreach (var raid in Vagabond.State.CustomExfils)
             {
-                Vagabond.Log($"Custom extractions for {raid.Key}:");
                 foreach (var map in raid.Value)
                 {
-                    Vagabond.Log($"Specific Map: {map.Key}:");
                     foreach (var exfil in map.Value)
                     {
                         var kind = exfil.IsTransit ? "Transit" : "Extract";
-                        var destination = exfil.IsTransit ? $" -> {exfil.DestinationLocation}" : string.Empty;
-                        Vagabond.Log($" => [{kind}] {exfil.DisplayName} [{exfil.Identifier}]{destination}");
+                        var desc = exfil.IsTransit ? $" To {exfil.DestinationLocation}" : $" {exfil.DisplayName}";
+                        Vagabond.Log($" => [{kind}] {exfil.Identifier} :: {desc}");
                     }
                 }
             }

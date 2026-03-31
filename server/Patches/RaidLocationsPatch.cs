@@ -136,7 +136,7 @@ public sealed class RaidLocationsPatch : AbstractPatch
                     continue;
                 }
 
-                if (!IsVehicleExfil(exfil) && !IsCustomExtract(exfil, locationKey))
+                if (!IsCustomExtract(exfil, locationKey))
                 {
                     exits.RemoveAt(i);
                 }
@@ -147,21 +147,6 @@ public sealed class RaidLocationsPatch : AbstractPatch
         {
             WriteIndented = false
         });
-    }
-
-    private static bool IsVehicleExfil(JsonObject exfil)
-    {
-        string? passageRequirement = exfil["PassageRequirement"]?.GetValue<string>();
-        string? requirementTip = exfil["RequirementTip"]?.GetValue<string>();
-        string? id = exfil["Id"]?.GetValue<string>();
-
-        int count = exfil["Count"]?.GetValue<int>() ?? 0;
-        int countPve = exfil["CountPVE"]?.GetValue<int>() ?? 0;
-
-        return string.Equals(passageRequirement, "TransferItem", StringComparison.OrdinalIgnoreCase)
-               && string.Equals(id, VagabondService.Roubles, StringComparison.OrdinalIgnoreCase)
-               && string.Equals(requirementTip, "EXFIL_Item", StringComparison.OrdinalIgnoreCase)
-               && (count > 0 || countPve > 0);
     }
 
     private static bool IsCustomExtract(JsonObject exfil, MongoId locationKey)

@@ -159,7 +159,7 @@ public class Vagabond : BaseUnityPlugin
             {
                 $"new CustomExfil",
                 "{",
-                $"    Identifier = \"unique_identifier\",",
+                $"    Identifier = \"VGB_EXT_\",",
                 $"    DisplayName = \"Human Readable Label\",",
                 "    IsTransit = false,",
                 "    TemplateExitName = \"REPLACE_WITH_TEMPLATE_EXIT_NAME\",",

@@ -142,6 +142,17 @@ public class DifficultyChanges(DatabaseService databaseService) : IOnLoad
             globals.Configuration.RagFair.MinUserLevel = 99;
         }
 
+        if (VagabondConfig.Config.AdjustRaidTimeMins != 0)
+        {
+            foreach (Location names in locationsdb.GetDictionary().Values)
+            {
+                names.Base.ExitAccessTime += VagabondConfig.Config.AdjustRaidTimeMins;
+                names.Base.EscapeTimeLimit += VagabondConfig.Config.AdjustRaidTimeMins;
+                names.Base.EscapeTimeLimitCoop += VagabondConfig.Config.AdjustRaidTimeMins;
+                names.Base.EscapeTimeLimitPVE += VagabondConfig.Config.AdjustRaidTimeMins;
+            }
+        }
+
         return Task.CompletedTask;
     }
 }

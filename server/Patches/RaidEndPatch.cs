@@ -7,6 +7,7 @@ using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
 using Vagabond.Common.Data;
 using Vagabond.Common.Models;
+using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -65,6 +66,7 @@ public sealed class RaidEndPatch : AbstractPatch
         
         if (isDead)
         {
+            state.ResetProfile = VagabondConfig.Config.PermaDeath;
             VagabondState.SaveState(sessionId, state);
             return;
         }

@@ -9,16 +9,12 @@ public sealed class VagabondConfig
     public bool PermaDeath { get; set; } = false;
     public bool FixProfiles { get; set; } = false;
     public int StartingRoubles { get; set; } = 135_000;
+    public int AdjustRaidTimeMins  { get; set; } = 60;
     public bool EnableFenceChanges { get; set; } = true;
     public bool DisableFlea { get; set; } = true;
     public bool StripMailAttachments { get; set; } = true;
-    public bool AlsoWipeCarriedMoneyOnFirstRaid { get; set; } = true;
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
-    public List<string> StarterTraders { get; set; } = new();
-    public List<string> PermanentTraders { get; set; } = new()
-    {
-        "579dc571d53a0658a154fbec"
-    };
+    public bool AlsoWipeCarriedMoneyOnFirstRaid { get; set; } = true;
     public List<string> IgnoredProfiles { get; set; } = new();
 
     // internal

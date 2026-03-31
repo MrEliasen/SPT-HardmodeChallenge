@@ -22,4 +22,8 @@
     <ItemGroup>
         <None Include="Config\\vagabond.json" CopyToOutputDirectory="Always"/>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Definitions\" />
+    </ItemGroup>
 </Project>
