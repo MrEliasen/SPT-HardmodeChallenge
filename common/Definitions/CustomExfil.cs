@@ -67,5 +67,6 @@ public sealed class CustomExfil
     public float Y { get; set; }
     public float Z { get; set; }
     public float RotationY { get; set; }
+    public string? ConnectedIdentifier { get; set; }
     public List<CustomExtractRequirementDefinition> Requirements { get; set; } = new();
 }

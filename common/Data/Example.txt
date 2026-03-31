@@ -13,7 +13,7 @@ public class ExfilsShoreline : ICustomExtilData
     private static RaidLocation _raid = RaidLocation.Shoreline;
     public RaidLocation Raid => _raid;
     
-    private static string _mapName = "shoreline";
+    private static string _mapName = "Shoreline"; // capitalisation is important for this to work..
     private static List<CustomExfilDefinition> _extracts = [
         new CustomExfilDefinition{
             Identifier = "vagabond_shoreline_cliff_vex",

@@ -97,7 +97,6 @@ public sealed class VagabondDbLoader : IOnLoad
         _mailSendService = mailSendService;
         _locationController = locationController;
         _databaseService = databaseService;
-        CopyUtil.Init(jsonUtil);
     }
 
     public Task OnLoad()

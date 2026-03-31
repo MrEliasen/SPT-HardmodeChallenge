@@ -37,8 +37,8 @@ public sealed class StartLocalRaidPatch : AbstractPatch
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(request.Location) || LocationData.NormaliseMapName(request.Location) !=
-                LocationData.NormaliseMapName(transitState.ToMap))
+            if (string.IsNullOrWhiteSpace(request.Location) || VagabondLocations.NormaliseMapName(request.Location) !=
+                VagabondLocations.NormaliseMapName(transitState.ToMap))
             {
                 return;
             }
@@ -69,18 +69,17 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         TransitState transitState,
         StartLocalRaidResponseData response)
     {
-        var template = response.LocationLoot?.SpawnPointParams?
-            .FirstOrDefault(sp =>
-                (sp.Categories?.Any(c => string.Equals(c, "Player", StringComparison.OrdinalIgnoreCase)) ?? false) &&
-                (sp.Sides?.Any(s => string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false));
-
-        if (template == null)
+        // if we cannot map the exit directly to a spawn location, we fall back to the below switch.
+        if (GetExitSpecificSpawnLocation(transitState, out var customExitSpawn))
         {
-            return null;
+            return customExitSpawn;
         }
 
-        var from = LocationData.NormaliseMapName(transitState.FromMap);
-        var to = LocationData.NormaliseMapName(transitState.ToMap);
+        // Honestly, I made this as my first version of custom spawn points and it works well for
+        // original transits, but if you have two transits going in the same direction, it falls apart.
+        // So, leave this for original transits, and we only worry about mapping our custom transits.
+        var from = VagabondLocations.NormaliseMapName(transitState.FromMap);
+        var to = VagabondLocations.NormaliseMapName(transitState.ToMap);
 
         return (from, to) switch
         {
@@ -91,7 +90,9 @@ public sealed class StartLocalRaidPatch : AbstractPatch
                 { X = 9.094f, Y = -1.048f, Z = 126.674f, Rotation = 166.027f },
             (RaidLocation.Reserve, RaidLocation.Customs) => new ManualSpawnPoint
                 { X = 650.311f, Y = 0.39f, Z = 116.193f, Rotation = 196.06f },
-            (RaidLocation.Factory, RaidLocation.Customs) => new ManualSpawnPoint
+            (RaidLocation.FactoryDay, RaidLocation.Customs) => new ManualSpawnPoint
+                { X = 353.939f, Y = 1.123f, Z = -189.197f, Rotation = 3.389f },
+            (RaidLocation.FactoryNight, RaidLocation.Customs) => new ManualSpawnPoint
                 { X = 353.939f, Y = 1.123f, Z = -189.197f, Rotation = 3.389f },
             (RaidLocation.Woods, RaidLocation.Customs) => new ManualSpawnPoint
                 { X = -4.414f, Y = 1.104f, Z = -136.337f, Rotation = 352.916f },
@@ -119,7 +120,9 @@ public sealed class StartLocalRaidPatch : AbstractPatch
             (RaidLocation.Lighthouse, RaidLocation.Reserve) => new ManualSpawnPoint
                 { X = 216.246f, Y = -7.007f, Z = -176.805f, Rotation = 211.995f },
             // Woods
-            (RaidLocation.Factory, RaidLocation.Woods) => new ManualSpawnPoint
+            (RaidLocation.FactoryDay, RaidLocation.Woods) => new ManualSpawnPoint
+                { X = -355.201f, Y = -0.268f, Z = 362.391f, Rotation = 161.997f },
+            (RaidLocation.FactoryNight, RaidLocation.Woods) => new ManualSpawnPoint
                 { X = -355.201f, Y = -0.268f, Z = 362.391f, Rotation = 161.997f },
             (RaidLocation.Customs, RaidLocation.Woods) => new ManualSpawnPoint
                 { X = -139.908f, Y = -1.504f, Z = 417.126f, Rotation = 212.588f },
@@ -151,7 +154,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         return spawnPoints?
             .Where(sp =>
                 (sp.Categories?.Any(c => string.Equals(c, "Player", StringComparison.OrdinalIgnoreCase)) ?? false) &&
-                (sp.Sides?.Any(s => string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false) &&
+                (sp.Sides?.Any(s => string.Equals(s, "All", StringComparison.OrdinalIgnoreCase) || string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false) &&
                 sp.Position != null)
             .OrderBy(sp =>
             {
@@ -174,11 +177,16 @@ public sealed class StartLocalRaidPatch : AbstractPatch
 
         bool IsPmcPlayerSpawn(SpawnPointParam sp) =>
             (sp.Categories?.Any(c => string.Equals(c, "Player", StringComparison.OrdinalIgnoreCase)) ?? false) &&
-            (sp.Sides?.Any(s => string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false);
+            (sp.Sides?.Any(s => string.Equals(s, "All", StringComparison.OrdinalIgnoreCase) || string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false);
 
         var template = GetSpawnPointTemplate(all, point);
         if (template == null)
         {
+            // foreach (var sp in all)
+            // {
+            //     VagabondLogger.Error($"Checked => {string.Join(",", sp.Categories)} && {string.Join(",", sp.Sides)}");
+            // }
+            
             VagabondLogger.Error("Could not find PMC player spawn template");
             return;
         }
@@ -202,5 +210,43 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         response.LocationLoot!.SpawnPointParams = kept;
 
         //VagabondLogger.Log($"Forced PMC player spawn applied. Original total: {all.Count}, new total: {kept.Count}, kept non-player/non-PMC entries: {kept.Count - 1}");
+    }
+
+    private static bool GetExitSpecificSpawnLocation(TransitState transitState, out ManualSpawnPoint customExitSpawn)
+    {
+        customExitSpawn = null!;
+        var from = VagabondLocations.NormaliseMapName(transitState.FromMap);
+        var to = VagabondLocations.NormaliseMapName(transitState.ToMap);
+        if (to == RaidLocation.Nil)
+        {
+            VagabondLogger.Error($"Raid is Nil, no specific spawn locations found");
+            return false;
+        }
+        
+        var fromMapData = ExfilService.GetCustomMapData(from);
+        var exfil = fromMapData.Extracts.Concat(fromMapData.Transits).FirstOrDefault(x=> x.Identifier ==  transitState.ExitName);
+        if (exfil == null)
+        {
+            VagabondLogger.Error($"No exfils for map {to} from exit {transitState.ExitName}");
+            return false;
+        }
+        
+        if (string.IsNullOrEmpty(exfil.ConnectedIdentifier))
+        {
+            VagabondLogger.Error($"No ConnectedIdentifier on map {to}, exit {exfil.Identifier}");
+            return false;
+        }
+        
+        var toMapData = ExfilService.GetCustomMapData(to);
+        var position = toMapData.Extracts.Concat(toMapData.Transits).FirstOrDefault(x=> x.Identifier ==  exfil.ConnectedIdentifier);
+        if (position == null)
+        {
+            VagabondLogger.Error($"No connected spawn found for {transitState.ExitName} on {to}");
+            return false;
+        }
+        
+        customExitSpawn = new ManualSpawnPoint{ X = position.X, Y = position.Y, Z = position.Z, Rotation = position.RotationY};
+        VagabondLogger.Error($"forcing spawn at {customExitSpawn.X},{customExitSpawn.Y},{customExitSpawn.Z},R={customExitSpawn.Rotation}");
+        return true;
     }
 }

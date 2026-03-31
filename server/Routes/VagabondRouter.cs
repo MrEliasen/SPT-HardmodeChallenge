@@ -49,7 +49,7 @@ public class VagabondRouter(
             if (VagabondConfig._config.RememberLastLocation)
             {
                 var raidNameE = GetCurrentRaidName(state);
-                if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+                if (raidNameE != RaidLocation.Nil && VagabondLocations.Locations.TryGetValue(raidNameE, out var mapIds))
                 {
                     response.CompletedRaids.AddRange(mapIds);
                 }
@@ -59,8 +59,8 @@ public class VagabondRouter(
 
             foreach (var raidName in state.CompletedRaids)
             {
-                RaidLocation raidNameE = LocationData.NormaliseMapName(raidName);
-                if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+                RaidLocation raidNameE = VagabondLocations.NormaliseMapName(raidName);
+                if (raidNameE != RaidLocation.Nil && VagabondLocations.Locations.TryGetValue(raidNameE, out var mapIds))
                 {
                     response.CompletedRaids.AddRange(mapIds);
                 }
@@ -85,6 +85,6 @@ public class VagabondRouter(
             return RaidLocation.Nil;
         }
 
-        return LocationData.NormaliseMapName(mapName);
+        return VagabondLocations.NormaliseMapName(mapName);
     }
 }

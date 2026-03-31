@@ -15,7 +15,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(ProfileHelper).GetMethod(nameof(ProfileHelper.GetPmcProfile));
+        return typeof(ProfileHelper).GetMethod(nameof(ProfileHelper.GetPmcProfile))!;
     }
 
     [PatchPostfix]

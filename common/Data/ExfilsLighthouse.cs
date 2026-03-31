@@ -20,18 +20,19 @@ public class ExfilsLighthouse : ICustomExtilData
             Identifier = "VGB_LH_SL",
             IsTransit = true,
             TransitPointId = 0,// gets auto generated
-            DestinationLocation = LocationData.InverseLookupTable[RaidLocation.Shoreline].First(),
-            TargetLocation = LocationData.InverseLookupTable[RaidLocation.Shoreline].First(),
+            DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Shoreline].First(),
+            TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Shoreline].First(),
             Description = "Transit to Shoreline",
-            ExfiltrationTime = 20f,
-            ActivateAfterSeconds = 60,
+            ExfiltrationTime = 5f,
+            ActivateAfterSeconds = 5,
             IsActive = true,
             Events = false,
             HideIfNoKey = false,
             X = -286.691f,
             Y = 5.971f,
             Z = 419.177f,
-            RotationY = 110.061f
+            RotationY = 110.061f,
+            ConnectedIdentifier = "VGB_SL_LH",
         }
     ];
 }

@@ -59,7 +59,7 @@ public sealed class RaidEndPatch : AbstractPatch
         
         state.TransitState = null;
         
-        var LocationMapE = LocationData.NormaliseMapName(locationName);
+        var LocationMapE = VagabondLocations.NormaliseMapName(locationName);
         var LocationMapStr = LocationMapE.ToString();
         state.LastExitMap = LocationMapStr;
         
@@ -75,8 +75,8 @@ public sealed class RaidEndPatch : AbstractPatch
             state.TransitState = new TransitState
             {
                 FromMap =  LocationMapStr,
-                ToMap = LocationData.NormaliseMapName(request?.LocationTransit?.Location).ToString(),
-                ExitName = request?.Results?.ExitName,
+                ToMap = VagabondLocations.NormaliseMapName(request?.LocationTransit?.Location).ToString(),
+                ExitName = request?.Results?.ExitName
             };
         }
         

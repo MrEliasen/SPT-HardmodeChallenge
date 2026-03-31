@@ -43,13 +43,13 @@ internal class CustomExfilPlacementPatch : ModulePatch
             return;
         }
 
-        if (!LocationData.LookupTable.ContainsKey(locationId))
+        if (!VagabondLocations.LookupTable.ContainsKey(locationId))
         {
             Vagabond.Log($"Unknown location => {locationId}");
             return;
         }
         
-        var raid = LocationData.NormaliseMapName(locationId);
+        var raid = VagabondLocations.NormaliseMapName(locationId);
         if (raid == RaidLocation.Nil)
         {
             Vagabond.Log($"Unknown Raid => {locationId}");
@@ -204,7 +204,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             lookup[definition.TransitPointId.Value] = clone;
             CustomTransitDefinitions[definition.TransitPointId.Value] = definition;
 
-            Vagabond.Log($"Added custom transit '{definition.DisplayName}' (identifier '{definition.Identifier}') to '{definition.DestinationLocation}'.");
+            Vagabond.Log($"Added custom transit '{raid}' (identifier '{definition.Identifier}') to '{definition.DestinationLocation}'.");
         }
         
         TransitsAppliedThisRaid = true;
@@ -361,7 +361,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         return built.ToArray();
     }
 
-    private static Dictionary<int, TransitPoint>? GetTransitLookup(TransitControllerAbstractClass controller)
+    private static Dictionary<int, TransitPoint> GetTransitLookup(TransitControllerAbstractClass controller)
     {
         return TransitPointLookupField?.GetValue(controller) as Dictionary<int, TransitPoint>;
     }
@@ -423,12 +423,12 @@ internal class CustomTransitRetryPatch : ModulePatch
             return;
         }
 
-        if (!LocationData.LookupTable.ContainsKey(locationId))
+        if (!VagabondLocations.LookupTable.ContainsKey(locationId))
         {
             return;
         }
         
-        var raid = LocationData.NormaliseMapName(locationId);
+        var raid = VagabondLocations.NormaliseMapName(locationId);
         if (raid == RaidLocation.Nil)
         {
             return;

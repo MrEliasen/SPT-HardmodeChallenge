@@ -26,7 +26,7 @@ internal static class VagabondService
 
     public static bool HasCompletedAllMaps(List<string> completedRaids)
     {
-        foreach (var raid in LocationData.Locations)
+        foreach (var raid in VagabondLocations.Locations)
         {
             if (!completedRaids.Any(x => string.Equals(x, raid.Key.ToString(), StringComparison.OrdinalIgnoreCase)))
             {

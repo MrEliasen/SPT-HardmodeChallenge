@@ -23,7 +23,11 @@ internal static class ExfilService
                 continue;
             }
             
-            LocationData.InverseLookupTable.TryGetValue(loc, out var maps);
+            if (!VagabondLocations.InverseLookupTable.TryGetValue(loc, out var maps) || maps == null)
+            {
+                continue;
+            }
+            
             var ent = new Dictionary<string, List<CustomExfil>>();
             foreach (var map in maps)
             {
@@ -44,6 +48,8 @@ internal static class ExfilService
         AddExtractions(9700,locations.Shoreline, new ExfilsShoreline()); 
         AddExtractions(9800,locations.TarkovStreets, new ExfilsStreets()); 
         AddExtractions(9900,locations.Woods, new ExfilsWoods());
+        AddExtractions(10000,locations.Laboratory, new ExfilsLabs()); 
+        AddExtractions(1100,locations.Labyrinth, new ExfilsLabyrinth());
     }
 
     private static void AddExtractions(int pointIdOffset, Location location, ICustomExtilData data)
@@ -149,13 +155,35 @@ internal static class ExfilService
 
     private static string GetPmcEntryPoints(Location location)
     {
-        var entryPoints = location.Base.Exits?
-            .Where(x => string.Equals(x.Side, "Pmc", StringComparison.OrdinalIgnoreCase)
-                        && !string.IsNullOrWhiteSpace(x.EntryPoints))
-            .SelectMany(x => x.EntryPoints.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        var entryPoints = location.Base.Exits
+            .Where(x => string.Equals(x.Side, "Pmc", StringComparison.OrdinalIgnoreCase))
+            .Select(x => x.EntryPoints)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .SelectMany(x => x!.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray() ?? Array.Empty<string>();
+            .ToArray();
 
         return string.Join(",", entryPoints);
+    }
+
+    public static ICustomExtilData GetCustomMapData(RaidLocation raid)
+    {
+        return (raid) switch
+        {
+            (RaidLocation.Customs) => new ExfilsCustoms(),
+            (RaidLocation.FactoryDay) => new ExfilsFactoryDay(),
+            (RaidLocation.FactoryNight) => new ExfilsFactoryNight(),
+            (RaidLocation.GroundZero) => new ExfilsGroundZero(),
+            (RaidLocation.Interchange) => new ExfilsInterchange(),
+            (RaidLocation.Lighthouse) => new ExfilsLighthouse(),
+            (RaidLocation.Reserve) => new ExfilsReserve(),
+            (RaidLocation.Shoreline) => new ExfilsShoreline(),
+            (RaidLocation.Streets) => new ExfilsStreets(),
+            (RaidLocation.Woods) => new ExfilsWoods(),
+            (RaidLocation.Labs) => new ExfilsLabs(),
+            (RaidLocation.Labyrinth) => new ExfilsLabyrinth(),
+            RaidLocation.Nil => throw new ArgumentOutOfRangeException(nameof(raid), raid, "RaidLocation.Nil has no custom map data."),
+            _ => throw new ArgumentOutOfRangeException(nameof(raid), raid, "Unsupported raid location.")
+        };
     }
 }

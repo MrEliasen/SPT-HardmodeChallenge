@@ -13,7 +13,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(CreateProfileService).GetMethod(nameof(CreateProfileService.CreateProfile));
+        return typeof(CreateProfileService).GetMethod(nameof(CreateProfileService.CreateProfile))!;
     }
 
     [PatchPostfix]

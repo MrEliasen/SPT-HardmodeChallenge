@@ -73,7 +73,7 @@ public static class Messages
     {
         var progress = "";
 
-        foreach (var raid in LocationData.Locations)
+        foreach (var raid in VagabondLocations.Locations)
         {
             var completed = completedRaids.Any(x => raid.Value.Contains(x));
             var entry = $"[{(completed ? "X" : " ")}] {raid.Key.ToString()} \n";

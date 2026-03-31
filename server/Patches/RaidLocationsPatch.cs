@@ -14,7 +14,7 @@ public sealed class RaidLocationsPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(LocationCallbacks).GetMethod(nameof(LocationCallbacks.GetLocationData));
+        return typeof(LocationCallbacks).GetMethod(nameof(LocationCallbacks.GetLocationData))!;
     }
 
     [PatchPostfix]
@@ -71,8 +71,8 @@ public sealed class RaidLocationsPatch : AbstractPatch
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
         foreach (var raidName in state.CompletedRaids)
         {
-            RaidLocation raidNameE = LocationData.NormaliseMapName(raidName);
-            if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+            RaidLocation raidNameE = VagabondLocations.NormaliseMapName(raidName);
+            if (raidNameE != RaidLocation.Nil && VagabondLocations.Locations.TryGetValue(raidNameE, out var mapIds))
             {
                 foreach (var mapId in mapIds)
                 {
@@ -146,8 +146,8 @@ public sealed class RaidLocationsPatch : AbstractPatch
     {
         string? name = exfil["Name"]?.GetValue<string>();
         string? sptName = exfil["SptName"]?.GetValue<string>();
-        var raid = LocationData.NormaliseMapName(locationKey);
-        if (!LocationData.IdToName.TryGetValue(locationKey, out var mapName))
+        var raid = VagabondLocations.NormaliseMapName(locationKey);
+        if (!VagabondLocations.IdToName.TryGetValue(locationKey, out var mapName))
         {
             return false;
         }

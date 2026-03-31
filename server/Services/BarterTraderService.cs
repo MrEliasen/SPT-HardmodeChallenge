@@ -30,7 +30,7 @@ public class BarterTraderService(ICloner cloner, DatabaseService databaseService
     {
         databaseService.GetTables().Traders[traderBase.Id] = new Trader
         {
-            Base = cloner.Clone(traderBase),
+            Base = cloner.Clone(traderBase)!,
             Assort = new TraderAssort
             {
                 Items = [],
@@ -53,10 +53,10 @@ public class BarterTraderService(ICloner cloner, DatabaseService databaseService
         {
             locale.AddTransformer(data =>
             {
-                data[$"{traderBase.Id} FullName"] = traderBase.Name;
+                data![$"{traderBase.Id} FullName"] = traderBase.Name;
                 data[$"{traderBase.Id} FirstName"] = firstName;
-                data[$"{traderBase.Id} Nickname"] = traderBase.Nickname;
-                data[$"{traderBase.Id} Location"] = traderBase.Location;
+                data[$"{traderBase.Id} Nickname"] = traderBase.Nickname ?? string.Empty;
+                data[$"{traderBase.Id} Location"] = traderBase.Location ?? string.Empty;
                 data[$"{traderBase.Id} Description"] = description;
                 return data;
             });

@@ -13,7 +13,7 @@ public sealed class RaidJoinPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(MatchController).GetMethod(nameof(MatchController.StartLocalRaid));
+        return typeof(MatchController).GetMethod(nameof(MatchController.StartLocalRaid))!;
     }
 
     [PatchPrefix]

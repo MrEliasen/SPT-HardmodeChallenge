@@ -5,7 +5,8 @@ namespace Vagabond.Common.Enums;
 public enum RaidLocation
 {
     Nil,
-    Factory,
+    FactoryDay,
+    FactoryNight,
     [Description("Ground Zero")] GroundZero,
     Streets,
     Woods,

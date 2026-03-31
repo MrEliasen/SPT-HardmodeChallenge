@@ -2,13 +2,13 @@
 
 namespace Vagabond.Common.Definitions;
 
-public class LocationData
+public class VagabondLocations
 {
     public static Dictionary<RaidLocation, List<string>> Locations = new()
     {
-        [RaidLocation.Factory] = ["55f2d3fd4bdc2d5f408b4567", "59fc81d786f774390775787e"],
-        [RaidLocation.GroundZero] =
-            ["65b8d6f5cdde2479cb2a3125", "653e6760052c01c1c805532f", "68236e8153654e8c1200798a"],
+        [RaidLocation.FactoryDay] = ["55f2d3fd4bdc2d5f408b4567"],
+        [RaidLocation.FactoryNight] = ["59fc81d786f774390775787e"],
+        [RaidLocation.GroundZero] = ["65b8d6f5cdde2479cb2a3125"],
         [RaidLocation.Streets] = ["5714dc692459777137212e12"],
         [RaidLocation.Woods] = ["5704e3c2d2720bac5b8b4567"],
         [RaidLocation.Customs] = ["56f40101d2720b2a4d8b45d6"],
@@ -25,7 +25,6 @@ public class LocationData
         //EFT
         ["56f40101d2720b2a4d8b45d6"] = "bigmap",
         ["55f2d3fd4bdc2d5f408b4567"] = "factory4_day",
-        ["653e6760052c01c1c805532f"] = "Sandbox",
         ["65b8d6f5cdde2479cb2a3125"] = "Sandbox_high",
         ["5714dbc024597771384a510d"] = "Interchange",
         ["5704e4dad2720bb55b8b4567"] = "Lighthouse",
@@ -40,9 +39,12 @@ public class LocationData
 
     public static Dictionary<RaidLocation, List<string>> InverseLookupTable = new()
     {
-        [RaidLocation.Factory] = new List<string>
+        [RaidLocation.FactoryDay] = new List<string>
         {
             "factory4_day",
+        },
+        [RaidLocation.FactoryNight] = new List<string>
+        {
             "factory4_night",
         },
         [RaidLocation.GroundZero] = new List<string>
@@ -90,8 +92,8 @@ public class LocationData
     public static Dictionary<string, RaidLocation> LookupTable = new(StringComparer.OrdinalIgnoreCase)
     {
         //EFT
-        ["factory4_day"] = RaidLocation.Factory,
-        ["factory4_night"] = RaidLocation.Factory,
+        ["factory4_day"] = RaidLocation.FactoryDay,
+        ["factory4_night"] = RaidLocation.FactoryNight,
         ["Sandbox_high"] = RaidLocation.GroundZero,
         ["TarkovStreets"] = RaidLocation.Streets,
         ["Woods"] = RaidLocation.Woods,
@@ -103,8 +105,8 @@ public class LocationData
         ["laboratory"] = RaidLocation.Labs,
         ["labyrinth"] = RaidLocation.Labyrinth,
         //SPT
-        ["Factory4Day"] = RaidLocation.Factory,
-        ["Factory4Night"] = RaidLocation.Factory,
+        ["Factory4Day"] = RaidLocation.FactoryDay,
+        ["Factory4Night"] = RaidLocation.FactoryNight,
         ["SandboxHigh"] = RaidLocation.GroundZero,
     };
     
