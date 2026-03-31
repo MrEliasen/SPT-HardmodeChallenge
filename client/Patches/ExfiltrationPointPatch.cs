@@ -81,7 +81,6 @@ internal class ExfiltrationPointPatch : ModulePatch
 
     private static bool IsCustomExfil(ExitTriggerSettings settings)
     {
-        Vagabond.Log($"TESTING => {settings.Name}");
         return !string.IsNullOrWhiteSpace(settings?.Name)
                && Vagabond.State.CustomExfils.Values
                    .SelectMany(x => x)
