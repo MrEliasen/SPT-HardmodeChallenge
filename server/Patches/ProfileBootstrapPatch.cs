@@ -3,8 +3,6 @@ using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
-using SPTarkov.Server.Core.Models.Eft.Profile;
-using Vagabond.Server.Config;
 using Vagabond.Server.Definitions;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
@@ -15,7 +13,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(ProfileHelper).GetMethod(nameof(ProfileHelper.GetPmcProfile));
+        return typeof(ProfileHelper).GetMethod(nameof(ProfileHelper.GetPmcProfile))!;
     }
 
     [PatchPostfix]
@@ -38,31 +36,18 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             {
                 return;
             }
-
-            // attempt to apply to old profiles
-            if (VagabondConfig._config.RememberLastLocation && state.LastExitMap == "" && state.CompletedRaids.Count > 0)
+            
+            if (state.ResetProfile)
             {
-                state.LastExitMap = state.CompletedRaids.Last();
-                VagabondState.SaveState(sessionId, state);
-            }
-
-            if (state.ResetProfile || state.CompletedChallenge)
-            {
-                var completed = state.CompletedChallenge;
                 state.ResetProfile = false;
-                state.CompletedChallenge = false;
                 VagabondState.SaveState(sessionId, state);
-                VagabondService.ResetProfile(sessionId, pmc, true, !VagabondConfig._config.ResetProfileOnWin);
+                VagabondService.ResetProfile(sessionId, pmc);
                 VagabondService.PersistProfileIfPossible(sessionId);
-                
-                if (!completed)
-                {
-                    MailerService.SendMail(sessionId, Messages.ProfileReset(state.CompletedRaids));
-                }
+                MailerService.SendMail(sessionId, Messages.ProfileResetGeneric());
                 return;
             }
 
-            VagabondService.ApplyTraderRestrictions(pmc, !state.HasEnteredFirstRaid);
+            VagabondService.ApplyTraderRestrictions(pmc);
         }
         catch (Exception ex)
         {

@@ -6,9 +6,9 @@ using SPTarkov.Server.Core.Models.Eft.Inventory;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Routers;
 using SPTarkov.Server.Core.Servers;
+using Vagabond.Common.Data;
 using Vagabond.Server.Config;
-using Vagabond.Server.Definitions;
-using Vagabond.Server.Models.Enums;
+using Vagabond.Common.Enums;
 using Vagabond.Server.State;
 
 namespace Vagabond.Server.Services;
@@ -16,36 +16,6 @@ namespace Vagabond.Server.Services;
 internal static class VagabondService
 {
     public const string Roubles = "5449016a4bdc2d6f028b456f";
-    public const string SpectatorTraderID = "686172646d6f647472616465";
-
-    public static bool IsMapCompleted(List<string> completedRaids, RaidLocation location)
-    {
-        var str = location.ToString();
-        return completedRaids.Any(x => string.Equals(x, str, StringComparison.OrdinalIgnoreCase));
-    }
-
-    public static bool HasCompletedAllMaps(List<string> completedRaids)
-    {
-        foreach (var raid in LocationData.Locations)
-        {
-            if (!completedRaids.Any(x => string.Equals(x, raid.Key.ToString(), StringComparison.OrdinalIgnoreCase)))
-            {
-                if (!VagabondConfig._config.IsLabsRequired && raid.Key == RaidLocation.Labs)
-                {
-                    continue;
-                }
-
-                if (!VagabondConfig._config.IsLabyrinthRequired && raid.Key == RaidLocation.Labyrinth)
-                {
-                    continue;
-                }
-
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     public static void ResetProfile(MongoId sessionId, PmcData pmc, bool keepSecureContainer = false, bool softReset = false)
     {
@@ -67,10 +37,10 @@ internal static class VagabondService
 
         var state = VagabondState.GetState(sessionId);
         state.ProfileInitialized = true;
-        state.HasEnteredFirstRaid = false;
-        state.RaidEntryCount = 0;
         state.ResetProfile = false;
-        state.CompletedRaids = [];
+        state.CurrentMap = "";
+        state.LastExit = "";
+        state.TransitState = new TransitState();
         VagabondState.SaveState(sessionId, state);
 
         if (softReset)
@@ -79,7 +49,7 @@ internal static class VagabondService
             return;
         }
 
-        WipeItems(sessionId, pmc, state.ChallengesCompleted, true, true, true, keepSecureContainer);
+        WipeItems(sessionId, pmc, true, true, true, keepSecureContainer);
         AddMoney(sessionId, pmc);
         VagabondLogger.Log($"ResetProfile: player profile reset {sessionId}.");
     }
@@ -113,7 +83,7 @@ internal static class VagabondService
         }
     }
 
-    public static void WipeItems(MongoId sessionId, PmcData pmc,int hcLevel, bool wipeEquipment = false,
+    public static void WipeItems(MongoId sessionId, PmcData pmc, bool wipeEquipment = false,
         bool wipeStash = false, bool forceRemoveAllMoney = false, bool keepSecureContainer = false)
     {
         var inventory = pmc.Inventory;
@@ -201,30 +171,19 @@ internal static class VagabondService
 
     public static void ApplyTraderRestrictions(PmcData pmc, bool isNewAccount = false)
     {
-        var tradersInfo = pmc?.TradersInfo;
-        if (tradersInfo == null)
-        {
-            return;
-        }
-
+        var tradersInfo = pmc.TradersInfo;
         foreach (KeyValuePair<MongoId, TraderInfo> entry in tradersInfo)
         {
             entry.Value.Disabled = true;
             entry.Value.Unlocked = false;
-            
-            if (VagabondConfig._config.AddSpectatorTrader && entry.Key == SpectatorTraderID)
-            {
-                entry.Value.Disabled = false;
-                entry.Value.Unlocked = true;
-            }
         
-            if (VagabondConfig._config.PermanentTraders.Contains(entry.Key))
+            if (VagabondConfig.Config.PermanentTraders.Contains(entry.Key))
             {
                 entry.Value.Disabled = false;
                 entry.Value.Unlocked = true;
             }
 
-            if (isNewAccount && VagabondConfig._config.StarterTraders.Contains(entry.Key))
+            if (isNewAccount && VagabondConfig.Config.StarterTraders.Contains(entry.Key))
             {
                 entry.Value.Disabled = false;
                 entry.Value.Unlocked = true;
@@ -241,7 +200,7 @@ internal static class VagabondService
                 return false;
             }
 
-            if (VagabondConfig._config.IgnoredProfiles.Contains(sessionId))
+            if (VagabondConfig.Config.IgnoredProfiles.Contains(sessionId))
             {
                 return false;
             }
@@ -257,8 +216,7 @@ internal static class VagabondService
                 return false;
             }
 
-            var isHeadless = pmc.ProfileInfo.Username?.StartsWith("headless_") ?? false;
-            return !isHeadless;
+            return !(pmc.ProfileInfo.Username?.StartsWith("headless_") ?? false);
         }
         catch
         {
@@ -278,7 +236,7 @@ internal static class VagabondService
             return;
         }
 
-        var amount = VagabondConfig._config.StartingRoubles;
+        var amount = VagabondConfig.Config.StartingRoubles;
         while (amount > 0)
         {
             var moneyItem = new Item
@@ -300,5 +258,44 @@ internal static class VagabondService
 
             invHelper.AddItemToStash(sessionId, request, pmcData, eventOutputHolder.GetOutput(sessionId));
         }
+    }
+
+    public static string GetCurrentRaidId(VagabondState state)
+    {
+        if (string.IsNullOrEmpty(state.CurrentMap))
+        {
+            return "";
+        }
+
+        RaidLocation currentMap = VagabondLocations.NormaliseMapName(state.CurrentMap);
+        if (currentMap == RaidLocation.Nil)
+        {
+            return "";
+        }
+        
+        HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
+        RaidLocation transitMap = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
+        if (transitMap != RaidLocation.Nil)
+        {
+            if (VagabondLocations.Locations.TryGetValue(transitMap, out var mapIds))
+            {
+                foreach (var mapId in mapIds)
+                {
+                    allowedMapIds.Add(mapId);
+                }
+            }
+        }
+        else
+        {
+            if (VagabondLocations.Locations.TryGetValue(currentMap, out var mapIds))
+            {
+                foreach (var mapId in mapIds)
+                {
+                    allowedMapIds.Add(mapId);
+                }
+            }
+        }
+
+        return allowedMapIds.First();
     }
 }

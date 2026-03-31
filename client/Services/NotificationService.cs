@@ -17,7 +17,7 @@ public sealed class NotificationService : MonoBehaviour
         public Color OverlayColor = new(0f, 0f, 0f, 0.72f);
 
         // Panel
-        public float PanelWidth = 760f;           // Main thing to tweak
+        public float PanelWidth = 760f; // Main thing to tweak
         public float PanelYOffset = 120f;
         public Color PanelColor = new(0.12f, 0.12f, 0.12f, 1f);
         public RectOffset PanelPadding = new(24, 24, 18, 18);

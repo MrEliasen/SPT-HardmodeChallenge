@@ -10,20 +10,16 @@ public sealed class VagabondState
     private const string ModKey = "dev.oogabooga.spt-vagabond";
 
     public bool ProfileInitialized { get; set; }
-    public bool HasEnteredFirstRaid { get; set; }
-    public int RaidEntryCount { get; set; }
-    public int ChallengesCompleted { get; set; }
-    public required string LastExitMap { get; set; }
-    public bool CompletedChallenge { get; set; }
+    public required string CurrentMap { get; set; }
+    public required string LastExit { get; set; }
     public TransitState? TransitState { get; set; }
-    public required List<string> CompletedRaids { get; set; }
     public bool ResetProfile { get; set; }
 
     [SetsRequiredMembers]
     public VagabondState()
     {
-        CompletedRaids = new List<string>();
-        LastExitMap = "";
+        CurrentMap = "";
+        LastExit = "";
     }
 
     public static VagabondState GetState(MongoId sessionId)

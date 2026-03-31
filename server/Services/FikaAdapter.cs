@@ -71,6 +71,11 @@ public static class FikaAdapter
         }
 
         var client = args[1];
+        if (client == null)
+        {
+            return sessionId;
+        }
+        
         var requesterProp = client.GetType().GetProperty("RequesterSessionID");
         var requesterSessionId = requesterProp?.GetValue(client) as string;
 
@@ -79,6 +84,7 @@ public static class FikaAdapter
             return sessionId;
         }
 
+        VagabondLogger.Success($"Raid Owner SessionId: {requesterSessionId}");
         return new MongoId(requesterSessionId);
     }
 }

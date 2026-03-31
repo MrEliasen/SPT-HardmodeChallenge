@@ -38,11 +38,12 @@ public record ModMetadata : AbstractModMetadata
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
 public sealed class VagabondLoader : IOnLoad
 {
-    public ModMetadata MetaData { get; } = new();
+    private readonly ConfigServer _configServer;
 
-    public VagabondLoader(ISptLogger<VagabondLoader> logger)
+    public VagabondLoader(ISptLogger<VagabondLoader> logger, ConfigServer configServer)
     {
         VagabondLogger.Init(logger);
+        _configServer = configServer;
     }
 
     public Task OnLoad()
@@ -56,6 +57,14 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.RaidJoinPatch().Enable();
         new Patches.RaidLocationsPatch().Enable();
         new Patches.StartLocalRaidPatch().Enable();
+        
+        // remove old trader from profiles
+        // this will be removed in some later version
+        if (VagabondConfig.Config.FixProfiles)
+        {
+            var coreConfig = _configServer.GetConfig<CoreConfig>();
+            coreConfig.Fixes.RemoveInvalidTradersFromProfile = true;
+        }
                 
         return Task.CompletedTask;
     }
@@ -69,6 +78,7 @@ public sealed class VagabondDbLoader : IOnLoad
     private readonly SaveServer _saveServer;
     private readonly InventoryHelper _invHelper;
     private readonly EventOutputHolder _eventOutputHolder;
+    private readonly DatabaseService _databaseService;
     private readonly MailSendService _mailSendService;
     private readonly LocationController _locationController;
 
@@ -77,6 +87,7 @@ public sealed class VagabondDbLoader : IOnLoad
     public VagabondDbLoader(
         IServiceProvider services,
         ProfileDataService profileDataService,
+        DatabaseService databaseService,
         SaveServer saveServer,
         InventoryHelper invHelper,
         EventOutputHolder eventOutputHolder,
@@ -92,6 +103,7 @@ public sealed class VagabondDbLoader : IOnLoad
         _eventOutputHolder = eventOutputHolder;
         _mailSendService = mailSendService;
         _locationController = locationController;
+        _databaseService = databaseService;
     }
 
     public Task OnLoad()
@@ -103,6 +115,8 @@ public sealed class VagabondDbLoader : IOnLoad
         ReflectionUtil.Register(_eventOutputHolder);
         ReflectionUtil.Register(_mailSendService);
         ReflectionUtil.Register(_locationController);
+        ReflectionUtil.Register(_databaseService);
+        ExfilService.Apply(_databaseService);
         
         if (FikaAdapter.Init(_services))
         {
@@ -115,60 +129,14 @@ public sealed class VagabondDbLoader : IOnLoad
 }
 
 [Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 2)]
-public class BarterTrader(
-    ModHelper modHelper,
-    ImageRouter imageRouter,
-    ConfigServer configServer,
-    BarterTraderService barterTraderService,
-    DatabaseService databaseService) : IOnLoad
-{
-    private readonly TraderConfig _traderConfig = configServer.GetConfig<TraderConfig>();
-
-    public Task OnLoad()
-    {
-        if (!VagabondConfig._config.AddSpectatorTrader && VagabondConfig._config.SpectatorTraderAssortment.Count <= 0)
-        {
-            return Task.CompletedTask;
-        }
-
-        var assembly = Assembly.GetExecutingAssembly();
-        var pathToMod = modHelper.GetAbsolutePathToModFolder(assembly);
-
-        var traderBase = modHelper.GetJsonDataFromFile<TraderBase>(pathToMod, "Assets/trader-base.json");
-        var avatarPath = Path.Combine(pathToMod, "Assets/spectator.jpg");
-        if (traderBase.Avatar == null)
-        {
-            return Task.CompletedTask;
-        }
-
-        imageRouter.AddRoute(traderBase.Avatar.Replace(".jpg", ""), avatarPath);
-
-        barterTraderService.SetTraderUpdateTime(_traderConfig, traderBase, 1800, 3600);
-        barterTraderService.AddTraderWithEmptyAssortToDb(traderBase);
-        barterTraderService.AddTraderToLocales(
-            traderBase,
-            firstName: "Spectator",
-            description: "Exchanges merchandise for things to keep you going."
-        );
-
-        var trader = databaseService.GetTables().Traders[traderBase.Id];
-        barterTraderService.AddTraderAssortment(trader);
-        return Task.CompletedTask;
-    }
-}
-
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 2)]
 public class DifficultyChanges(DatabaseService databaseService) : IOnLoad
 {
     public Task OnLoad()
     {
-        if (VagabondConfig._config.EnableDifficultyChanges)
-        {
-            var locationsdb = databaseService.GetLocations();
-            locationsdb.Sandbox.Base.RequiredPlayerLevelMax = 0;
-        }
-
-        if (VagabondConfig._config.DisableFlea)
+        var locationsdb = databaseService.GetLocations();
+        locationsdb.Sandbox.Base.RequiredPlayerLevelMax = 0;
+        
+        if (VagabondConfig.Config.DisableFlea)
         {
             Globals globals = databaseService.GetGlobals();
             globals.Configuration.RagFair.MinUserLevel = 99;
@@ -189,7 +157,7 @@ public class FenceTweaks(
 {
     public Task OnLoad()
     {
-        if (!VagabondConfig._config.EnableFenceChanges)
+        if (!VagabondConfig.Config.EnableFenceChanges)
         {
             return Task.CompletedTask;
         }

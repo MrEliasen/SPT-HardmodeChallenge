@@ -13,7 +13,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(CreateProfileService).GetMethod(nameof(CreateProfileService.CreateProfile));
+        return typeof(CreateProfileService).GetMethod(nameof(CreateProfileService.CreateProfile))!;
     }
 
     [PatchPostfix]
@@ -53,13 +53,10 @@ public sealed class ProfileCreatePatch : AbstractPatch
 
         var state = VagabondState.GetState(sessionId);
         state.ProfileInitialized = true;
-        state.ChallengesCompleted = 0; 
-        state.CompletedRaids = [];
         VagabondState.SaveState(sessionId, state);
         VagabondService.ApplyTraderRestrictions(pmc.CharacterData.PmcData, true);
         VagabondService.PersistProfileIfPossible(sessionId);
-        MailerService.SendMail(sessionId, Messages.Welcome(state.CompletedRaids));
-
+        MailerService.SendMail(sessionId, Messages.WelcomeOpenWorld());
         VagabondLogger.Success($"activated Vagabond profile for {sessionId}.");
     }
 
@@ -85,7 +82,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
             return false;
         }
 
-        VagabondService.WipeItems(sessionId, pmc.CharacterData.PmcData, 0, true, true);
+        VagabondService.WipeItems(sessionId, pmc.CharacterData.PmcData, true, true);
         VagabondService.AddMoney(sessionId, pmc.CharacterData.PmcData);
         return true;
     }

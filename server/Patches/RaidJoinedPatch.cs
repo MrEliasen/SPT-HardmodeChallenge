@@ -3,6 +3,8 @@ using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Controllers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
+using Vagabond.Common.Data;
+using Vagabond.Common.Enums;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
@@ -13,66 +15,64 @@ public sealed class RaidJoinPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(MatchController).GetMethod(nameof(MatchController.StartLocalRaid));
+        return typeof(MatchController).GetMethod(nameof(MatchController.StartLocalRaid))!;
     }
 
     [PatchPrefix]
     public static void Prefix(MongoId sessionId, StartLocalRaidRequestData request)
     {
-        HandleRaidEntry(sessionId, request);
+        var serverOwnerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionId);
+        HandleRaidEntry(serverOwnerSessionId, request);
     }
 
     public static void HandleRaidEntry(MongoId sessionId, StartLocalRaidRequestData request)
     {
-        try
+        if (!VagabondService.ShouldApplyVagabondRules(sessionId))
         {
-            if (!VagabondService.ShouldApplyVagabondRules(sessionId))
-            {
-                return;
-            }
-
-            var pmc = VagabondService.GetPmcProfile(sessionId);
-            if (pmc?.CharacterData?.PmcData == null)
-            {
-                VagabondLogger.Error($"Raid-entry hook could not resolve PMC profile for {sessionId}.");
-                return;
-            }
-
-            var state = VagabondState.GetState(sessionId);
-            if (!state.ProfileInitialized)
-            {
-                return;
-            }
-
-            var mapName = request.Location;
-            if (mapName == null)
-            {
-                VagabondLogger.Error($"Raid-entry error: request.Location is null");
-                return;
-            }
-
-            state.RaidEntryCount += 1;
-            state.HasEnteredFirstRaid = true;
-            VagabondState.SaveState(sessionId, state);
-
-            if (state.RaidEntryCount == 1 && VagabondConfig._config.PreventStarterTraderAccessAfterFirstRaidEntry)
-            {
-                VagabondService.ApplyTraderRestrictions(pmc.CharacterData.PmcData);
-            }
-
-            if (VagabondConfig._config.WipeStashOnEveryRaidEntry ||
-                VagabondConfig._config.WipeStashOnFirstRaidEntry && state.RaidEntryCount == 1)
-            {
-                VagabondService.WipeItems(sessionId, pmc.CharacterData.PmcData, state.ChallengesCompleted, false, true,
-                    VagabondConfig._config.AlsoWipeCarriedMoneyOnFirstRaid && state.RaidEntryCount == 1);
-            }
-
-            VagabondService.PersistProfileIfPossible(sessionId);
+            return;
         }
-        catch
-            (Exception ex)
+
+        var pmc = VagabondService.GetPmcProfile(sessionId);
+        if (pmc?.CharacterData?.PmcData == null)
         {
-            VagabondLogger.Error($"HandleRaidEntry failed: {ex}");
+            VagabondLogger.Error($"Raid-entry hook could not resolve PMC profile for {sessionId}.");
+            return;
         }
+
+        var state = VagabondState.GetState(sessionId);
+        if (!state.ProfileInitialized)
+        {
+            return;
+        }
+
+        var mapName = request.Location;
+        if (mapName == null)
+        {
+            VagabondLogger.Error($"Raid-entry error: request.Location is null");
+            return;
+        }
+
+        var mapNameE = VagabondLocations.NormaliseMapName(mapName);
+        if (string.IsNullOrEmpty(state.CurrentMap) && mapNameE != RaidLocation.Nil)
+        {
+            state.TransitState = null;
+            state.CurrentMap = mapNameE.ToString();
+            state.LastExit = "";
+        }
+
+        VagabondState.SaveState(sessionId, state);
+
+        if (VagabondConfig.Config.WipeStashOnFirstRaidEntry && string.IsNullOrEmpty(state.CurrentMap))
+        {
+            VagabondService.WipeItems(
+                sessionId,
+                pmc.CharacterData.PmcData,
+                false,
+                true,
+                VagabondConfig.Config.AlsoWipeCarriedMoneyOnFirstRaid
+            );
+        }
+
+        VagabondService.PersistProfileIfPossible(sessionId);
     }
 }

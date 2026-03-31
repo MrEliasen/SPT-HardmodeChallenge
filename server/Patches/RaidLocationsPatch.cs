@@ -3,8 +3,9 @@ using System.Text.Json.Nodes;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Callbacks;
 using SPTarkov.Server.Core.Models.Common;
-using Vagabond.Server.Definitions;
-using Vagabond.Server.Models.Enums;
+using Vagabond.Common.Data;
+using Vagabond.Common.Models;
+using Vagabond.Common.Enums;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -14,13 +15,14 @@ public sealed class RaidLocationsPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(LocationCallbacks).GetMethod(nameof(LocationCallbacks.GetLocationData));
+        return typeof(LocationCallbacks).GetMethod(nameof(LocationCallbacks.GetLocationData))!;
     }
 
     [PatchPostfix]
-    public static void Postfix(MongoId? sessionID, ref ValueTask<string> __result)
+    public static void Postfix(MongoId sessionID, ref ValueTask<string> __result)
     {
-        __result = RewriteResponseAsync(sessionID ?? "", __result);
+        var serverOwnerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionID);
+        __result = RewriteResponseAsync(serverOwnerSessionId, __result);
     }
 
     private static async ValueTask<string> RewriteResponseAsync(MongoId sessionId, ValueTask<string> originalResult)
@@ -35,7 +37,6 @@ public sealed class RaidLocationsPatch : AbstractPatch
 
         if (!VagabondService.ShouldApplyVagabondRules(sessionId))
         {
-            VagabondLogger.Error($"Ignoring for session {sessionId}.");
             return jsonString;
         }
 
@@ -53,12 +54,17 @@ public sealed class RaidLocationsPatch : AbstractPatch
             return jsonString;
         }
 
-        if (state.CompletedRaids.Count == 0)
+        if (string.IsNullOrEmpty(state.CurrentMap))
         {
-            VagabondLogger.Error($"CompletedRaids is zero {sessionId}.");
             return jsonString;
         }
 
+        RaidLocation currentMap = VagabondLocations.NormaliseMapName(state.CurrentMap);
+        if (currentMap == RaidLocation.Nil)
+        {
+            return jsonString;
+        }
+        
         JsonObject? data = root["data"]?.AsObject();
         JsonObject? locations = data?["locations"]?.AsObject();
 
@@ -67,12 +73,23 @@ public sealed class RaidLocationsPatch : AbstractPatch
             VagabondLogger.Error($"locations is null {sessionId}.");
             return jsonString;
         }
-
+        
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
-        foreach (var raidName in state.CompletedRaids)
+        
+        RaidLocation transitMap = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
+        if (transitMap != RaidLocation.Nil)
         {
-            RaidLocation raidNameE = LocationData.NormaliseMapName(raidName);
-            if (raidNameE != RaidLocation.Nil && LocationData.Locations.TryGetValue(raidNameE, out var mapIds))
+            if (VagabondLocations.Locations.TryGetValue(transitMap, out var mapIds))
+            {
+                foreach (var mapId in mapIds)
+                {
+                    allowedMapIds.Add(mapId);
+                }
+            }
+        }
+        else
+        {
+            if (VagabondLocations.Locations.TryGetValue(currentMap, out var mapIds))
             {
                 foreach (var mapId in mapIds)
                 {
@@ -81,7 +98,11 @@ public sealed class RaidLocationsPatch : AbstractPatch
             }
         }
 
-        // remove locations the player has no access to
+        if (allowedMapIds.Count == 0)
+        {
+            return jsonString;
+        }
+        
         foreach (string locationKey in locations.Select(kv => kv.Key).ToList())
         {
             if (!allowedMapIds.Contains(locationKey))
@@ -91,11 +112,9 @@ public sealed class RaidLocationsPatch : AbstractPatch
                 {
                     location["enabled"] = false;
                 }
-
             }
         }
 
-        // remove all non v-ex
         foreach (string locationKey in locations.Select(x => x.Key).ToList())
         {
             JsonObject? location = locations[locationKey]?.AsObject();
@@ -117,7 +136,7 @@ public sealed class RaidLocationsPatch : AbstractPatch
                     continue;
                 }
 
-                if (!IsVehicleExfil(exfil))
+                if (!IsVehicleExfil(exfil) && !IsCustomExtract(exfil, locationKey))
                 {
                     exits.RemoveAt(i);
                 }
@@ -143,5 +162,17 @@ public sealed class RaidLocationsPatch : AbstractPatch
                && string.Equals(id, VagabondService.Roubles, StringComparison.OrdinalIgnoreCase)
                && string.Equals(requirementTip, "EXFIL_Item", StringComparison.OrdinalIgnoreCase)
                && (count > 0 || countPve > 0);
+    }
+
+    private static bool IsCustomExtract(JsonObject exfil, MongoId locationKey)
+    {
+        string? name = exfil["Name"]?.GetValue<string>();
+        var raid = VagabondLocations.NormaliseMapName(locationKey);
+        if (!VagabondLocations.IdToName.TryGetValue(locationKey, out var mapName))
+        {
+            return false;
+        }
+        
+        return ExfilService.IsCustomExtractName(name, raid, mapName);
     }
 }

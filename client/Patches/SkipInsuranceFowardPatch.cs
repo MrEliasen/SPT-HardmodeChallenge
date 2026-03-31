@@ -20,13 +20,18 @@ namespace Vagabond.Client.Patches
                 },
                 null
             );
-            
+
             return method!;
         }
 
         [PatchPostfix]
         private static void Postfix(MatchmakerInsuranceScreen __instance)
         {
+            if (!Vagabond.State.VagabondModeEnabled)
+            {
+                return;
+            }
+
             var screenControllerField = AccessTools.Field(__instance.GetType(), "ScreenController");
             var screenController = screenControllerField?.GetValue(__instance);
 
