@@ -1,52 +1,21 @@
-﻿using System;
-using System.Reflection;
-using EFT.UI.Matchmaker;
+﻿using System.Reflection;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace Vagabond.Client.Patches
+namespace Vagabond.Client.Patches;
+
+public class SkipInsuranceFlowPatch : ModulePatch
 {
-    internal class SkipInsuranceScreenPatch : ModulePatch
+    protected override MethodBase GetTargetMethod()
     {
-        protected override MethodBase GetTargetMethod()
-        {
-            var method = typeof(MatchmakerInsuranceScreen).GetMethod(
-                "Show",
-                BindingFlags.Instance | BindingFlags.Public,
-                Type.DefaultBinder,
-                new[]
-                {
-                    typeof(MatchmakerInsuranceScreen.GClass3913)
-                },
-                null
-            );
+        return AccessTools.Method(typeof(MainMenuControllerClass), "method_51");
+    }
 
-            return method!;
-        }
-
-        [PatchPostfix]
-        private static void Postfix(MatchmakerInsuranceScreen __instance)
-        {
-            if (!Vagabond.State.VagabondModeEnabled)
-            {
-                return;
-            }
-
-            var screenControllerField = AccessTools.Field(__instance.GetType(), "ScreenController");
-            var screenController = screenControllerField?.GetValue(__instance);
-
-            if (screenController == null)
-            {
-                return;
-            }
-
-            var showNextScreen = AccessTools.Method(screenController.GetType(), "ShowNextScreen");
-            if (showNextScreen == null)
-            {
-                return;
-            }
-
-            showNextScreen.Invoke(screenController, null);
-        }
+    [PatchPrefix]
+    public static bool Prefix(MainMenuControllerClass __instance)
+    {
+        Vagabond.Log("Skipping insurance flow via MainMenuControllerClass.method_51");
+        __instance.method_52();
+        return false;
     }
 }

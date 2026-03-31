@@ -22,11 +22,6 @@ internal class ExfiltrationPointPatch : ModulePatch
     [PatchPostfix]
     static void Postfix(ExfiltrationControllerClass __instance)
     {
-        if (!Vagabond.State.VagabondModeEnabled && !Vagabond.IsHeadless())
-        {
-            return;
-        }
-
         if (__instance?.ExfiltrationPoints == null)
         {
             return;

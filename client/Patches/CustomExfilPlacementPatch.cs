@@ -33,11 +33,6 @@ internal class CustomExfilPlacementPatch : ModulePatch
     [PatchPostfix]
     public static void Postfix(ExfiltrationControllerClass __instance)
     {
-        if (!Vagabond.State.VagabondModeEnabled && !Vagabond.IsHeadless())
-        {
-            return;
-        }
-
         if (ExtractsAppliedThisRaid && TransitsAppliedThisRaid)
         {
             return;

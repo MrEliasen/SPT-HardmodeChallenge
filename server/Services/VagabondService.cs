@@ -36,7 +36,6 @@ internal static class VagabondService
         ApplyTraderRestrictions(pmc);
 
         var state = VagabondState.GetState(sessionId);
-        state.ProfileInitialized = true;
         state.ResetProfile = false;
         state.CurrentMap = "";
         state.LastExit = "";
@@ -76,72 +75,98 @@ internal static class VagabondService
             VagabondLogger.Error($"PersistProfileIfPossible failed: {ex}");
         }
     }
-
-    public static void WipeItems(MongoId sessionId, PmcData pmc, bool wipeEquipment = false, bool wipeStash = false, bool forceRemoveAllMoney = false)
+    
+    public static void WipeItems(MongoId sessionId, PmcData pmc, bool wipeEquipment = false, bool wipeStash = false, bool removeAllMoney = false)
     {
         var inventory = pmc.Inventory;
-        if (inventory == null)
+        if (inventory?.Items == null)
         {
-            VagabondLogger.Error("Wipe Equipment: inventory was null.");
-            return;
-        }
-
-        if (inventory.Items == null)
-        {
-            VagabondLogger.Error("Wipe Equipment: inventory items list was null.");
-            return;
-        }
-
-        if (inventory.Stash == null)
-        {
-            VagabondLogger.Error("Wipe Equipment: Stash ID null");
+            VagabondLogger.Error("WipeItems: inventory was null.");
             return;
         }
 
         var invHelper = ReflectionUtil.GetService<InventoryHelper>();
         if (invHelper == null)
         {
-            VagabondLogger.Error("Wipe Equipment: Inventory Helper not found");
+            VagabondLogger.Error("WipeItems: InventoryHelper not found");
             return;
         }
 
-        var idsToRemove = new List<MongoId>();
+        var itemsById = inventory.Items.ToDictionary(x => (string)x.Id, x => x);
+        var currencyIds = new HashSet<MongoId>
+        {
+            Currencies.Dollar,
+            Currencies.Euro,
+            Currencies.Ruble
+        };
+
+        var rootIdsToKeep = new HashSet<string>
+        {
+            inventory.Stash!,
+            inventory.Equipment!,
+            inventory.SortingTable!,
+        };
+
+        var idsToRemove = new HashSet<MongoId>();
+
         foreach (var item in inventory.Items)
         {
-            if (item.Id == inventory.Stash)
+            var itemId = (string)item.Id;
+
+            if (rootIdsToKeep.Contains(itemId))
             {
                 continue;
             }
 
-            // Keep the pockets container itself
             if (string.Equals(item.SlotId, "Pockets", StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
 
-            if (forceRemoveAllMoney &&
-                Currencies.CurrencyIds.Any(x => string.Equals(x, item.Template, StringComparison.OrdinalIgnoreCase)))
+            if (removeAllMoney && currencyIds.Contains(item.Template))
             {
                 idsToRemove.Add(item.Id);
                 continue;
             }
 
-            if (wipeStash && item.ParentId != null && item.ParentId == inventory.Stash)
+            if (wipeStash && IsUnderRoot(item, inventory.Stash!, itemsById))
             {
                 idsToRemove.Add(item.Id);
                 continue;
             }
 
-            if (wipeEquipment && item.ParentId != null && item.ParentId != inventory.Stash)
+            if (wipeEquipment && IsUnderRoot(item, inventory.Equipment!, itemsById))
             {
                 idsToRemove.Add(item.Id);
             }
         }
-        
-        foreach (var id in idsToRemove.Distinct())
+
+        foreach (var id in idsToRemove)
         {
             invHelper.RemoveItem(pmc, id, sessionId);
         }
+    }
+
+    private static bool IsUnderRoot(Item item, string rootId, Dictionary<string, Item> itemsById)
+    {
+        var parentId = item.ParentId;
+
+        while (!string.IsNullOrEmpty(parentId))
+        {
+            if (string.Equals(parentId, rootId, StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            if (!itemsById.TryGetValue(parentId, out var parent))
+            {
+                return false;
+            }
+
+            parentId = parent.ParentId;
+        }
+
+        return false;
     }
 
     public static void ApplyTraderRestrictions(PmcData pmc, string LastExit = "")
@@ -150,6 +175,13 @@ internal static class VagabondService
         var tradersInfo = pmc.TradersInfo;
         foreach (KeyValuePair<MongoId, TraderInfo> entry in tradersInfo)
         {
+            if (entry.Key == "579dc571d53a0658a154fbec")
+            {
+                entry.Value.Disabled = false;
+                entry.Value.Unlocked = true;
+                continue;
+            }
+            
             entry.Value.Disabled = true;
             entry.Value.Unlocked = false;
         }
@@ -160,11 +192,6 @@ internal static class VagabondService
         try
         {
             if (string.IsNullOrWhiteSpace(sessionId))
-            {
-                return false;
-            }
-
-            if (VagabondConfig.Config.IgnoredProfiles.Contains(sessionId))
             {
                 return false;
             }
@@ -231,7 +258,7 @@ internal static class VagabondService
             return "";
         }
         
-        if (!VagabondConfig.Config.DisableFreePickRaidLocation)
+        if (VagabondConfig.Config.EnablePickRaidLocation)
         {
             return "";
         }

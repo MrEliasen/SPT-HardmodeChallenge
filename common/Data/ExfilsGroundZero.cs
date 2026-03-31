@@ -14,7 +14,22 @@ public class ExfilsGroundZero : ICustomExtilData
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "Sandbox_high";
-    private static List<CustomExfil> _extracts = [];
+    private static List<CustomExfil> _extracts = [
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_THERAPIST",
+            DisplayName = "Therapist's Clinic",
+            IsTransit = false,
+            TemplateExitName = "REPLACE_WITH_TEMPLATE_EXIT_NAME",
+            EntryPoints = "",
+            ExfiltrationTime = 20f,
+            X = 152.412f,
+            Y = 23.267f,
+            Z = -99.062f,
+            RotationY = 342.458f,
+            Side = "Pmc"
+        },
+    ];
     private static  List<CustomExfil>_transits = [
         new CustomExfil
         {

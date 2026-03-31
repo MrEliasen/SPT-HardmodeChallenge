@@ -25,11 +25,6 @@ internal class MatchMakerLocationFilterPatch : ModulePatch
     {
         OriginalEnabled.Clear();
 
-        if (!Vagabond.State.VagabondModeEnabled || Vagabond.State.CurrentMap.IsNullOrEmpty())
-        {
-            return;
-        }
-
         var session = SessionRef(__instance);
         if (session?.LocationSettings?.locations == null)
         {
@@ -65,7 +60,7 @@ internal class MatchMakerLocationFilterPatch : ModulePatch
 
     private static bool ShouldHide(LocationSettingsClass.Location location)
     {
-        if (location == null)
+        if (location == null || Vagabond.State.CurrentMap.IsNullOrEmpty())
         {
             return false;
         }

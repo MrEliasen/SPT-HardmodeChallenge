@@ -135,6 +135,7 @@ public class DifficultyChanges(DatabaseService databaseService) : IOnLoad
     {
         var locationsdb = databaseService.GetLocations();
         locationsdb.Sandbox.Base.RequiredPlayerLevelMax = 0;
+        locationsdb.SandboxHigh.Base.Enabled = true;
         
         if (VagabondConfig.Config.DisableFlea)
         {

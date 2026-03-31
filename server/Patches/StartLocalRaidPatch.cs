@@ -95,11 +95,6 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         var template = GetSpawnPointTemplate(all, point);
         if (template == null)
         {
-            // foreach (var sp in all)
-            // {
-            //     VagabondLogger.Error($"Checked => {string.Join(",", sp.Categories)} && {string.Join(",", sp.Sides)}");
-            // }
-            
             VagabondLogger.Error("Could not find PMC player spawn template");
             return;
         }

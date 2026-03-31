@@ -20,11 +20,6 @@ internal class TransitInteractionPatch : ModulePatch
     [PatchPrefix]
     private static bool Prefix(int pointId, Player player)
     {
-        if (!Vagabond.State.VagabondModeEnabled)
-        {
-            return true;
-        }
-
         if (!CustomExfilPlacementPatch.CustomTransitDefinitions.TryGetValue(pointId, out var definition))
         {
             return true;

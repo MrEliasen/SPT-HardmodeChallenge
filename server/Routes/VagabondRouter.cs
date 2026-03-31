@@ -27,7 +27,7 @@ public class VagabondRouter(
     {
         var response = new SyncStateResponse();
         response.CustomExfils = ExfilService.CustomExfils;
-        response.VagabondModeEnabled = false;
+        response.CurrentMap = "";
         
         if (VagabondService.ShouldApplyVagabondRules(sessionId))
         {
@@ -38,7 +38,6 @@ public class VagabondRouter(
             }
             
             var state = VagabondState.GetState(sessionId);
-            response.VagabondModeEnabled = true;
             response.PermaDeath = VagabondConfig.Config.PermaDeath;
             response.WipeFirstRaid = VagabondConfig.Config.WipeStashOnFirstRaidEntry;
             response.WipeFirstMoney = VagabondConfig.Config.AlsoWipeCarriedMoneyOnFirstRaid;

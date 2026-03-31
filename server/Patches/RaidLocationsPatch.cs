@@ -6,6 +6,7 @@ using SPTarkov.Server.Core.Models.Common;
 using Vagabond.Common.Data;
 using Vagabond.Common.Models;
 using Vagabond.Common.Enums;
+using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -48,13 +49,13 @@ public sealed class RaidLocationsPatch : AbstractPatch
         }
 
         var state = VagabondState.GetState(sessionId);
-        if (!state.ProfileInitialized)
+        if (!state.VagabondModeEnabled)
         {
             VagabondLogger.Error($"Missing state {sessionId}.");
             return jsonString;
         }
 
-        if (string.IsNullOrEmpty(state.CurrentMap))
+        if (string.IsNullOrEmpty(state.CurrentMap) || VagabondConfig.Config.EnablePickRaidLocation)
         {
             return jsonString;
         }

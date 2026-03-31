@@ -65,14 +65,18 @@ internal class MenuShowPatch : ModulePatch
         try
         {
             var resp = await Networking.ApiClient.HydrateVagabondState();
-            Vagabond.State.VagabondModeEnabled = resp.VagabondModeEnabled;
-            Vagabond.State.PermaDeath = resp.PermaDeath;
-            Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
-            Vagabond.State.WipeFirstMoney = resp.WipeFirstMoney;
-            Vagabond.State.CurrentMap = resp.CurrentMap;
-            Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
             Vagabond.State.CustomExfils = resp.CustomExfils ?? new();
-
+            
+            if (!Vagabond.IsHeadless())
+            {
+                Vagabond.State.PermaDeath = resp.PermaDeath;
+                Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
+                Vagabond.State.WipeFirstMoney = resp.WipeFirstMoney;
+                Vagabond.State.CurrentMap = resp.CurrentMap;
+                Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
+                Vagabond.Log($"current map: {resp.CurrentMap}/{Vagabond.State.CurrentMap}");
+            }
+            
             Vagabond.Log($"Loading Custom Extractions");
             foreach (var raid in Vagabond.State.CustomExfils)
             {
@@ -81,7 +85,7 @@ internal class MenuShowPatch : ModulePatch
                     foreach (var exfil in map.Value)
                     {
                         var kind = exfil.IsTransit ? "Transit" : "Extract";
-                        var desc = exfil.IsTransit ? $" To {exfil.DestinationLocation}" : $" {exfil.DisplayName}";
+                        var desc = exfil.IsTransit ? $"{map.Key} To {exfil.DestinationLocation}" : $" {exfil.DisplayName}";
                         Vagabond.Log($" => [{kind}] {exfil.Identifier} :: {desc}");
                     }
                 }

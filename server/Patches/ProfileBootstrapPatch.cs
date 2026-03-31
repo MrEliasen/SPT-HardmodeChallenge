@@ -32,7 +32,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             }
 
             var state = VagabondState.GetState(sessionId);
-            if (!state.ProfileInitialized)
+            if (!state.VagabondModeEnabled)
             {
                 return;
             }

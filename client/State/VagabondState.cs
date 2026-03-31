@@ -10,7 +10,6 @@ public sealed class VagabondState
     public bool IsRefreshing { get; set; }
     public DateTime LastRefreshUtc { get; set; }
     public bool HasShownWarningMessage { get; set; }
-    public bool VagabondModeEnabled { get; set; }
     public bool PermaDeath { get; set; }
     public string CurrentMap { get; set; }
     public bool WipeFirstRaid { get; set; }

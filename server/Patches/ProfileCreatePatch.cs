@@ -52,7 +52,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
         }
 
         var state = VagabondState.GetState(sessionId);
-        state.ProfileInitialized = true;
+        state.VagabondModeEnabled = true;
         VagabondState.SaveState(sessionId, state);
         VagabondService.ApplyTraderRestrictions(pmc.CharacterData.PmcData);
         VagabondService.PersistProfileIfPossible(sessionId);

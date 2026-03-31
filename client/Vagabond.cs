@@ -42,7 +42,7 @@ public class Vagabond : BaseUnityPlugin
         _logger = Logger;
         State = new VagabondState();
         new ExfiltrationPointPatch().Enable();
-        new MatchMakerLocationFilterPatch().Enable();
+        //new MatchMakerLocationFilterPatch().Enable();
         new CustomExfilPlacementPatch().Enable();
         new CustomExfilCleanupPatch().Enable();
         new CustomTransitRetryPatch().Enable();
@@ -55,8 +55,7 @@ public class Vagabond : BaseUnityPlugin
         }
 
         new TransitInteractionPatch().Enable();
-        new SkipInsuranceScreenPatch().Enable();
-        new DisableInsuranceBackNavigationPatch().Enable();
+        new SkipInsuranceFlowPatch().Enable();
         NotificationService.Create(transform);
 
         _dumpHotkey = Config.Bind(

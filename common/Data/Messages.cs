@@ -23,7 +23,7 @@ public static class Messages
         
         if (wipeFirstRaid)
         {
-            message += $"\n[X] First time you enter a raid anything left in your stash gets wiped\n";
+            message += $"\n[X] First time you enter a raid anything left in your stash gets wiped";
             
             if (wipeFirstMoney)
             {
