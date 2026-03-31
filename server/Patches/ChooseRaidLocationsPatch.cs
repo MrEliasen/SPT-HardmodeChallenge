@@ -12,7 +12,7 @@ using Vagabond.Server.State;
 
 namespace Vagabond.Server.Patches;
 
-public sealed class RaidLocationsPatch : AbstractPatch
+public sealed class ChooseRaidLocationsPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {

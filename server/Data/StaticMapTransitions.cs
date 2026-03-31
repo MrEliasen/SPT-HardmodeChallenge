@@ -8,10 +8,16 @@ namespace Vagabond.Server.Data;
 
 public static class StaticMapTransitions
 {
-    public  static ManualSpawnPoint? GetSpawnLocation(TransitState transitState)
+    public  static ManualSpawnPoint? GetSpawnLocation(VagabondState state)
     {
         // if we cannot map the exit directly to a spawn location, we fall back to the below switch.
-        if (GetExitSpecificSpawnLocation(transitState, out var customExitSpawn))
+        if (GetTransitSpecificSpawnLocation(state.TransitState, out var customTransitSpawn))
+        {
+            return customTransitSpawn;
+        }
+        
+        // if we cannot map the exit directly to a spawn location, we fall back to the below switch.
+        if (GetNormalRaidLocation(state, out var customExitSpawn))
         {
             return customExitSpawn;
         }
@@ -19,8 +25,8 @@ public static class StaticMapTransitions
         // Honestly, I made this as my first version of custom spawn points and it works well for
         // original transits, but if you have two transits going in the same direction, it falls apart.
         // So, leave this for original transits, and we only worry about mapping our custom transits.
-        var from = VagabondLocations.NormaliseMapName(transitState.FromMap);
-        var to = VagabondLocations.NormaliseMapName(transitState.ToMap);
+        var from = VagabondLocations.NormaliseMapName(state.TransitState?.FromMap);
+        var to = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
         
         return (from, to) switch
         {
@@ -114,10 +120,38 @@ public static class StaticMapTransitions
             _ => null
         };
     }
-
-    private static bool GetExitSpecificSpawnLocation(TransitState transitState, out ManualSpawnPoint customExitSpawn)
+    
+    private static bool GetNormalRaidLocation(VagabondState state, out ManualSpawnPoint customExitSpawn)
     {
         customExitSpawn = null!;
+        var raid  = VagabondLocations.NormaliseMapName(state.CurrentMap);
+        var exitName = state.LastExit;
+        
+        if (raid == RaidLocation.Nil || string.IsNullOrEmpty(exitName))
+        {
+            return false;
+        }
+        
+        var raidMapData = ExfilService.GetCustomMapData(raid);
+        var exfil = raidMapData.Extracts.Concat(raidMapData.Transits).FirstOrDefault(x=> x.Identifier == exitName);
+        if (exfil == null)
+        {
+            return false;
+        }
+        
+        customExitSpawn = new ManualSpawnPoint{ X = exfil.X, Y = exfil.Y, Z = exfil.Z, Rotation = exfil.RotationY};
+        //VagabondLogger.Error($"forcing spawn at {customExitSpawn.X},{customExitSpawn.Y},{customExitSpawn.Z},R={customExitSpawn.Rotation}");
+        return true;
+    }
+
+    private static bool GetTransitSpecificSpawnLocation(TransitState? transitState, out ManualSpawnPoint customTransitSpawn)
+    {
+        customTransitSpawn = null!;
+        if (transitState == null)
+        {
+            return false;
+        }
+        
         var from = VagabondLocations.NormaliseMapName(transitState.FromMap);
         var to = VagabondLocations.NormaliseMapName(transitState.ToMap);
         if (to == RaidLocation.Nil)
@@ -148,8 +182,7 @@ public static class StaticMapTransitions
             return false;
         }
         
-        customExitSpawn = new ManualSpawnPoint{ X = position.X, Y = position.Y, Z = position.Z, Rotation = position.RotationY};
-        //VagabondLogger.Error($"forcing spawn at {customExitSpawn.X},{customExitSpawn.Y},{customExitSpawn.Z},R={customExitSpawn.Rotation}");
+        customTransitSpawn = new ManualSpawnPoint{ X = position.X, Y = position.Y, Z = position.Z, Rotation = position.RotationY};
         return true;
     }
 }

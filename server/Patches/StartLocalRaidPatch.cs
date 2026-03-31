@@ -43,7 +43,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
                 return;
             }
 
-            var forcedSpawn = StaticMapTransitions.GetSpawnLocation(transitState);
+            var forcedSpawn = StaticMapTransitions.GetSpawnLocation(state);
             if (forcedSpawn == null)
             {
                 VagabondLogger.Log($"Did not find a PMC spawn template to clone from");

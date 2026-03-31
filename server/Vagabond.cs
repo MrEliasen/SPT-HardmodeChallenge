@@ -55,7 +55,7 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.ProfileCreatePatch().Enable();
         new Patches.RaidEndPatch().Enable();
         new Patches.RaidJoinPatch().Enable();
-        new Patches.RaidLocationsPatch().Enable();
+        new Patches.ChooseRaidLocationsPatch().Enable();
         new Patches.StartLocalRaidPatch().Enable();
         
         // remove old trader from profiles
