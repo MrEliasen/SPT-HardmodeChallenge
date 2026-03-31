@@ -1,4 +1,5 @@
 ﻿using Vagabond.Common.Definitions;
+using Vagabond.Common.Interfaces;
 using Vagabond.Common.Enums;
 
 namespace Vagabond.Common.Data;
@@ -40,7 +41,7 @@ public class ExfilsShoreline : ICustomExtilData
             TransitPointId = 0,// gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Reserve].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Reserve].First(),
-            Description = "Transit to Reserve",
+            Description = "Mountain climb to Reserve",
             ExfiltrationTime = 5f,
             ActivateAfterSeconds = 5,
             IsActive = true,
@@ -50,7 +51,7 @@ public class ExfilsShoreline : ICustomExtilData
             Y = -12.753f,
             Z = -356.269f,
             RotationY = 23.539f,
-            Requirements = new() // Only works for extractions for now.. need to make a custom patch .. later keep as reminder
+            Requirements = new()
             {
                 new CustomExtractRequirementDefinition
                 {
@@ -66,7 +67,8 @@ public class ExfilsShoreline : ICustomExtilData
                     Count = 1,
                     RequirementTip = "Requires Paracord"
                 }
-            }
+            },
+            ConnectedIdentifier = "VGB_RS_SL",
         },
         new CustomExfil
         {

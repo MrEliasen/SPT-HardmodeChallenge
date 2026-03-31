@@ -1,5 +1,4 @@
-﻿using Vagabond.Server.Config;
-using SPTarkov.Server.Core.Models.Utils;
+﻿using SPTarkov.Server.Core.Models.Utils;
 
 namespace Vagabond.Server.Services;
 

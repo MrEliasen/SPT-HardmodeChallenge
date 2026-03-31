@@ -1,13 +1,12 @@
 using System.Reflection;
 using SPTarkov.Reflection.Patching;
-using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
-using Vagabond.Common.Definitions;
-using Vagabond.Common.Enums;
+using Vagabond.Common.Data;
+using Vagabond.Common.Models;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -57,15 +56,15 @@ public sealed class RaidEndPatch : AbstractPatch
             return;
         }
         
-        state.TransitState = null;
+        var locationMapE = VagabondLocations.NormaliseMapName(locationName);
+        var locationMapStr = locationMapE.ToString();
         
-        var LocationMapE = VagabondLocations.NormaliseMapName(locationName);
-        var LocationMapStr = LocationMapE.ToString();
-        state.LastExitMap = LocationMapStr;
+        state.TransitState = null;
+        state.CurrentMap = locationMapStr;
+        state.LastExit = request.Results?.ExitName ?? "";
         
         if (isDead)
         {
-            state.LastExitMap = RaidLocation.Streets.ToString();
             VagabondState.SaveState(sessionId, state);
             return;
         }
@@ -74,10 +73,12 @@ public sealed class RaidEndPatch : AbstractPatch
         {
             state.TransitState = new TransitState
             {
-                FromMap =  LocationMapStr,
-                ToMap = VagabondLocations.NormaliseMapName(request?.LocationTransit?.Location).ToString(),
-                ExitName = request?.Results?.ExitName
+                FromMap =  locationMapStr,
+                ToMap = VagabondLocations.NormaliseMapName(request.LocationTransit?.Location).ToString(),
+                ExitName = request.Results?.ExitName
             };
+            
+            state.CurrentMap = state.TransitState.ToMap;
         }
         
         VagabondState.SaveState(sessionId, state);

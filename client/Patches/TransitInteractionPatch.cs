@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using EFT;
-using EFT.Communications;
 using EFT.InventoryLogic;
 using HarmonyLib;
 using SPT.Reflection.Patching;
@@ -21,6 +20,11 @@ internal class TransitInteractionPatch : ModulePatch
     [PatchPrefix]
     private static bool Prefix(int pointId, Player player)
     {
+        if (!Vagabond.State.VagabondModeEnabled)
+        {
+            return true;
+        }
+
         if (!CustomExfilPlacementPatch.CustomTransitDefinitions.TryGetValue(pointId, out var definition))
         {
             return true;
@@ -31,10 +35,10 @@ internal class TransitInteractionPatch : ModulePatch
             return true;
         }
 
-        NotificationManagerClass.DisplayWarningNotification(string.IsNullOrWhiteSpace(failReason) ? "Requirements not met" : failReason, ENotificationDurationType.Default);
+        NotificationManagerClass.DisplayWarningNotification(string.IsNullOrWhiteSpace(failReason) ? "Requirements not met" : failReason);
         return false;
     }
-    
+
     private static bool MeetsTransitRequirements(Player player, CustomExfil definition, out string failReason)
     {
         failReason = string.Empty;
@@ -51,7 +55,8 @@ internal class TransitInteractionPatch : ModulePatch
             {
                 case CustomExfilRequirementType.HasItem:
                 {
-                    var items = player.InventoryController.Inventory.GetPlayerItems(EPlayerItems.Equipment | EPlayerItems.Stash);
+                    var items = player.InventoryController.Inventory.GetPlayerItems(EPlayerItems.Equipment |
+                        EPlayerItems.Stash);
                     var count = items.ToList()?.Count(x => x.TemplateId == req.Id);
                     if (count < req.Count)
                     {
@@ -66,6 +71,7 @@ internal class TransitInteractionPatch : ModulePatch
                             failReason += $"{(c > 0 ? " & " : " ")}{req.RequirementTip}";
                         }
                     }
+
                     break;
                 }
 
@@ -85,11 +91,12 @@ internal class TransitInteractionPatch : ModulePatch
                             : req.RequirementTip;
                         return false;
                     }
+
                     break;
                 }
             }
         }
-        
+
         if (!string.IsNullOrWhiteSpace(failReason))
         {
             return false;

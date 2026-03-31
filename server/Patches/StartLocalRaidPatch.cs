@@ -4,7 +4,7 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Services;
-using Vagabond.Common.Definitions;
+using Vagabond.Common.Data;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Models;
 using Vagabond.Server.Services;
@@ -43,11 +43,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
                 return;
             }
 
-            var forcedSpawn = GetSpawnLocation(
-                transitState,
-                __result
-            );
-
+            var forcedSpawn = GetSpawnLocation(transitState);
             if (forcedSpawn == null)
             {
                 VagabondLogger.Log($"Did not find a PMC spawn template to clone from");
@@ -65,9 +61,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         }
     }
 
-    private static ManualSpawnPoint? GetSpawnLocation(
-        TransitState transitState,
-        StartLocalRaidResponseData response)
+    private static ManualSpawnPoint? GetSpawnLocation(TransitState transitState)
     {
         // if we cannot map the exit directly to a spawn location, we fall back to the below switch.
         if (GetExitSpecificSpawnLocation(transitState, out var customExitSpawn))
@@ -80,14 +74,14 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         // So, leave this for original transits, and we only worry about mapping our custom transits.
         var from = VagabondLocations.NormaliseMapName(transitState.FromMap);
         var to = VagabondLocations.NormaliseMapName(transitState.ToMap);
-
+        
         return (from, to) switch
         {
             // Customs
             (RaidLocation.Interchange, RaidLocation.Customs) => new ManualSpawnPoint
                 { X = -338.961f, Y = 0.793f, Z = -194.769f, Rotation = 30.629f },
             (RaidLocation.Shoreline, RaidLocation.Customs) => new ManualSpawnPoint
-                { X = 9.094f, Y = -1.048f, Z = 126.674f, Rotation = 166.027f },
+                { X = 24.013f, Y = -1.326f, Z = 134.716f, Rotation = 95.674f },
             (RaidLocation.Reserve, RaidLocation.Customs) => new ManualSpawnPoint
                 { X = 650.311f, Y = 0.39f, Z = 116.193f, Rotation = 196.06f },
             (RaidLocation.FactoryDay, RaidLocation.Customs) => new ManualSpawnPoint
@@ -246,7 +240,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         }
         
         customExitSpawn = new ManualSpawnPoint{ X = position.X, Y = position.Y, Z = position.Z, Rotation = position.RotationY};
-        VagabondLogger.Error($"forcing spawn at {customExitSpawn.X},{customExitSpawn.Y},{customExitSpawn.Z},R={customExitSpawn.Rotation}");
+        //VagabondLogger.Error($"forcing spawn at {customExitSpawn.X},{customExitSpawn.Y},{customExitSpawn.Z},R={customExitSpawn.Rotation}");
         return true;
     }
 }

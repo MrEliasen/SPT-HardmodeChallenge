@@ -3,6 +3,8 @@ using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Controllers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
+using Vagabond.Common.Data;
+using Vagabond.Common.Enums;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
@@ -50,20 +52,25 @@ public sealed class RaidJoinPatch : AbstractPatch
             return;
         }
 
-        state.RaidEntryCount += 1;
-        state.HasEnteredFirstRaid = true;
-        VagabondState.SaveState(sessionId, state);
-
-        if (state.RaidEntryCount == 1 && VagabondConfig._config.PreventStarterTraderAccessAfterFirstRaidEntry)
+        var mapNameE = VagabondLocations.NormaliseMapName(mapName);
+        if (string.IsNullOrEmpty(state.CurrentMap) && mapNameE != RaidLocation.Nil)
         {
-            VagabondService.ApplyTraderRestrictions(pmc.CharacterData.PmcData);
+            state.TransitState = null;
+            state.CurrentMap = mapNameE.ToString();
+            state.LastExit = "";
         }
 
-        if (VagabondConfig._config.WipeStashOnEveryRaidEntry ||
-            VagabondConfig._config.WipeStashOnFirstRaidEntry && state.RaidEntryCount == 1)
+        VagabondState.SaveState(sessionId, state);
+
+        if (VagabondConfig.Config.WipeStashOnFirstRaidEntry && string.IsNullOrEmpty(state.CurrentMap))
         {
-            VagabondService.WipeItems(sessionId, pmc.CharacterData.PmcData, false, true,
-                VagabondConfig._config.AlsoWipeCarriedMoneyOnFirstRaid && state.RaidEntryCount == 1);
+            VagabondService.WipeItems(
+                sessionId,
+                pmc.CharacterData.PmcData,
+                false,
+                true,
+                VagabondConfig.Config.AlsoWipeCarriedMoneyOnFirstRaid
+            );
         }
 
         VagabondService.PersistProfileIfPossible(sessionId);

@@ -65,7 +65,7 @@ public class BarterTraderService(ICloner cloner, DatabaseService databaseService
 
     public void AddTraderAssortment(Trader trader)
     {
-        foreach (var barter in VagabondConfig._config.SpectatorTraderAssortment)
+        foreach (var barter in VagabondConfig.Config.SpectatorTraderAssortment)
         {
             var rootId = new MongoId();
             trader.Assort.Items.Add(new Item

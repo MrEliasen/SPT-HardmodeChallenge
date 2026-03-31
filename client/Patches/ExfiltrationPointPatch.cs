@@ -15,18 +15,24 @@ internal class ExfiltrationPointPatch : ModulePatch
 
     protected override MethodBase GetTargetMethod()
     {
-        return AccessTools.Method(typeof(ExfiltrationControllerClass), nameof(ExfiltrationControllerClass.InitAllExfiltrationPoints));
+        return AccessTools.Method(typeof(ExfiltrationControllerClass),
+            nameof(ExfiltrationControllerClass.InitAllExfiltrationPoints));
         //return AccessTools.Method(typeof(ExfiltrationPoint), nameof(ExfiltrationPoint.LoadSettings));
     }
 
     [PatchPostfix]
     static void Postfix(ExfiltrationControllerClass __instance)
     {
+        if (!Vagabond.State.VagabondModeEnabled && !Vagabond.IsHeadless())
+        {
+            return;
+        }
+
         if (__instance?.ExfiltrationPoints == null)
         {
             return;
         }
-        
+
         var kept = new List<ExfiltrationPoint>();
         foreach (var exfil in __instance.ExfiltrationPoints.Where(x => x != null))
         {
@@ -47,7 +53,7 @@ internal class ExfiltrationPointPatch : ModulePatch
 
         __instance.ExfiltrationPoints = kept.ToArray();
     }
-    
+
     private static void HideExfil(ExfiltrationPoint exfil)
     {
         exfil.Reusable = false;
@@ -62,7 +68,7 @@ internal class ExfiltrationPointPatch : ModulePatch
 
         exfil.gameObject.SetActive(false);
     }
-    
+
     private static bool IsVehicleExfil(ExfiltrationRequirement[] settings)
     {
         if (settings.Length == 0)

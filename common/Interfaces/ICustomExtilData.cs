@@ -1,7 +1,7 @@
-﻿using Vagabond.Common.Enums;
-using Vagabond.Common.Definitions;
+﻿using Vagabond.Common.Definitions;
+using Vagabond.Common.Enums;
 
-namespace Vagabond.Common;
+namespace Vagabond.Common.Interfaces;
 
 public interface ICustomExtilData {
     string MapName { get; }

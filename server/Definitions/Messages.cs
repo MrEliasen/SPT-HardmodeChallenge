@@ -1,4 +1,5 @@
-﻿using Vagabond.Common.Definitions;
+﻿using Vagabond.Common.Data;
+using Vagabond.Common.Models;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Config;
 
@@ -11,11 +12,11 @@ public static class Messages
         var mesage ="You complete a map by taking a transit exit to another map.\n"+
                  "If you take a v-ex, you go back to your stash, however the map is not counted towards your progression.\n";
         
-        if (VagabondConfig._config.WipeStashOnEveryRaidEntry)
+        if (VagabondConfig.Config.WipeStashOnEveryRaidEntry)
         {
             mesage +=
                 "\nWhen you enter a raid, all items left in the stash will be deleted. First time you enter a raid, any left over cash is removed.";
-        } else if (VagabondConfig._config.WipeStashOnFirstRaidEntry)
+        } else if (VagabondConfig.Config.WipeStashOnFirstRaidEntry)
         {
             mesage +=
                 "\nWhen you enter you your first raid, all items left in the stash will be deleted, including any left over cash.";
@@ -80,12 +81,12 @@ public static class Messages
 
             if (!completed)
             {
-                if (!VagabondConfig._config.IsLabsRequired && raid.Key == RaidLocation.Labs)
+                if (!VagabondConfig.Config.IsLabsRequired && raid.Key == RaidLocation.Labs)
                 {
                     continue;
                 }
 
-                if (!VagabondConfig._config.IsLabyrinthRequired && raid.Key == RaidLocation.Labyrinth)
+                if (!VagabondConfig.Config.IsLabyrinthRequired && raid.Key == RaidLocation.Labyrinth)
                 {
                     continue;
                 }

@@ -3,7 +3,8 @@ using System.Text.Json.Nodes;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Callbacks;
 using SPTarkov.Server.Core.Models.Common;
-using Vagabond.Common.Definitions;
+using Vagabond.Common.Data;
+using Vagabond.Common.Models;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
@@ -53,12 +54,17 @@ public sealed class RaidLocationsPatch : AbstractPatch
             return jsonString;
         }
 
-        if (state.CompletedRaids.Count == 0)
+        if (string.IsNullOrEmpty(state.CurrentMap))
         {
-            VagabondLogger.Error($"CompletedRaids is zero {sessionId}.");
             return jsonString;
         }
 
+        RaidLocation currentMap = VagabondLocations.NormaliseMapName(state.CurrentMap);
+        if (currentMap == RaidLocation.Nil)
+        {
+            return jsonString;
+        }
+        
         JsonObject? data = root["data"]?.AsObject();
         JsonObject? locations = data?["locations"]?.AsObject();
 
@@ -67,12 +73,23 @@ public sealed class RaidLocationsPatch : AbstractPatch
             VagabondLogger.Error($"locations is null {sessionId}.");
             return jsonString;
         }
-
+        
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
-        foreach (var raidName in state.CompletedRaids)
+        
+        RaidLocation transitMap = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
+        if (transitMap != RaidLocation.Nil)
         {
-            RaidLocation raidNameE = VagabondLocations.NormaliseMapName(raidName);
-            if (raidNameE != RaidLocation.Nil && VagabondLocations.Locations.TryGetValue(raidNameE, out var mapIds))
+            if (VagabondLocations.Locations.TryGetValue(transitMap, out var mapIds))
+            {
+                foreach (var mapId in mapIds)
+                {
+                    allowedMapIds.Add(mapId);
+                }
+            }
+        }
+        else
+        {
+            if (VagabondLocations.Locations.TryGetValue(currentMap, out var mapIds))
             {
                 foreach (var mapId in mapIds)
                 {
@@ -81,6 +98,11 @@ public sealed class RaidLocationsPatch : AbstractPatch
             }
         }
 
+        if (allowedMapIds.Count == 0)
+        {
+            return jsonString;
+        }
+        
         foreach (string locationKey in locations.Select(kv => kv.Key).ToList())
         {
             if (!allowedMapIds.Contains(locationKey))
@@ -145,7 +167,6 @@ public sealed class RaidLocationsPatch : AbstractPatch
     private static bool IsCustomExtract(JsonObject exfil, MongoId locationKey)
     {
         string? name = exfil["Name"]?.GetValue<string>();
-        string? sptName = exfil["SptName"]?.GetValue<string>();
         var raid = VagabondLocations.NormaliseMapName(locationKey);
         if (!VagabondLocations.IdToName.TryGetValue(locationKey, out var mapName))
         {

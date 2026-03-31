@@ -1,5 +1,7 @@
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 
+namespace Vagabond.Server.Services;
+
 public static class SecureContainerService
 {
     public static HashSet<string> GetSecureContainerItemIdsToKeep(List<Item> items)

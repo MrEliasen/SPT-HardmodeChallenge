@@ -10,11 +10,9 @@ using UnityEngine.Rendering;
 using Vagabond.Client.Patches;
 using Vagabond.Client.Services;
 using Vagabond.Client.State;
-using Vagabond.Common.Definitions;
-using Vagabond.Common.Enums;
 
 namespace Vagabond.Client;
-    
+
 [BepInPlugin("dev.oogabooga.spt-vagabond", "Vagabond", BuildInfo.Version)]
 public class Vagabond : BaseUnityPlugin
 {
@@ -23,10 +21,10 @@ public class Vagabond : BaseUnityPlugin
     private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomExtractHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;
-    private string _LocationDumpPath = null!;
+    private string _locationDumpPath = null!;
     private string _customExtractDumpPath = null!;
     private string _customTransitDumpPath = null!;
-    
+
     public static void Log(string message)
     {
         _logger.LogInfo($"[Vagabond] {message}");
@@ -47,18 +45,18 @@ public class Vagabond : BaseUnityPlugin
         new CustomExfilCleanupPatch().Enable();
         new CustomTransitRetryPatch().Enable();
         new MenuShowPatch().Enable();
-        
+
         if (IsHeadless())
         {
             Log($"Loaded in headless mode");
             return;
         }
-        
+
         new TransitInteractionPatch().Enable();
         new SkipInsuranceScreenPatch().Enable();
         new DisableInsuranceBackNavigationPatch().Enable();
         NotificationService.Create(transform);
-        
+
         _dumpHotkey = Config.Bind(
             "Location Capture (Dev)",
             "Dump Location Hotkey",
@@ -81,10 +79,10 @@ public class Vagabond : BaseUnityPlugin
         );
 
         var pluginDir = Path.GetDirectoryName(Info.Location);
-        _LocationDumpPath = Path.Combine(pluginDir, "dumped_locations.txt");
+        _locationDumpPath = Path.Combine(pluginDir, "dumped_locations.txt");
         _customExtractDumpPath = Path.Combine(pluginDir, "dumped_custom_extracts.txt");
         _customTransitDumpPath = Path.Combine(pluginDir, "dumped_custom_transits.txt");
-        
+
         Log("loaded");
     }
 
@@ -94,7 +92,7 @@ public class Vagabond : BaseUnityPlugin
         {
             return;
         }
-        
+
         if (_dumpHotkey.Value.IsDown())
         {
             DumpCurrentLocation();
@@ -114,7 +112,6 @@ public class Vagabond : BaseUnityPlugin
         {
             DumpCustomTransitDefinition();
         }
-
     }
 
     private void DumpCurrentLocation()
@@ -138,20 +135,20 @@ public class Vagabond : BaseUnityPlugin
                 pos.z,
                 yaw
             );
-            File.AppendAllText(_LocationDumpPath, csharpLine + Environment.NewLine);
+            File.AppendAllText(_locationDumpPath, csharpLine + Environment.NewLine);
         }
         catch (Exception ex)
         {
             Logger.LogError($"Failed to dump location: {ex}");
         }
     }
-    
+
     public static bool IsHeadless()
     {
         return Application.isBatchMode
                || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
     }
-    
+
     private void DumpCustomExtractDefinition()
     {
         try
@@ -163,7 +160,7 @@ public class Vagabond : BaseUnityPlugin
 
             File.AppendAllText(_customExtractDumpPath, string.Join(Environment.NewLine, new[]
             {
-                $"new CustomExfilDefinition",
+                $"new CustomExfil",
                 "{",
                 $"    Identifier = \"unique_identifier\",",
                 $"    DisplayName = \"Human Readable Label\",",
@@ -196,17 +193,16 @@ public class Vagabond : BaseUnityPlugin
 
             File.AppendAllText(_customTransitDumpPath, string.Join(Environment.NewLine, new[]
             {
-                "new CustomExfilDefinition",
+                "new CustomExfil",
                 "{",
                 $"    Identifier = \"unique_identifier\",",
-                $"    DisplayName = \"Label\",",
                 "    IsTransit = true,",
                 $"    TransitPointId = 0,// gets auto generated",
-                "    DestinationLocation = LocationData.InverseLookupTable[RaidLocation.DESTINATION].First(),",
-                "    TargetLocation = LocationData.InverseLookupTable[RaidLocation.DESTINATION].First(),",
+                "    DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),",
+                "    TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),",
                 "    Description = \"Description\",",
-                "    ExfiltrationTime = 20f,",
-                "    ActivateAfterSeconds = 60,",
+                "    ExfiltrationTime = 5f,",
+                "    ActivateAfterSeconds = 0,",
                 "    IsActive = true,",
                 "    Events = false,",
                 "    HideIfNoKey = false,",
@@ -214,6 +210,7 @@ public class Vagabond : BaseUnityPlugin
                 $"    Y = {snapshot.Position.y:0.###}f,",
                 $"    Z = {snapshot.Position.z:0.###}f,",
                 $"    RotationY = {snapshot.Yaw:0.###}f",
+                $"    ConnectedIdentifier = \"VGB_\"",
                 "},"
             }));
         }

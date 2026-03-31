@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using SPTarkov.Server.Core.Models.Eft.Common;
+﻿using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Services;
-using Vagabond.Common;
 using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
+using Vagabond.Common.Interfaces;
 using Vagabond.Common.Enums;
 using Location = SPTarkov.Server.Core.Models.Eft.Common.Location;
 
@@ -23,7 +22,7 @@ internal static class ExfilService
                 continue;
             }
             
-            if (!VagabondLocations.InverseLookupTable.TryGetValue(loc, out var maps) || maps == null)
+            if (!VagabondLocations.InverseLookupTable.TryGetValue(loc, out var maps))
             {
                 continue;
             }
@@ -87,13 +86,13 @@ internal static class ExfilService
 
     private static void AddOrReplaceExtract(Location location, CustomExfil definition)
     {
-        var allExtracts = location.AllExtracts?.ToList() ?? new List<AllExtractsExit>();
+        var allExtracts = location.AllExtracts.ToList();
         allExtracts.RemoveAll(x => string.Equals(x.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase)
                                    || string.Equals(x.SptName, definition.Identifier, StringComparison.OrdinalIgnoreCase));
         allExtracts.Add(CreateExit(definition));
         location.AllExtracts = allExtracts;
 
-        var baseExits = location.Base.Exits?.ToList() ?? new List<Exit>();
+        var baseExits = location.Base.Exits.ToList();
         baseExits.RemoveAll(x => string.Equals(x.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase));
         baseExits.Add(CreateExit(definition));
         location.Base.Exits = baseExits;

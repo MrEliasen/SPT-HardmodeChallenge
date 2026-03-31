@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SPT.Common.Http;
-using Vagabond.Common.Definitions;
+using Vagabond.Common.Models;
 
 namespace Vagabond.Client.Networking
 {

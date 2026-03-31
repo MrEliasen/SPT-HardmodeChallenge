@@ -1,4 +1,5 @@
 ﻿using Vagabond.Common.Definitions;
+using Vagabond.Common.Interfaces;
 using Vagabond.Common.Enums;
 
 namespace Vagabond.Common.Data;
@@ -14,5 +15,5 @@ public class ExfilsFactoryDay : ICustomExtilData
 
     private static readonly string _mapName = "factory4_day";
     private static readonly List<CustomExfil> _extracts = [];
-    private static  readonly List<CustomExfil>_transits = [];
+    private static  readonly List<CustomExfil> _transits = [];
 }

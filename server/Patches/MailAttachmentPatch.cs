@@ -16,12 +16,7 @@ public sealed class MailAttachmentsPatch : AbstractPatch
     [PatchPrefix]
     public static bool Prefix(SendMessageDetails messageDetails)
     {
-        if (messageDetails is null)
-        {
-            return true;
-        }
-
-        if (!VagabondConfig._config.StripMailAttachments)
+        if (!VagabondConfig.Config.StripMailAttachments)
         {
             return true;
         }

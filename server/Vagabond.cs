@@ -14,7 +14,6 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
-using SPTarkov.Server.Core.Utils;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 using Path = System.IO.Path;
@@ -85,8 +84,7 @@ public sealed class VagabondDbLoader : IOnLoad
         EventOutputHolder eventOutputHolder,
         MailSendService mailSendService,
         LocationController locationController,
-        ISptLogger<VagabondDbLoader> logger,
-        JsonUtil jsonUtil)
+        ISptLogger<VagabondDbLoader> logger)
     {
         _services = services;
         _profileDataService = profileDataService;
@@ -133,7 +131,7 @@ public class BarterTrader(
 
     public Task OnLoad()
     {
-        if (!VagabondConfig._config.AddSpectatorTrader && VagabondConfig._config.SpectatorTraderAssortment.Count <= 0)
+        if (!VagabondConfig.Config.AddSpectatorTrader && VagabondConfig.Config.SpectatorTraderAssortment.Count <= 0)
         {
             return Task.CompletedTask;
         }
@@ -169,13 +167,13 @@ public class DifficultyChanges(DatabaseService databaseService) : IOnLoad
 {
     public Task OnLoad()
     {
-        if (VagabondConfig._config.EnableDifficultyChanges)
+        if (VagabondConfig.Config.EnableDifficultyChanges)
         {
             var locationsdb = databaseService.GetLocations();
             locationsdb.Sandbox.Base.RequiredPlayerLevelMax = 0;
         }
 
-        if (VagabondConfig._config.DisableFlea)
+        if (VagabondConfig.Config.DisableFlea)
         {
             Globals globals = databaseService.GetGlobals();
             globals.Configuration.RagFair.MinUserLevel = 99;
@@ -196,7 +194,7 @@ public class FenceTweaks(
 {
     public Task OnLoad()
     {
-        if (!VagabondConfig._config.EnableFenceChanges)
+        if (!VagabondConfig.Config.EnableFenceChanges)
         {
             return Task.CompletedTask;
         }

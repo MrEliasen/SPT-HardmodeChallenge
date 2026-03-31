@@ -24,6 +24,11 @@ namespace Vagabond.Client.Patches
         [PatchPostfix]
         private static void Postfix(MatchMakerAcceptScreen __instance)
         {
+            if (!Vagabond.State.VagabondModeEnabled)
+            {
+                return;
+            }
+
             __instance.method_9();
         }
     }

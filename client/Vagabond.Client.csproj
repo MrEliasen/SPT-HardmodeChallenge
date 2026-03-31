@@ -1,120 +1,120 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Vagabond.Client</RootNamespace>
-    <LangVersion>latest</LangVersion>
-    <Nullable>disable</Nullable>
-    
-    <!-- Output -->
-    <OutputPath>..\\build\\client\\$(Configuration)\\$(AssemblyName)\\</OutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    
-    <!-- Build Settings -->
-    <Deterministic>true</Deterministic>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PackageId>Vagabond</PackageId>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\\common\\Vagabond.Common.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>Vagabond.Client</RootNamespace>
+        <LangVersion>latest</LangVersion>
+        <Nullable>disable</Nullable>
 
-  <PropertyGroup>
-    <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT\</TarkovDir>
-    <TarkovPluginsSPTDir>$(TarkovDir)BepInEx\plugins\spt\</TarkovPluginsSPTDir>
-    <TarkovManagedDir>$(TarkovDir)EscapeFromTarkov_Data\Managed\</TarkovManagedDir>
-    <TarkovBepInExCoreDir>$(TarkovDir)BepInEx\core\</TarkovBepInExCoreDir>
-  </PropertyGroup>
-  
-  <ItemDefinitionGroup>
-    <Reference>
-      <Private>false</Private>
-    </Reference>
-  </ItemDefinitionGroup>
-  
-  <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>$(TarkovBepInExCoreDir)0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Spt.Common">
-      <HintPath>$(TarkovPluginsSPTDir)spt-common.dll</HintPath>
-    </Reference>
-    <Reference Include="Spt.Reflection">
-      <HintPath>$(TarkovPluginsSPTDir)spt-reflection.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(TarkovManagedDir)Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>$(TarkovBepInExCoreDir)BepInEx.dll</HintPath>
-    </Reference>
-    <Reference Include="Comfort">
-      <HintPath>$(TarkovManagedDir)Comfort.dll</HintPath>
-    </Reference>
-    <Reference Include="Comfort.Unity">
-      <HintPath>$(TarkovManagedDir)Comfort.Unity.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>$(TarkovManagedDir)Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Sirenix.Serialization">
-      <HintPath>$(TarkovManagedDir)Sirenix.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>$(TarkovManagedDir)UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(TarkovManagedDir)UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>$(TarkovManagedDir)UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>$(TarkovManagedDir)UnityEngine.PhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>$(TarkovManagedDir)UnityEngine.TextRenderingModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>$(TarkovManagedDir)UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UIModule">
-      <HintPath>$(TarkovManagedDir)UnityEngine.UIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>$(TarkovManagedDir)UnityEngine.InputLegacyModule.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTween">
-      <HintPath>$(TarkovManagedDir)DOTween.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTween.Modules">
-      <HintPath>$(TarkovManagedDir)DOTween.Modules.dll</HintPath>
-    </Reference>
-    <Reference Include="CommonExtensions">
-      <HintPath>$(TarkovManagedDir)CommonExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>$(TarkovManagedDir)Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Postprocessing.Runtime">
-      <HintPath>$(TarkovManagedDir)Unity.Postprocessing.Runtime.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+        <!-- Output -->
+        <OutputPath>..\\build\\client\\$(Configuration)\\$(AssemblyName)\\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
-  <Target Name="PostBuild" AfterTargets="Build">
+        <!-- Build Settings -->
+        <Deterministic>true</Deterministic>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <PackageId>Vagabond</PackageId>
+    </PropertyGroup>
+
     <ItemGroup>
-      <OutputDLL Include="$(ProjectDir)$(OutDir)$(TargetName).dll" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <PluginFiles Include="$(ProjectDir)$(OutDir)$(TargetName).dll" />
-      <PluginFiles Include="$(ProjectDir)$(OutDir)Vagabond.Common.dll" />
+        <ProjectReference Include="..\\common\\Vagabond.Common.csproj"/>
     </ItemGroup>
 
-    <!-- Copy to Tarkov plugin directory -->
-    <Copy SourceFiles="@(PluginFiles)"
-          DestinationFolder="$(TarkovDir)BepInEx\plugins\$(AssemblyName)\"
-          SkipUnchangedFiles="true" />
-  </Target>
+    <PropertyGroup>
+        <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT\</TarkovDir>
+        <TarkovPluginsSPTDir>$(TarkovDir)BepInEx\plugins\spt\</TarkovPluginsSPTDir>
+        <TarkovManagedDir>$(TarkovDir)EscapeFromTarkov_Data\Managed\</TarkovManagedDir>
+        <TarkovBepInExCoreDir>$(TarkovDir)BepInEx\core\</TarkovBepInExCoreDir>
+    </PropertyGroup>
+
+    <ItemDefinitionGroup>
+        <Reference>
+            <Private>false</Private>
+        </Reference>
+    </ItemDefinitionGroup>
+
+    <ItemGroup>
+        <Reference Include="0Harmony">
+            <HintPath>$(TarkovBepInExCoreDir)0Harmony.dll</HintPath>
+        </Reference>
+        <Reference Include="Spt.Common">
+            <HintPath>$(TarkovPluginsSPTDir)spt-common.dll</HintPath>
+        </Reference>
+        <Reference Include="Spt.Reflection">
+            <HintPath>$(TarkovPluginsSPTDir)spt-reflection.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp">
+            <HintPath>$(TarkovManagedDir)Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="BepInEx">
+            <HintPath>$(TarkovBepInExCoreDir)BepInEx.dll</HintPath>
+        </Reference>
+        <Reference Include="Comfort">
+            <HintPath>$(TarkovManagedDir)Comfort.dll</HintPath>
+        </Reference>
+        <Reference Include="Comfort.Unity">
+            <HintPath>$(TarkovManagedDir)Comfort.Unity.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>$(TarkovManagedDir)Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="Sirenix.Serialization">
+            <HintPath>$(TarkovManagedDir)Sirenix.Serialization.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine">
+            <HintPath>$(TarkovManagedDir)UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>$(TarkovManagedDir)UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.IMGUIModule">
+            <HintPath>$(TarkovManagedDir)UnityEngine.IMGUIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule">
+            <HintPath>$(TarkovManagedDir)UnityEngine.PhysicsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TextRenderingModule">
+            <HintPath>$(TarkovManagedDir)UnityEngine.TextRenderingModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UI">
+            <HintPath>$(TarkovManagedDir)UnityEngine.UI.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UIModule">
+            <HintPath>$(TarkovManagedDir)UnityEngine.UIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.InputLegacyModule">
+            <HintPath>$(TarkovManagedDir)UnityEngine.InputLegacyModule.dll</HintPath>
+        </Reference>
+        <Reference Include="DOTween">
+            <HintPath>$(TarkovManagedDir)DOTween.dll</HintPath>
+        </Reference>
+        <Reference Include="DOTween.Modules">
+            <HintPath>$(TarkovManagedDir)DOTween.Modules.dll</HintPath>
+        </Reference>
+        <Reference Include="CommonExtensions">
+            <HintPath>$(TarkovManagedDir)CommonExtensions.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.TextMeshPro">
+            <HintPath>$(TarkovManagedDir)Unity.TextMeshPro.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Postprocessing.Runtime">
+            <HintPath>$(TarkovManagedDir)Unity.Postprocessing.Runtime.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="Build">
+        <ItemGroup>
+            <OutputDLL Include="$(ProjectDir)$(OutDir)$(TargetName).dll"/>
+        </ItemGroup>
+
+        <ItemGroup>
+            <PluginFiles Include="$(ProjectDir)$(OutDir)$(TargetName).dll"/>
+            <PluginFiles Include="$(ProjectDir)$(OutDir)Vagabond.Common.dll"/>
+        </ItemGroup>
+
+        <!-- Copy to Tarkov plugin directory -->
+        <Copy SourceFiles="@(PluginFiles)"
+              DestinationFolder="$(TarkovDir)BepInEx\plugins\$(AssemblyName)\"
+              SkipUnchangedFiles="true"/>
+    </Target>
 </Project>

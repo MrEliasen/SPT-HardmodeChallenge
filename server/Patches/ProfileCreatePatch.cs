@@ -53,7 +53,6 @@ public sealed class ProfileCreatePatch : AbstractPatch
 
         var state = VagabondState.GetState(sessionId);
         state.ProfileInitialized = true;
-        state.CompletedRaids = [];
         VagabondState.SaveState(sessionId, state);
         VagabondService.ApplyTraderRestrictions(pmc.CharacterData.PmcData, true);
         VagabondService.PersistProfileIfPossible(sessionId);

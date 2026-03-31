@@ -1,8 +1,8 @@
 ﻿using Vagabond.Common.Enums;
 
-namespace Vagabond.Common.Definitions;
+namespace Vagabond.Common.Data;
 
-public class VagabondLocations
+public static class VagabondLocations
 {
     public static Dictionary<RaidLocation, List<string>> Locations = new()
     {

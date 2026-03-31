@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using EFT;
@@ -12,7 +11,8 @@ namespace Vagabond.Client.Patches;
 
 internal class MenuShowPatch : ModulePatch
 {
-    private static bool _headlessUpdated = false;
+    private static bool _headlessUpdated;
+
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(
@@ -36,26 +36,22 @@ internal class MenuShowPatch : ModulePatch
                 _headlessUpdated = true;
                 _ = RefreshVagabondState();
             }
+
             return;
         }
-        
-        if (Vagabond.State.ChallengeActive && !Vagabond.State.HasShownWarningMessage && !Vagabond.State.HasEnteredFirstRaid)
+
+        if (!Vagabond.State.HasShownWarningMessage && Vagabond.State.CurrentMap.IsNullOrEmpty())
         {
             var message = "";
 
-            if (Vagabond.State.WipeEveryRaid)
+            if (Vagabond.State.PermaDeath)
             {
-                message += "\nFirst time you enter a raid, any money you carry on you is removed.\n";
-                message += "Everything left in your stash is wiped every time you enter a raid. Carry with you what you want to keep.\n";
+                message += "\nWARNING: Perma-death is enabled. If you die for any reason, your profile is wiped.\n";
             }
             else if (Vagabond.State.WipeFirstRaid)
             {
-                message += "\nFirst time you enter a raid, any money you carry on you is removed, and everything left in your stash gets wiped\n";
-            }
-
-            if (Vagabond.State.LooseAccessToTraders)
-            {
-                message += "\nOnce you enter your first raid, you will loose access to some of the traders.";
+                message +=
+                    "\nFirst time you enter a raid, any money you carry on you is removed, and everything left in your stash gets wiped\n";
             }
 
             if (message != "")
@@ -79,13 +75,11 @@ internal class MenuShowPatch : ModulePatch
         try
         {
             var resp = await Networking.ApiClient.HydrateVagabondState();
-            Vagabond.State.ChallengeActive = resp.ChallengeActive;
-            Vagabond.State.HasEnteredFirstRaid = resp.HasEnteredFirstRaid;
-            Vagabond.State.CompletedRaids = resp.CompletedRaids.ToHashSet(StringComparer.OrdinalIgnoreCase);
-            Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
-            Vagabond.State.WipeEveryRaid = resp.WipeEveryRaid;
+            Vagabond.State.VagabondModeEnabled = resp.VagabondModeEnabled;
+            Vagabond.State.PermaDeath = resp.PermaDeath;
             Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
-            Vagabond.State.LooseAccessToTraders = resp.LooseAccessToTraders;
+            Vagabond.State.CurrentMap = resp.CurrentMap;
+            Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
             Vagabond.State.CustomExfils = resp.CustomExfils ?? new();
 
             foreach (var raid in Vagabond.State.CustomExfils)

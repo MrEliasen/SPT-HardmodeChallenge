@@ -8,7 +8,9 @@ using EFT.Interactive;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UnityEngine;
+using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
+using Vagabond.Common.Models;
 using Vagabond.Common.Enums;
 
 namespace Vagabond.Client.Patches;
@@ -18,23 +20,29 @@ internal class CustomExfilPlacementPatch : ModulePatch
     public static bool ExtractsAppliedThisRaid;
     public static bool TransitsAppliedThisRaid;
     public static readonly Dictionary<int, CustomExfil> CustomTransitDefinitions = new();
-    
+
     private static readonly FieldInfo TransitPointLookupField =
         AccessTools.Field(typeof(TransitControllerAbstractClass), "Dictionary_0");
 
     protected override MethodBase GetTargetMethod()
     {
-        return AccessTools.Method(typeof(ExfiltrationControllerClass), nameof(ExfiltrationControllerClass.InitAllExfiltrationPoints));
+        return AccessTools.Method(typeof(ExfiltrationControllerClass),
+            nameof(ExfiltrationControllerClass.InitAllExfiltrationPoints));
     }
 
     [PatchPostfix]
     public static void Postfix(ExfiltrationControllerClass __instance)
     {
+        if (!Vagabond.State.VagabondModeEnabled && !Vagabond.IsHeadless())
+        {
+            return;
+        }
+
         if (ExtractsAppliedThisRaid && TransitsAppliedThisRaid)
         {
             return;
         }
-        
+
         var gameWorld = Singleton<GameWorld>.Instance;
         var locationId = gameWorld?.LocationId;
         if (string.IsNullOrWhiteSpace(locationId))
@@ -48,7 +56,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             Vagabond.Log($"Unknown location => {locationId}");
             return;
         }
-        
+
         var raid = VagabondLocations.NormaliseMapName(locationId);
         if (raid == RaidLocation.Nil)
         {
@@ -69,13 +77,13 @@ internal class CustomExfilPlacementPatch : ModulePatch
         ApplyCustomExtracts(__instance, raid, definitions.Where(x => !x.IsTransit).ToList());
         ApplyCustomTransits(gameWorld.TransitController, raid, definitions.Where(x => x.IsTransit).ToList());
     }
-    
-    public static void ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid, List<CustomExfil> definitions)
+
+    public static void ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid,
+        List<CustomExfil> definitions)
     {
         if (ExtractsAppliedThisRaid)
         {
             return;
-
         }
 
         if (definitions.Count == 0)
@@ -91,12 +99,15 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         foreach (var definition in definitions)
         {
-            if (pmcExfils.Any(x => string.Equals(x.Settings?.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase)))
+            if (pmcExfils.Any(x =>
+                    string.Equals(x.Settings?.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase)))
             {
                 continue;
             }
 
-            var template = pmcExfils.FirstOrDefault(x => string.Equals(x.Settings?.Name, definition.TemplateExitName, StringComparison.OrdinalIgnoreCase))
+            var template = pmcExfils.FirstOrDefault(x =>
+                               string.Equals(x.Settings?.Name, definition.TemplateExitName,
+                                   StringComparison.OrdinalIgnoreCase))
                            ?? pmcExfils.FirstOrDefault(x => !IsCustomExtract(x, definitions));
 
             if (template == null)
@@ -123,20 +134,22 @@ internal class CustomExfilPlacementPatch : ModulePatch
             ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
             pmcExfils.Add(clone);
 
-            Vagabond.Log($"Added custom extract '{definition.DisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
+            Vagabond.Log(
+                $"Added custom extract '{definition.DisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
         }
 
         controller.ExfiltrationPoints = pmcExfils.ToArray();
         ExtractsAppliedThisRaid = true;
     }
 
-    public static void ApplyCustomTransits(TransitControllerAbstractClass transitController, RaidLocation raid, List<CustomExfil> definitions)
+    public static void ApplyCustomTransits(TransitControllerAbstractClass transitController, RaidLocation raid,
+        List<CustomExfil> definitions)
     {
         if (TransitsAppliedThisRaid)
         {
             return;
         }
-        
+
         if (definitions.Count == 0)
         {
             return;
@@ -171,12 +184,15 @@ internal class CustomExfilPlacementPatch : ModulePatch
             }
 
             if (lookup.ContainsKey(definition.TransitPointId.Value)
-                || existingTransitPoints.Any(x => x.parameters != null && x.parameters.id == definition.TransitPointId.Value))
+                || existingTransitPoints.Any(x =>
+                    x.parameters != null && x.parameters.id == definition.TransitPointId.Value))
             {
                 continue;
             }
 
-            var template = existingTransitPoints.FirstOrDefault(x => definition.TemplateTransitId.HasValue && x.parameters != null && x.parameters.id == definition.TemplateTransitId.Value)
+            var template = existingTransitPoints.FirstOrDefault(x =>
+                               definition.TemplateTransitId.HasValue && x.parameters != null &&
+                               x.parameters.id == definition.TemplateTransitId.Value)
                            ?? existingTransitPoints.FirstOrDefault();
 
             if (template == null)
@@ -204,13 +220,15 @@ internal class CustomExfilPlacementPatch : ModulePatch
             lookup[definition.TransitPointId.Value] = clone;
             CustomTransitDefinitions[definition.TransitPointId.Value] = definition;
 
-            Vagabond.Log($"Added custom transit '{raid}' (identifier '{definition.Identifier}') to '{definition.DestinationLocation}'.");
+            Vagabond.Log(
+                $"Added custom transit '{raid}' (identifier '{definition.Identifier}') to '{definition.DestinationLocation}'.");
         }
-        
+
         TransitsAppliedThisRaid = true;
     }
 
-    private static void ConfigureTransitClone(TransitPoint clone, TransitControllerAbstractClass controller, TransitPoint template, CustomExfil definition)
+    private static void ConfigureTransitClone(TransitPoint clone, TransitControllerAbstractClass controller,
+        TransitPoint template, CustomExfil definition)
     {
         clone.Controller = controller;
         clone.Enabled = true;
@@ -220,11 +238,15 @@ internal class CustomExfilPlacementPatch : ModulePatch
             id = definition.TransitPointId!.Value,
             active = definition.IsActive,
             name = definition.Identifier,
-            description = string.IsNullOrWhiteSpace(definition.Description) ? definition.DisplayName : definition.Description,
+            description = string.IsNullOrWhiteSpace(definition.Description)
+                ? definition.DisplayName
+                : definition.Description,
             conditions = string.Empty,
             activateAfterSec = definition.ActivateAfterSeconds,
             time = (ushort)Mathf.Clamp(Mathf.RoundToInt(definition.ExfiltrationTime), 1, ushort.MaxValue),
-            target = string.IsNullOrWhiteSpace(definition.TargetLocation) ? definition.DestinationLocation : definition.TargetLocation,
+            target = string.IsNullOrWhiteSpace(definition.TargetLocation)
+                ? definition.DestinationLocation
+                : definition.TargetLocation,
             location = definition.DestinationLocation,
             events = definition.Events,
             hideIfNoKey = definition.HideIfNoKey,
@@ -245,8 +267,9 @@ internal class CustomExfilPlacementPatch : ModulePatch
             box.size = templateBox.size;
         }
     }
-    
-    private static void ConfigureExtractClone(ExfiltrationPoint clone, ExfiltrationPoint template, CustomExfil definition, int idOffset)
+
+    private static void ConfigureExtractClone(ExfiltrationPoint clone, ExfiltrationPoint template,
+        CustomExfil definition, int idOffset)
     {
         var eligibleEntryPoints = BuildEligibleEntryPoints(definition, template);
         var settings = new LocationExitClass
@@ -318,7 +341,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         return eligible.ToArray();
     }
-    
+
     private static ExfiltrationRequirement[] BuildRequirements(CustomExfil definition, ExfiltrationPoint point)
     {
         if (definition.Requirements == null || definition.Requirements.Count == 0)
@@ -373,7 +396,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                    .Where(x => !x.IsTransit)
                    .Any(x => string.Equals(x.DisplayName, exfil.Settings.Name, StringComparison.OrdinalIgnoreCase));
     }
-    
+
     private static ERequirementState MapRequirementType(CustomExfilRequirementType type)
     {
         return type switch
@@ -416,7 +439,7 @@ internal class CustomTransitRetryPatch : ModulePatch
         {
             return;
         }
-        
+
         var locationId = __instance?.LocationId;
         if (string.IsNullOrWhiteSpace(locationId))
         {
@@ -427,7 +450,7 @@ internal class CustomTransitRetryPatch : ModulePatch
         {
             return;
         }
-        
+
         var raid = VagabondLocations.NormaliseMapName(locationId);
         if (raid == RaidLocation.Nil)
         {
@@ -444,7 +467,9 @@ internal class CustomTransitRetryPatch : ModulePatch
             return;
         }
 
-        CustomExfilPlacementPatch.ApplyCustomExtracts(__instance.ExfiltrationController, raid, definitions.Where(x => !x.IsTransit).ToList());
-        CustomExfilPlacementPatch.ApplyCustomTransits(__instance.TransitController, raid, definitions.Where(x => x.IsTransit).ToList());
+        CustomExfilPlacementPatch.ApplyCustomExtracts(__instance.ExfiltrationController, raid,
+            definitions.Where(x => !x.IsTransit).ToList());
+        CustomExfilPlacementPatch.ApplyCustomTransits(__instance.TransitController, raid,
+            definitions.Where(x => x.IsTransit).ToList());
     }
 }

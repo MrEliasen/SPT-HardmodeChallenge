@@ -25,7 +25,7 @@ internal class MatchMakerLocationFilterPatch : ModulePatch
     {
         OriginalEnabled.Clear();
 
-        if (!Vagabond.State.ChallengeActive || Vagabond.State.CompletedRaids.Count == 0)
+        if (!Vagabond.State.VagabondModeEnabled || Vagabond.State.CurrentMap.IsNullOrEmpty())
         {
             return;
         }
@@ -70,6 +70,6 @@ internal class MatchMakerLocationFilterPatch : ModulePatch
             return false;
         }
 
-        return !Vagabond.State.CompletedRaids.Contains(location._Id);
+        return Vagabond.State.CurrentMap != location._Id;
     }
 }
