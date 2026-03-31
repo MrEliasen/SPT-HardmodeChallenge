@@ -18,35 +18,6 @@ internal static class VagabondService
     public const string Roubles = "5449016a4bdc2d6f028b456f";
     public const string SpectatorTraderID = "686172646d6f647472616465";
 
-    public static bool IsMapCompleted(List<string> completedRaids, RaidLocation location)
-    {
-        var str = location.ToString();
-        return completedRaids.Any(x => string.Equals(x, str, StringComparison.OrdinalIgnoreCase));
-    }
-
-    public static bool HasCompletedAllMaps(List<string> completedRaids)
-    {
-        foreach (var raid in VagabondLocations.Locations)
-        {
-            if (!completedRaids.Any(x => string.Equals(x, raid.Key.ToString(), StringComparison.OrdinalIgnoreCase)))
-            {
-                if (!VagabondConfig.Config.IsLabsRequired && raid.Key == RaidLocation.Labs)
-                {
-                    continue;
-                }
-
-                if (!VagabondConfig.Config.IsLabyrinthRequired && raid.Key == RaidLocation.Labyrinth)
-                {
-                    continue;
-                }
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public static void ResetProfile(MongoId sessionId, PmcData pmc, bool keepSecureContainer = false, bool softReset = false)
     {
         var inventory = pmc.Inventory;
@@ -206,12 +177,6 @@ internal static class VagabondService
         {
             entry.Value.Disabled = true;
             entry.Value.Unlocked = false;
-            
-            if (VagabondConfig.Config.AddSpectatorTrader && entry.Key == SpectatorTraderID)
-            {
-                entry.Value.Disabled = false;
-                entry.Value.Unlocked = true;
-            }
         
             if (VagabondConfig.Config.PermanentTraders.Contains(entry.Key))
             {

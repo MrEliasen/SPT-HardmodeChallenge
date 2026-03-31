@@ -18,9 +18,11 @@ public class Vagabond : BaseUnityPlugin
 {
     private static ManualLogSource _logger;
     public static VagabondState State { get; private set; } = new();
+    
     private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomExtractHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;
+    
     private string _locationDumpPath = null!;
     private string _customExtractDumpPath = null!;
     private string _customTransitDumpPath = null!;
@@ -91,11 +93,6 @@ public class Vagabond : BaseUnityPlugin
         if (IsHeadless())
         {
             return;
-        }
-
-        if (_dumpHotkey.Value.IsDown())
-        {
-            DumpCurrentLocation();
         }
 
         if (_dumpHotkey.Value.IsDown())
@@ -195,12 +192,12 @@ public class Vagabond : BaseUnityPlugin
             {
                 "new CustomExfil",
                 "{",
-                $"    Identifier = \"unique_identifier\",",
+                $"    Identifier = \"VGB_\",",
                 "    IsTransit = true,",
                 $"    TransitPointId = 0,// gets auto generated",
                 "    DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),",
                 "    TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),",
-                "    Description = \"Description\",",
+                "    Description = \"Transit to \",",
                 "    ExfiltrationTime = 5f,",
                 "    ActivateAfterSeconds = 0,",
                 "    IsActive = true,",
@@ -209,7 +206,7 @@ public class Vagabond : BaseUnityPlugin
                 $"    X = {snapshot.Position.x:0.###}f,",
                 $"    Y = {snapshot.Position.y:0.###}f,",
                 $"    Z = {snapshot.Position.z:0.###}f,",
-                $"    RotationY = {snapshot.Yaw:0.###}f",
+                $"    RotationY = {snapshot.Yaw:0.###}f,",
                 $"    ConnectedIdentifier = \"VGB_\"",
                 "},"
             }));

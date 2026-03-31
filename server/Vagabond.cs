@@ -120,59 +120,13 @@ public sealed class VagabondDbLoader : IOnLoad
 }
 
 [Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 2)]
-public class BarterTrader(
-    ModHelper modHelper,
-    ImageRouter imageRouter,
-    ConfigServer configServer,
-    BarterTraderService barterTraderService,
-    DatabaseService databaseService) : IOnLoad
-{
-    private readonly TraderConfig _traderConfig = configServer.GetConfig<TraderConfig>();
-
-    public Task OnLoad()
-    {
-        if (!VagabondConfig.Config.AddSpectatorTrader && VagabondConfig.Config.SpectatorTraderAssortment.Count <= 0)
-        {
-            return Task.CompletedTask;
-        }
-
-        var assembly = Assembly.GetExecutingAssembly();
-        var pathToMod = modHelper.GetAbsolutePathToModFolder(assembly);
-
-        var traderBase = modHelper.GetJsonDataFromFile<TraderBase>(pathToMod, "Assets/trader-base.json");
-        var avatarPath = Path.Combine(pathToMod, "Assets/spectator.jpg");
-        if (traderBase.Avatar == null)
-        {
-            return Task.CompletedTask;
-        }
-
-        imageRouter.AddRoute(traderBase.Avatar.Replace(".jpg", ""), avatarPath);
-
-        barterTraderService.SetTraderUpdateTime(_traderConfig, traderBase, 1800, 3600);
-        barterTraderService.AddTraderWithEmptyAssortToDb(traderBase);
-        barterTraderService.AddTraderToLocales(
-            traderBase,
-            firstName: "Spectator",
-            description: "Exchanges merchandise for things to keep you going."
-        );
-
-        var trader = databaseService.GetTables().Traders[traderBase.Id];
-        barterTraderService.AddTraderAssortment(trader);
-        return Task.CompletedTask;
-    }
-}
-
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 2)]
 public class DifficultyChanges(DatabaseService databaseService) : IOnLoad
 {
     public Task OnLoad()
     {
-        if (VagabondConfig.Config.EnableDifficultyChanges)
-        {
-            var locationsdb = databaseService.GetLocations();
-            locationsdb.Sandbox.Base.RequiredPlayerLevelMax = 0;
-        }
-
+        var locationsdb = databaseService.GetLocations();
+        locationsdb.Sandbox.Base.RequiredPlayerLevelMax = 0;
+        
         if (VagabondConfig.Config.DisableFlea)
         {
             Globals globals = databaseService.GetGlobals();

@@ -16,45 +16,24 @@ public class ExfilsInterchange : ICustomExtilData
     private static string _mapName = "Interchange";
     private static List<CustomExfil> _extracts = [];
     private static  List<CustomExfil>_transits = [
-        // // top-right 
-        // new CustomExfil
-        // {
-        //     Identifier = "unique_identifier",
-        //     DisplayName = "Label",
-        //     IsTransit = true,
-        //     TransitPointId = 0,// gets auto generated
-        //     DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),
-        //     TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),
-        //     Description = "Description",
-        //     ExfiltrationTime = 20f,
-        //     ActivateAfterSeconds = 60,
-        //     IsActive = true,
-        //     Events = false,
-        //     HideIfNoKey = false,
-        //     X = -317.718f,
-        //     Y = 21.339f,
-        //     Z = 268.838f,
-        //     RotationY = 202.714f
-        // },
-        // // bottom right
-        // new CustomExfil
-        // {
-        //     Identifier = "unique_identifier",
-        //     DisplayName = "Label",
-        //     IsTransit = true,
-        //     TransitPointId = 0,// gets auto generated
-        //     DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),
-        //     TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),
-        //     Description = "Description",
-        //     ExfiltrationTime = 20f,
-        //     ActivateAfterSeconds = 60,
-        //     IsActive = true,
-        //     Events = false,
-        //     HideIfNoKey = false,
-        //     X = -252.624f,
-        //     Y = 21.32f,
-        //     Z = -367.248f,
-        //     RotationY = 96.547f
-        // },
+        new CustomExfil
+        {
+            Identifier = "VGB_IC_GZ",
+            IsTransit = true,
+            TransitPointId = 0,// gets auto generated
+            DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.GroundZero].First(),
+            TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.GroundZero].First(),
+            Description = "Transit to Ground Zero",
+            ExfiltrationTime = 5f,
+            ActivateAfterSeconds = 0,
+            IsActive = true,
+            Events = false,
+            HideIfNoKey = false,
+            X = -318.782f,
+            Y = 21.365f,
+            Z = 268.296f,
+            RotationY = 207.341f,
+            ConnectedIdentifier = "VGB_GZ_IC"
+        }
     ];
 }

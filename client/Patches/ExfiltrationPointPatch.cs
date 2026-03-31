@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using EFT.Interactive;
+using EFT.Interactive.SecretExfiltrations;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UnityEngine;
@@ -52,6 +53,14 @@ internal class ExfiltrationPointPatch : ModulePatch
         }
 
         __instance.ExfiltrationPoints = kept.ToArray();
+        
+        
+        foreach (var exfil in __instance.SecretExfiltrationPoints.Where(x => x != null))
+        {
+            HideExfil(exfil);
+        }
+
+        __instance.SecretExfiltrationPoints = [];
     }
 
     private static void HideExfil(ExfiltrationPoint exfil)
