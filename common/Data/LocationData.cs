@@ -47,7 +47,6 @@ public class LocationData
         },
         [RaidLocation.GroundZero] = new List<string>
         {
-            "Sandbox",
             "Sandbox_high",
         },
         [RaidLocation.Streets] = new List<string>
@@ -93,7 +92,6 @@ public class LocationData
         //EFT
         ["factory4_day"] = RaidLocation.Factory,
         ["factory4_night"] = RaidLocation.Factory,
-        ["Sandbox"] = RaidLocation.GroundZero,
         ["Sandbox_high"] = RaidLocation.GroundZero,
         ["TarkovStreets"] = RaidLocation.Streets,
         ["Woods"] = RaidLocation.Woods,
@@ -117,15 +115,12 @@ public class LocationData
             return RaidLocation.Nil;
         }
 
-        if (LookupTable.TryGetValue(mapName.ToLower(), out var mapped))
+        if (LookupTable.TryGetValue(mapName, out var mapped))
         {
             return mapped;
         }
-        
-        RaidLocation parsed = RaidLocation.Nil;
-        RaidLocation.TryParse(mapName, true, out parsed);
 
-        if (parsed != RaidLocation.Nil)
+        if (Enum.TryParse<RaidLocation>(mapName, true, out var parsed) && parsed != RaidLocation.Nil)
         {
             return parsed;
         }
@@ -137,7 +132,7 @@ public class LocationData
                 return loc.Key;
             }
         }
-        
+
         return RaidLocation.Nil;
     }
 }

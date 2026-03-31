@@ -36,20 +36,23 @@ internal class CustomExfilPlacementPatch : ModulePatch
         }
         
         var gameWorld = Singleton<GameWorld>.Instance;
-        var locationId = gameWorld?.LocationId.ToLower();
+        var locationId = gameWorld?.LocationId;
         if (string.IsNullOrWhiteSpace(locationId))
         {
+            Vagabond.Log($"null locations");
             return;
         }
 
         if (!LocationData.LookupTable.ContainsKey(locationId))
         {
+            Vagabond.Log($"Unknown location => {locationId}");
             return;
         }
         
         var raid = LocationData.NormaliseMapName(locationId);
         if (raid == RaidLocation.Nil)
         {
+            Vagabond.Log($"Unknown Raid => {locationId}");
             return;
         }
 
@@ -88,7 +91,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         foreach (var definition in definitions)
         {
-            if (pmcExfils.Any(x => string.Equals(x.Settings?.Name, definition.ExtractDisplayName, StringComparison.OrdinalIgnoreCase)))
+            if (pmcExfils.Any(x => string.Equals(x.Settings?.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase)))
             {
                 continue;
             }
@@ -120,7 +123,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
             pmcExfils.Add(clone);
 
-            Vagabond.Log($"Added custom extract '{definition.ExtractDisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
+            Vagabond.Log($"Added custom extract '{definition.DisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
         }
 
         controller.ExfiltrationPoints = pmcExfils.ToArray();
@@ -201,7 +204,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             lookup[definition.TransitPointId.Value] = clone;
             CustomTransitDefinitions[definition.TransitPointId.Value] = definition;
 
-            Vagabond.Log($"Added custom transit '{definition.ExtractDisplayName}' (identifier '{definition.Identifier}') to '{definition.DestinationLocation}'.");
+            Vagabond.Log($"Added custom transit '{definition.DisplayName}' (identifier '{definition.Identifier}') to '{definition.DestinationLocation}'.");
         }
         
         TransitsAppliedThisRaid = true;
@@ -217,7 +220,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             id = definition.TransitPointId!.Value,
             active = definition.IsActive,
             name = definition.Identifier,
-            description = string.IsNullOrWhiteSpace(definition.Description) ? definition.ExtractDisplayName : definition.Description,
+            description = string.IsNullOrWhiteSpace(definition.Description) ? definition.DisplayName : definition.Description,
             conditions = string.Empty,
             activateAfterSec = definition.ActivateAfterSeconds,
             time = (ushort)Mathf.Clamp(Mathf.RoundToInt(definition.ExfiltrationTime), 1, ushort.MaxValue),
@@ -248,7 +251,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         var eligibleEntryPoints = BuildEligibleEntryPoints(definition, template);
         var settings = new LocationExitClass
         {
-            Name = definition.ExtractDisplayName,
+            Name = definition.DisplayName,
             EntryPoints = string.Join(",", eligibleEntryPoints),
             ExfiltrationTime = definition.ExfiltrationTime,
             ExfiltrationType = EExfiltrationType.Individual,
@@ -270,7 +273,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         // EFT matches scene exfils by Settings.Name, not by the Unity object name.
         // LoadSettings does not retarget Settings.Name, so it must be fixed manually.
-        clone.Settings.Name = definition.ExtractDisplayName;
+        clone.Settings.Name = definition.DisplayName;
         clone.Settings.EntryPoints = settings.EntryPoints;
         clone.EligibleEntryPoints = eligibleEntryPoints;
         clone.Reusable = true;
@@ -368,7 +371,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         return !string.IsNullOrWhiteSpace(exfil?.Settings?.Name)
                && definitions
                    .Where(x => !x.IsTransit)
-                   .Any(x => string.Equals(x.ExtractDisplayName, exfil.Settings.Name, StringComparison.OrdinalIgnoreCase));
+                   .Any(x => string.Equals(x.DisplayName, exfil.Settings.Name, StringComparison.OrdinalIgnoreCase));
     }
     
     private static ERequirementState MapRequirementType(CustomExfilRequirementType type)
@@ -414,7 +417,7 @@ internal class CustomTransitRetryPatch : ModulePatch
             return;
         }
         
-        var locationId = __instance?.LocationId.ToLower();
+        var locationId = __instance?.LocationId;
         if (string.IsNullOrWhiteSpace(locationId))
         {
             return;
