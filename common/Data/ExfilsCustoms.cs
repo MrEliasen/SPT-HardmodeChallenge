@@ -14,7 +14,22 @@ public class ExfilsCustoms : ICustomExtilData
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "bigmap";
-    private static List<CustomExfil> _extracts = [];
+    private static List<CustomExfil> _extracts = [
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_SKIER",
+            DisplayName = "Skier's Bunker",
+            IsTransit = false,
+            TemplateExitName = "",// only fill if you want a specific template
+            EntryPoints = "",
+            ExfiltrationTime = 20f,
+            X = 104.18f,
+            Y = -5.66f,
+            Z = -43.974f,
+            RotationY = 78.79f,
+            Side = "Pmc"
+        },
+    ];
     private static  List<CustomExfil>_transits = [
         new CustomExfil
         {

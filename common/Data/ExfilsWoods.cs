@@ -14,7 +14,50 @@ public class ExfilsWoods : ICustomExtilData
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "Woods";
-    private static List<CustomExfil> _extracts = [];
+    private static List<CustomExfil> _extracts = [
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_JAEGER",
+            DisplayName = "Jaegers Hideout",
+            IsTransit = false,
+            TemplateExitName = "",// only fill if you want a specific template
+            EntryPoints = "",
+            ExfiltrationTime = 20f,
+            X = -155.956f,
+            Y = 51.164f,
+            Z = -273.296f,
+            RotationY = 169.732f,
+            Side = "Pmc"
+        },
+        // new CustomExfil
+        // {
+        //     Identifier = "VGB_EXT_ZB014",
+        //     DisplayName = "Hideout Entrance",
+        //     IsTransit = false,
+        //     TemplateExitName = "",// only fill if you want a specific template
+        //     EntryPoints = "",
+        //     ExfiltrationTime = 20f,
+        //     X = -155.941f,
+        //     Y = 51.192f,
+        //     Z = -273.616f,
+        //     RotationY = 149.697f,
+        //     Side = "Pmc"
+        // },
+        // new CustomExfil
+        // {
+        //     Identifier = "VGB_EXT_ZB016",
+        //     DisplayName = "Hideout Entrance",
+        //     IsTransit = false,
+        //     TemplateExitName = "",// only fill if you want a specific template
+        //     EntryPoints = "",
+        //     ExfiltrationTime = 20f,
+        //     X = -388.5f,
+        //     Y = 3.327f,
+        //     Z = 13.784f,
+        //     RotationY = 7.122f,
+        //     Side = "Pmc"
+        // },
+    ];
     private static  List<CustomExfil>_transits = [
         new CustomExfil
         {
@@ -35,25 +78,5 @@ public class ExfilsWoods : ICustomExtilData
             RotationY = 331.695f,
             ConnectedIdentifier = "VGB_ST_WD"
         },
-        // Railway Brige To Tarkov
-        // new CustomExfil
-        // {
-        //     Identifier = "unique_identifier",
-        //     IsTransit = true,
-        //     TransitPointId = 0,// gets auto generated
-        //     DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),
-        //     TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),
-        //     Description = "Description",
-        //     ExfiltrationTime = 5f,
-        //     ActivateAfterSeconds = 0,
-        //     IsActive = true,
-        //     Events = false,
-        //     HideIfNoKey = false,
-        //     X = -728.767f,
-        //     Y = 7.611f,
-        //     Z = 130.17f,
-        //     RotationY = 82.471f
-        //         ConnectedIdentifier = "VGB_"
-        // },
     ];
 }

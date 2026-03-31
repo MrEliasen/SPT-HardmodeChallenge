@@ -23,7 +23,7 @@ public sealed class CustomExfil
     /// <summary>
     /// Existing scene exfil used only as a template for the cloned trigger/component setup.
     /// </summary>
-    public string TemplateExitName { get; set; } = string.Empty;
+    public string? TemplateExitName { get; set; } = null;
 
     /// <summary>
     /// Existing scene transit point id used only as a template for the cloned trigger/component setup.

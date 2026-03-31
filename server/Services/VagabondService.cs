@@ -32,14 +32,13 @@ internal static class VagabondService
             VagabondLogger.Error("PlayerCompletedChallenge: inventory items list was null.");
             return;
         }
-        
-        ApplyTraderRestrictions(pmc);
 
         var state = VagabondState.GetState(sessionId);
         state.ResetProfile = false;
         state.CurrentMap = "";
         state.LastExit = "";
         state.TransitState = new TransitState();
+        HideoutService.UpdateTraderAccess(pmc, state);
         VagabondState.SaveState(sessionId, state);
 
         WipeItems(sessionId, pmc, true, true, true);
@@ -167,24 +166,6 @@ internal static class VagabondService
         }
 
         return false;
-    }
-
-    public static void ApplyTraderRestrictions(PmcData pmc, string LastExit = "")
-    {
-        
-        var tradersInfo = pmc.TradersInfo;
-        foreach (KeyValuePair<MongoId, TraderInfo> entry in tradersInfo)
-        {
-            if (entry.Key == "579dc571d53a0658a154fbec")
-            {
-                entry.Value.Disabled = false;
-                entry.Value.Unlocked = true;
-                continue;
-            }
-            
-            entry.Value.Disabled = true;
-            entry.Value.Unlocked = false;
-        }
     }
 
     public static bool ShouldApplyVagabondRules(MongoId sessionId)

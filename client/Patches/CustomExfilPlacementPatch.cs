@@ -100,11 +100,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 continue;
             }
 
-            var template = pmcExfils.FirstOrDefault(x =>
-                               string.Equals(x.Settings?.Name, definition.TemplateExitName,
-                                   StringComparison.OrdinalIgnoreCase))
-                           ?? pmcExfils.FirstOrDefault(x => !IsCustomExtract(x, definitions));
-
+            var template = FindTemplateExfil(pmcExfils, definition, definitions);
             if (template == null)
             {
                 Vagabond.LogError($"No template exfil found for '{definition.Identifier}' on {raid}.");
@@ -135,6 +131,28 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         controller.ExfiltrationPoints = pmcExfils.ToArray();
         ExtractsAppliedThisRaid = true;
+    }
+    
+    private static ExfiltrationPoint FindTemplateExfil(
+        List<ExfiltrationPoint> pmcExfils,
+        CustomExfil definition,
+        List<CustomExfil> definitions)
+    {
+        if (!string.IsNullOrWhiteSpace(definition.TemplateExitName))
+        {
+            var explicitTemplate = pmcExfils.FirstOrDefault(x =>
+                string.Equals(x.Settings?.Name, definition.TemplateExitName, StringComparison.OrdinalIgnoreCase));
+
+            if (explicitTemplate != null)
+            {
+                return explicitTemplate;
+            }
+        }
+
+        return pmcExfils.FirstOrDefault(x =>
+            !IsCustomExtract(x, definitions)
+            && x.Settings != null
+            && !string.IsNullOrWhiteSpace(x.Settings.Name));
     }
 
     public static void ApplyCustomTransits(TransitControllerAbstractClass transitController, RaidLocation raid,

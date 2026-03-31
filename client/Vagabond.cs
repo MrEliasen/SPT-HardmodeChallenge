@@ -161,7 +161,7 @@ public class Vagabond : BaseUnityPlugin
                 $"    Identifier = \"VGB_EXT_\",",
                 $"    DisplayName = \"Human Readable Label\",",
                 "    IsTransit = false,",
-                "    TemplateExitName = \"REPLACE_WITH_TEMPLATE_EXIT_NAME\",",
+                "    TemplateExitName = \"\",// only fill if you want a specific template",
                 "    EntryPoints = \"\",",
                 "    ExfiltrationTime = 20f,",
                 $"    X = {snapshot.Position.x:0.###}f,",

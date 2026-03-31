@@ -46,7 +46,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
                 return;
             }
 
-            VagabondService.ApplyTraderRestrictions(pmc);
+            HideoutService.UpdateTraderAccess(pmc, state);
         }
         catch (Exception ex)
         {

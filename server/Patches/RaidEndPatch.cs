@@ -2,6 +2,7 @@ using System.Reflection;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
@@ -82,7 +83,11 @@ public sealed class RaidEndPatch : AbstractPatch
             
             state.CurrentMap = state.TransitState.ToMap;
         }
-        
+        else
+        {
+            HideoutService.UpdateTraderAccess(profile.CharacterData!.PmcData!, state);
+        }
+
         VagabondState.SaveState(sessionId, state);
     }
 }

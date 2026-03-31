@@ -14,7 +14,21 @@ public class ExfilsStreets : ICustomExtilData
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "TarkovStreets";
-    private static List<CustomExfil> _extracts = [];
+    private static List<CustomExfil> _extracts = [
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_THERAPIST",
+            DisplayName = "Therapist's Clinic",
+            IsTransit = false,
+            EntryPoints = "",
+            ExfiltrationTime = 10f,
+            X = -32.637f,
+            Y = 6.608f,
+            Z = -110.759f,
+            RotationY = 254.802f,
+            Side = "Pmc"
+        },
+    ];
     private static  List<CustomExfil>_transits = [
         new CustomExfil
         {
