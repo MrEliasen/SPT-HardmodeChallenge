@@ -13,6 +13,7 @@ public sealed class VagabondConfig
     public bool EnableFenceChanges { get; set; } = true;
     public bool DisableFlea { get; set; } = true;
     public bool StripMailAttachments { get; set; } = true;
+    public bool DisableFreePickRaidLocation { get; set; } = true;
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
     public bool AlsoWipeCarriedMoneyOnFirstRaid { get; set; } = true;
     public List<string> IgnoredProfiles { get; set; } = new();

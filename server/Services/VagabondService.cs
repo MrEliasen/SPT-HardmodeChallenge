@@ -230,6 +230,11 @@ internal static class VagabondService
         {
             return "";
         }
+        
+        if (!VagabondConfig.Config.DisableFreePickRaidLocation)
+        {
+            return "";
+        }
 
         RaidLocation currentMap = VagabondLocations.NormaliseMapName(state.CurrentMap);
         if (currentMap == RaidLocation.Nil)

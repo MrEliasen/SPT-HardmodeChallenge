@@ -6,6 +6,7 @@
   "FixProfiles": false, // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful if you used older versions of this mod.
   "StripMailAttachments": true, // still allows mail, but removed all attachments from messages.
   "WipeStashOnFirstRaidEntry": true,
+  "DisableFreePickRaidLocation": true, // if disabled, you can choose any map you want when starting a raid.
   "AlsoWipeCarriedMoneyOnFirstRaid": true, // this only works if "WipeStashOnFirstRaidEntry" is enabled
   "AdjustRaidTimeMins": 60, // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
   "IgnoredProfiles": [
