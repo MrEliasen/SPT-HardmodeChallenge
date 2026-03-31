@@ -16,7 +16,6 @@ namespace Vagabond.Server.Services;
 internal static class VagabondService
 {
     public const string Roubles = "5449016a4bdc2d6f028b456f";
-    public const string SpectatorTraderID = "686172646d6f647472616465";
 
     public static void ResetProfile(MongoId sessionId, PmcData pmc, bool keepSecureContainer = false, bool softReset = false)
     {

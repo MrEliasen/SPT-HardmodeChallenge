@@ -38,11 +38,12 @@ public record ModMetadata : AbstractModMetadata
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
 public sealed class VagabondLoader : IOnLoad
 {
-    public ModMetadata MetaData { get; } = new();
+    private readonly ConfigServer _configServer;
 
-    public VagabondLoader(ISptLogger<VagabondLoader> logger)
+    public VagabondLoader(ISptLogger<VagabondLoader> logger, ConfigServer configServer)
     {
         VagabondLogger.Init(logger);
+        _configServer = configServer;
     }
 
     public Task OnLoad()
@@ -56,6 +57,14 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.RaidJoinPatch().Enable();
         new Patches.RaidLocationsPatch().Enable();
         new Patches.StartLocalRaidPatch().Enable();
+        
+        // remove old trader from profiles
+        // this will be removed in some later version
+        if (VagabondConfig.Config.FixProfiles)
+        {
+            var coreConfig = _configServer.GetConfig<CoreConfig>();
+            coreConfig.Fixes.RemoveInvalidTradersFromProfile = true;
+        }
                 
         return Task.CompletedTask;
     }

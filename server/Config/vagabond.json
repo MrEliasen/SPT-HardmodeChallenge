@@ -3,6 +3,7 @@
   "StartingRoubles": 135000, // The amount of money a player starts with
   "EnableFenceChanges": true, // makes fence less random and useful as a starter vendor - recommend removing other traders
   "DisableFlea": true,
+  "FixProfiles": false, // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful for removing the old Spectator trader which is no longer in this mod
   "StripMailAttachments": true, // still allows mail, but removed all attachments from messages.
   "AlsoWipeCarriedMoneyOnFirstRaid": true, // this only works if "WipeStashOnFirstRaidEntry" is enabled
   "WipeStashOnFirstRaidEntry": true,

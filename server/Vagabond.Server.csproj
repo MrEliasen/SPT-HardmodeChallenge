@@ -21,7 +21,5 @@
 
     <ItemGroup>
         <None Include="Config\\vagabond.json" CopyToOutputDirectory="Always"/>
-        <None Include="Assets\\spectator.jpg" CopyToOutputDirectory="Always"/>
-        <None Include="Assets\\trader-base.json" CopyToOutputDirectory="Always"/>
     </ItemGroup>
 </Project>
