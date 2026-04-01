@@ -138,6 +138,10 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
         locationsdb.SandboxHigh.Base.Enabled = true;
         
         Globals globals = databaseService.GetGlobals();
+        globals.Configuration.SavagePlayCooldown = 14400;
+        globals.Configuration.Exp.MatchEnd.SurvivedExperienceRequirement = 0;
+        globals.Configuration.Exp.MatchEnd.SurvivedSecondsRequirement = 0;
+            
         if (VagabondConfig.Config.DisableFlea)
         {
             globals.Configuration.RagFair.MinUserLevel = 99;
@@ -147,6 +151,8 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
         {
             globals.Configuration.EventSettings.EventActive = false;
         }
+        
+        
             
         if (VagabondConfig.Config.AdjustRaidTimeMins != 0)
         {
