@@ -43,7 +43,8 @@ internal class MenuShowPatch : ModulePatch
 
         if (!Vagabond.State.HasShownWarningMessage && Vagabond.State.NewCharacter)
         {
-            var message = Messages.FirstWarning(Vagabond.State.WipeFirstRaid,  Vagabond.State.WipeFirstMoney, Vagabond.State.PermaDeath);
+            var message = Messages.FirstWarning(Vagabond.State.WipeFirstRaid, Vagabond.State.WipeFirstMoney,
+                Vagabond.State.PermaDeath);
             if (message != "")
             {
                 NotificationService.Instance.ShowMessage("New Character Warning!\n" + message);
@@ -66,7 +67,7 @@ internal class MenuShowPatch : ModulePatch
         {
             var resp = await Networking.ApiClient.HydrateVagabondState();
             Vagabond.State.CustomExfils = resp.CustomExfils ?? new();
-            
+
             if (!Vagabond.IsHeadless())
             {
                 Vagabond.State.PermaDeath = resp.PermaDeath;
@@ -76,7 +77,7 @@ internal class MenuShowPatch : ModulePatch
                 Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
                 Vagabond.State.NewCharacter = resp.NewCharacter;
             }
-            
+
             Vagabond.Log($"Loading Custom Extractions");
             foreach (var raid in Vagabond.State.CustomExfils)
             {
@@ -85,7 +86,9 @@ internal class MenuShowPatch : ModulePatch
                     foreach (var exfil in map.Value)
                     {
                         var kind = exfil.IsTransit ? "Transit" : "Extract";
-                        var desc = exfil.IsTransit ? $"{map.Key} To {exfil.DestinationLocation}" : $" {exfil.DisplayName}";
+                        var desc = exfil.IsTransit
+                            ? $"{map.Key} To {exfil.DestinationLocation}"
+                            : $" {exfil.DisplayName}";
                         Vagabond.Log($" => [{kind}] {exfil.Identifier} :: {desc}");
                     }
                 }

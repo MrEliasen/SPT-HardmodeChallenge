@@ -6,7 +6,7 @@ using SPT.Reflection.Patching;
 
 namespace Vagabond.Client.Patches;
 
-public class SelectAvailableTraderPatch  : ModulePatch
+public class SelectAvailableTraderPatch : ModulePatch
 {
     protected override MethodBase GetTargetMethod()
     {

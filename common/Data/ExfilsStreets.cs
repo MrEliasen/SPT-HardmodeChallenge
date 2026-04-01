@@ -17,10 +17,11 @@ public class ExfilsStreets : ICustomExtilData
     private static List<CustomExfil> _extracts = [
         new CustomExfil
         {
-            Identifier = "VGB_EXT_THERAPIST",
-            DisplayName = "Therapist's Clinic",
+            Identifier = "VGB_EXT_PRAPOR",
+            DisplayName = "Prapor's Warehouse",
+            TemplateExitName = "Sewer River",
             IsTransit = false,
-            EntryPoints = "",
+            EntryPoints = "e1_2,e2_3,e3_4,e4_5,e5_6,e6_1", // just leave them here just in case. Streets was a bastard to get to work
             ExfiltrationTime = 10f,
             X = -32.637f,
             Y = 6.608f,

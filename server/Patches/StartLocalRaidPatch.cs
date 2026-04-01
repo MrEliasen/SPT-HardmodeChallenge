@@ -5,6 +5,7 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Services;
 using Vagabond.Common.Data;
+using Vagabond.Common.Enums;
 using Vagabond.Server.Data;
 using Vagabond.Server.Models;
 using Vagabond.Server.Services;
@@ -31,19 +32,14 @@ public sealed class StartLocalRaidPatch : AbstractPatch
             }
 
             var state = VagabondState.GetState(serverOwnerSessionId);
-            var transitState = state.TransitState;
-            if (transitState == null)
+            var location = VagabondLocations.NormaliseMapName(request.Location);
+            
+            if (string.IsNullOrWhiteSpace(request.Location) || location == RaidLocation.Nil)
             {
                 return;
             }
-
-            if (string.IsNullOrWhiteSpace(request.Location) || VagabondLocations.NormaliseMapName(request.Location) !=
-                VagabondLocations.NormaliseMapName(transitState.ToMap))
-            {
-                return;
-            }
-
-            var forcedSpawn = StaticMapTransitions.GetSpawnLocation(state);
+            
+            var forcedSpawn = StaticMapTransitions.GetSpawnLocation(state, location);
             if (forcedSpawn == null)
             {
                 VagabondLogger.Log($"Did not find a PMC spawn template to clone from");

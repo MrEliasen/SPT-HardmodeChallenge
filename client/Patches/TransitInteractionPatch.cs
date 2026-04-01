@@ -30,7 +30,9 @@ internal class TransitInteractionPatch : ModulePatch
             return true;
         }
 
-        NotificationManagerClass.DisplayWarningNotification(string.IsNullOrWhiteSpace(failReason) ? "Requirements not met" : failReason);
+        NotificationManagerClass.DisplayWarningNotification(string.IsNullOrWhiteSpace(failReason)
+            ? "Requirements not met"
+            : failReason);
         return false;
     }
 

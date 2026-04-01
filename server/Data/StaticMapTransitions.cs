@@ -1,4 +1,5 @@
-﻿using Vagabond.Common.Data;
+﻿using SPTarkov.Server.Core.Models.Eft.Common;
+using Vagabond.Common.Data;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Models;
 using Vagabond.Server.Services;
@@ -8,16 +9,16 @@ namespace Vagabond.Server.Data;
 
 public static class StaticMapTransitions
 {
-    public  static ManualSpawnPoint? GetSpawnLocation(VagabondState state)
+    public  static ManualSpawnPoint? GetSpawnLocation(VagabondState state, RaidLocation location)
     {
         // if we cannot map the exit directly to a spawn location, we fall back to the below switch.
-        if (GetTransitSpecificSpawnLocation(state.TransitState, out var customTransitSpawn))
+        if (GetTransitSpecificSpawnLocation(state, location, out var customTransitSpawn))
         {
             return customTransitSpawn;
         }
         
         // if we cannot map the exit directly to a spawn location, we fall back to the below switch.
-        if (GetNormalRaidLocation(state, out var customExitSpawn))
+        if (GetNormalRaidLocation(state, location, out var customExitSpawn))
         {
             return customExitSpawn;
         }
@@ -121,13 +122,13 @@ public static class StaticMapTransitions
         };
     }
     
-    private static bool GetNormalRaidLocation(VagabondState state, out ManualSpawnPoint customExitSpawn)
+    private static bool GetNormalRaidLocation(VagabondState state, RaidLocation location, out ManualSpawnPoint customExitSpawn)
     {
         customExitSpawn = null!;
         var raid  = VagabondLocations.NormaliseMapName(state.CurrentMap);
         var exitName = state.LastExit;
         
-        if (raid == RaidLocation.Nil || string.IsNullOrEmpty(exitName))
+        if (raid == RaidLocation.Nil || string.IsNullOrEmpty(exitName) || location != raid)
         {
             return false;
         }
@@ -144,16 +145,21 @@ public static class StaticMapTransitions
         return true;
     }
 
-    private static bool GetTransitSpecificSpawnLocation(TransitState? transitState, out ManualSpawnPoint customTransitSpawn)
+    private static bool GetTransitSpecificSpawnLocation(VagabondState state, RaidLocation location, out ManualSpawnPoint customTransitSpawn)
     {
         customTransitSpawn = null!;
-        if (transitState == null)
+        if (state.TransitState == null)
         {
             return false;
         }
         
-        var from = VagabondLocations.NormaliseMapName(transitState.FromMap);
-        var to = VagabondLocations.NormaliseMapName(transitState.ToMap);
+        if (location != VagabondLocations.NormaliseMapName(state.TransitState.ToMap))
+        {
+            return false;
+        }
+        
+        var from = VagabondLocations.NormaliseMapName(state.TransitState.FromMap);
+        var to = VagabondLocations.NormaliseMapName(state.TransitState.ToMap);
         if (to == RaidLocation.Nil)
         {
             VagabondLogger.Error($"Raid is Nil, no specific spawn locations found");
@@ -161,10 +167,9 @@ public static class StaticMapTransitions
         }
         
         var fromMapData = ExfilService.GetCustomMapData(from);
-        var exfil = fromMapData.Extracts.Concat(fromMapData.Transits).FirstOrDefault(x=> x.Identifier ==  transitState.ExitName);
+        var exfil = fromMapData.Extracts.Concat(fromMapData.Transits).FirstOrDefault(x=> x.Identifier ==  state.TransitState.ExitName);
         if (exfil == null)
         {
-            //VagabondLogger.Error($"No exfils for map {to} from exit {transitState.ExitName}");
             return false;
         }
         
@@ -178,11 +183,12 @@ public static class StaticMapTransitions
         var position = toMapData.Extracts.Concat(toMapData.Transits).FirstOrDefault(x=> x.Identifier ==  exfil.ConnectedIdentifier);
         if (position == null)
         {
-            VagabondLogger.Error($"No connected spawn found for {transitState.ExitName} on {to}");
+            VagabondLogger.Error($"No connected spawn found for {state.TransitState.ExitName} on {to}");
             return false;
         }
         
         customTransitSpawn = new ManualSpawnPoint{ X = position.X, Y = position.Y, Z = position.Z, Rotation = position.RotationY};
+        //VagabondLogger.Error($"forcing spawn at {position.X},{position.Y},{position.Z},R={position.RotationY}");
         return true;
     }
 }
