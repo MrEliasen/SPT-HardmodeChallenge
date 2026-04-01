@@ -2,11 +2,17 @@
   <img src="logo.png" alt="Logo" width="400">
 </p> 
 
-Vagabond is a SPTarkox gameplay overhaul mod, which aims to turn Tarkov into more of an open world game.
+Vagabond is a SPTarkov gameplay overhaul mod, which aims to turn Tarkov into an open world game.
 
 You start with limited money to buy a simple loadout from Fence, with some meds if you are lucky, and your challenge is now to survive. Using only transits to move around Tarko, and specific extracts to get access to traders.
 
 **Heavily inspired by Path To Tarkov, hopefully this mod can help scratch that itch.**
+
+## Known issues / limitations
+
+- Stash is available at every trader
+- (Fika) If one of your teammates die and you use a transit after the game will get stuck. I dont think this is a mod issue.
+
 ## Install
 
 1. Download the latest version [here](https://github.com/MrEliasen/SPT-Vagabond/releases/latest/download/spt-vagabond.zip)
