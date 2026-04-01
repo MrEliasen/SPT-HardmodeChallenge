@@ -43,7 +43,6 @@ internal static class VagabondService
 
         WipeItems(sessionId, pmc, true, true, true);
         AddMoney(sessionId, pmc);
-        VagabondLogger.Log($"ResetProfile: player profile reset {sessionId}.");
     }
 
     public static SptProfile? GetPmcProfile(MongoId sessionId)

@@ -52,6 +52,8 @@ public class Vagabond : BaseUnityPlugin
             return;
         }
 
+        new HideUnavailableTraderCardsPatch().Enable();
+        new SelectAvailableTraderPatch().Enable();
         new TransitInteractionPatch().Enable();
         new SkipInsuranceFlowPatch().Enable();
         NotificationService.Create(transform);

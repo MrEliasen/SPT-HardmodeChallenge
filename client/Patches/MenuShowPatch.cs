@@ -75,7 +75,6 @@ internal class MenuShowPatch : ModulePatch
                 Vagabond.State.CurrentMap = resp.CurrentMap;
                 Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
                 Vagabond.State.NewCharacter = resp.NewCharacter;
-                Vagabond.Log($"current map: {resp.CurrentMap}/{Vagabond.State.CurrentMap}");
             }
             
             Vagabond.Log($"Loading Custom Extractions");

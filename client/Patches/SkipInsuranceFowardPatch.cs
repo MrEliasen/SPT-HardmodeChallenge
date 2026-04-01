@@ -14,7 +14,6 @@ public class SkipInsuranceFlowPatch : ModulePatch
     [PatchPrefix]
     public static bool Prefix(MainMenuControllerClass __instance)
     {
-        Vagabond.Log("Skipping insurance flow via MainMenuControllerClass.method_51");
         __instance.method_52();
         return false;
     }

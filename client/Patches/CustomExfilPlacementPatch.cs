@@ -489,7 +489,6 @@ internal class CustomExfilCleanupPatch : ModulePatch
         CustomExfilPlacementPatch.TransitsAppliedThisRaid = false;
         CustomExfilPlacementPatch.ExtractsAppliedThisRaid = false;
         CustomExfilPlacementPatch.CustomTransitDefinitions.Clear();
-        Vagabond.Log("Cleaned up custom transits.");
     }
 }
 
