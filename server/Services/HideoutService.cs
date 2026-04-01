@@ -15,7 +15,7 @@ internal static class HideoutService
         new TraderLocation
         {
             Id = "54cb57776803fa99248b456e", // Therapist
-            Raid = RaidLocation.Streets,
+            Raid = RaidLocation.GroundZero,
             ExitName = "VGB_EXT_THERAPIST",
         },
         new TraderLocation
@@ -26,9 +26,45 @@ internal static class HideoutService
         },
         new TraderLocation
         {
-            Id = "579dc571d53a0658a154fbec", // Jaeger
+            Id = "5c0647fdd443bc2504c2d371", // Jaeger
             Raid = RaidLocation.Woods,
             ExitName = "VGB_EXT_JAEGER",
+        },
+        new TraderLocation
+        {
+            Id = "5a7c2eca46aef81a7ca2145d", // Mechanic
+            Raid = RaidLocation.FactoryDay,
+            ExitName = "VGB_EXT_MECHANIC",
+        },
+        new TraderLocation
+        {
+            Id = "5a7c2eca46aef81a7ca2145d", // Mechanic
+            Raid = RaidLocation.FactoryNight,
+            ExitName = "VGB_EXT_MECHANIC",
+        },
+        new TraderLocation
+        {
+            Id = "54cb50c76803fa8b248b4571", // Prapor
+            Raid = RaidLocation.Streets,
+            ExitName = "VGB_EXT_PRAPOR",
+        },
+        new TraderLocation
+        {
+            Id = "5ac3b934156ae10c4430e83c", // Ragman
+            Raid = RaidLocation.Interchange,
+            ExitName = "VGB_EXT_RAGMAN",
+        },
+        new TraderLocation
+        {
+            Id = "5935c25fb3acc3127c3d8cd9", // Peacekeeper
+            Raid = RaidLocation.Shoreline,
+            ExitName = "VGB_EXT_PEACEKEEPER",
+        },
+        new TraderLocation
+        {
+            Id = "579dc571d53a0658a154fbec", // Fence
+            Raid = RaidLocation.Streets,
+            ExitName = "VGB_EXT_FENCE",
         }
     };
 

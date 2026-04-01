@@ -29,6 +29,20 @@ public class ExfilsStreets : ICustomExtilData
             RotationY = 254.802f,
             Side = "Pmc"
         },
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_FENCE",
+            DisplayName = "Fence Smuggling Hub",
+            IsTransit = false,
+            TemplateExitName = "",// only fill if you want a specific template
+            EntryPoints = "",
+            ExfiltrationTime = 20f,
+            X = 74.785f,
+            Y = -2.046f,
+            Z = 49.224f,
+            RotationY = 15.011f,
+            Side = "Pmc"
+        },
     ];
     private static  List<CustomExfil>_transits = [
         new CustomExfil

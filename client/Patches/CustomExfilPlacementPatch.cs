@@ -179,7 +179,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 return false;
             }
 
-            if (x.Requirements != null && x.Requirements.Length > 0)
+            if (x.Requirements?.Length > 0)
             {
                 return false;
             }
@@ -490,7 +490,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         }
     }
 
-    private static CustomExfil? TryGetSyncedDefinition(CustomExfil definition)
+    private static CustomExfil TryGetSyncedDefinition(CustomExfil definition)
     {
         var locationId = Singleton<GameWorld>.Instance?.LocationId;
         if (string.IsNullOrWhiteSpace(locationId))
@@ -636,7 +636,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         };
     }
 
-    private static void FilterExtractions(ExfiltrationControllerClass __instance)
+    public static void FilterExtractions(ExfiltrationControllerClass __instance)
     {
         var kept = new List<ExfiltrationPoint>();
 
@@ -651,6 +651,14 @@ internal class CustomExfilPlacementPatch : ModulePatch
             if (IsCustomExfil(exfil.Settings))
             {
                 kept.Add(exfil);
+                continue;
+            }
+            
+            // Keep shared exits alive for scavs
+            if (exfil is SharedExfiltrationPoint shared)
+            {
+                shared.EligibleEntryPoints = Array.Empty<string>();
+                shared.Settings.EntryPoints = string.Empty;
                 continue;
             }
 
@@ -669,13 +677,14 @@ internal class CustomExfilPlacementPatch : ModulePatch
             HideExfil(secret);
         }
 
-        __instance.SecretExfiltrationPoints = Array.Empty<SecretExfiltrationPoint>();
+        __instance.SecretExfiltrationPoints = [];
     }
 
     private static void HideExfil(ExfiltrationPoint exfil)
     {
         exfil.Reusable = false;
         exfil.Status = EExfiltrationStatus.NotPresent;
+        exfil.Settings.Chance = 0;
         exfil.Disable();
         exfil.DisableInteraction();
 
@@ -784,10 +793,11 @@ internal class CustomTransitRetryPatch : ModulePatch
         {
             return;
         }
-
+        
         CustomExfilPlacementPatch.ApplyCustomExtracts(__instance.ExfiltrationController, raid,
             definitions.Where(x => !x.IsTransit).ToList());
         CustomExfilPlacementPatch.ApplyCustomTransits(__instance.TransitController, raid,
             definitions.Where(x => x.IsTransit).ToList());
+        CustomExfilPlacementPatch.FilterExtractions(__instance.ExfiltrationController);
     }
 }

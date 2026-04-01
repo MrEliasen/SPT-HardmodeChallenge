@@ -17,8 +17,8 @@ public class ExfilsShoreline : ICustomExtilData
     private static List<CustomExfil> _extracts = [
         new CustomExfil
         {
-            Identifier = "VGB_EXT_PEACEKPR",
-            DisplayName = "Peacekeeper's Hub",
+            Identifier = "VGB_EXT_PEACEKEEPER",
+            DisplayName = "Peacekeeper's Safe Zone",
             IsTransit = false,
             TemplateExitName = "",// only fill if you want a specific template
             EntryPoints = "",
@@ -47,7 +47,7 @@ public class ExfilsShoreline : ICustomExtilData
             X = -855.903f,
             Y = -42.52f,
             Z = 10.129f,
-            RotationY = 7.715f
+            RotationY = 7.715f,
         },
         new CustomExfil
         {

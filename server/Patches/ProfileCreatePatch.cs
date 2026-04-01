@@ -53,6 +53,8 @@ public sealed class ProfileCreatePatch : AbstractPatch
 
         var state = VagabondState.GetState(sessionId);
         state.VagabondModeEnabled = true;
+        state.CurrentMap = "Streets";
+        state.LastExit = "VGB_EXT_FENCE";
         VagabondState.SaveState(sessionId, state);
         HideoutService.UpdateTraderAccess(pmc.CharacterData.PmcData, state);
         VagabondService.PersistProfileIfPossible(sessionId);

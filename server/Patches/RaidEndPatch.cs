@@ -69,6 +69,8 @@ public sealed class RaidEndPatch : AbstractPatch
         if (isDead)
         {
             state.ResetProfile = VagabondConfig.Config.PermaDeath;
+            state.CurrentMap = "Streets";
+            state.LastExit = "VGB_EXT_FENCE";
             VagabondState.SaveState(sessionId, state);
             return;
         }

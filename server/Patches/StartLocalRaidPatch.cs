@@ -7,7 +7,7 @@ using SPTarkov.Server.Core.Services;
 using Vagabond.Common.Data;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Data;
-using Vagabond.Server.Models;
+using Vagabond.Common.Models;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -40,11 +40,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
             }
             
             var forcedSpawn = StaticMapTransitions.GetSpawnLocation(state, location);
-            if (forcedSpawn == null)
-            {
-                VagabondLogger.Log($"Did not find a PMC spawn template to clone from");
-            }
-            else
+            if (forcedSpawn != null)
             {
                 ApplyForcedSpawn(__result, forcedSpawn);
             }

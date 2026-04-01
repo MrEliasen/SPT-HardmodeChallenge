@@ -35,9 +35,9 @@ internal static class VagabondService
 
         var state = VagabondState.GetState(sessionId);
         state.ResetProfile = false;
-        state.CurrentMap = "";
-        state.LastExit = "";
-        state.TransitState = new TransitState();
+        state.CurrentMap = "Streets";
+        state.LastExit = "VGB_EXT_FENCE";
+        state.TransitState = null;
         HideoutService.UpdateTraderAccess(pmc, state);
         VagabondState.SaveState(sessionId, state);
 

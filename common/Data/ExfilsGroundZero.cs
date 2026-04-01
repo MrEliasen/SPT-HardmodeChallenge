@@ -19,14 +19,14 @@ public class ExfilsGroundZero : ICustomExtilData
         {
             Identifier = "VGB_EXT_THERAPIST",
             DisplayName = "Therapist's Clinic",
-            TemplateExitName = "Sewer River",
+            TemplateExitName = "",
             IsTransit = false,
-            EntryPoints = "e1_2,e2_3,e3_4,e4_5,e5_6,e6_1",
+            EntryPoints = "",
             ExfiltrationTime = 10f,
-            X = -32.637f,
-            Y = 6.608f,
-            Z = -110.759f,
-            RotationY = 254.802f,
+            X = -27.104f,
+            Y = 29.715f,
+            Z = 91.594f,
+            RotationY = 178.348f,
             Side = "Pmc"
         },
     ];
