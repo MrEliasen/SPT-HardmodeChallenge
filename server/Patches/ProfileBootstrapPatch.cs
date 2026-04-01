@@ -47,6 +47,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             }
 
             HideoutService.UpdateTraderAccess(pmc, state);
+            VagabondService.PersistProfileIfPossible(sessionId);
         }
         catch (Exception ex)
         {

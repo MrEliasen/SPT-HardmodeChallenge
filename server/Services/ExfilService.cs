@@ -161,7 +161,7 @@ internal static class ExfilService
             .SelectMany(x => x!.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
-
+            
         return string.Join(",", entryPoints);
     }
 

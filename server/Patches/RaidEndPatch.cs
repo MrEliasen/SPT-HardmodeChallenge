@@ -7,6 +7,7 @@ using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
 using Vagabond.Common.Data;
+using Vagabond.Common.Enums;
 using Vagabond.Common.Models;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
@@ -63,7 +64,7 @@ public sealed class RaidEndPatch : AbstractPatch
         
         state.TransitState = null;
         state.CurrentMap = locationMapStr;
-        state.LastExit = request.Results?.ExitName ?? "";
+        state.LastExit = GetExtractIdentifier(request.Results?.ExitName, locationMapE, locationName);
         
         if (isDead)
         {
@@ -78,7 +79,7 @@ public sealed class RaidEndPatch : AbstractPatch
             {
                 FromMap =  locationMapStr,
                 ToMap = VagabondLocations.NormaliseMapName(request.LocationTransit?.Location).ToString(),
-                ExitName = request.Results?.ExitName
+                ExitName = state.LastExit
             };
             
             state.CurrentMap = state.TransitState.ToMap;
@@ -87,7 +88,22 @@ public sealed class RaidEndPatch : AbstractPatch
         {
             HideoutService.UpdateTraderAccess(profile.CharacterData!.PmcData!, state);
         }
-
+        
+        VagabondService.PersistProfileIfPossible(sessionId);
         VagabondState.SaveState(sessionId, state);
+    }
+    
+    public static string GetExtractIdentifier(string? exitName, RaidLocation raid, string mapName)
+    {
+        if (string.IsNullOrWhiteSpace(exitName))
+        {
+            return string.Empty;
+        }
+
+        var match = ExfilService.CustomExfils[raid][mapName].FirstOrDefault(x =>
+            string.Equals(x.Identifier, exitName, StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(x.DisplayName, exitName, StringComparison.OrdinalIgnoreCase));
+
+        return match?.Identifier ?? exitName;
     }
 }

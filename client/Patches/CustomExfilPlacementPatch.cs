@@ -71,6 +71,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         ApplyCustomExtracts(__instance, raid, definitions.Where(x => !x.IsTransit).ToList());
         ApplyCustomTransits(gameWorld.TransitController, raid, definitions.Where(x => x.IsTransit).ToList());
+        FilterExtractions(__instance);
     }
 
     public static void ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid,
@@ -83,12 +84,14 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         if (definitions.Count == 0)
         {
+            Vagabond.Log("ApplyCustomExtracts: no definitions");
             return;
         }
-
+        
         var pmcExfils = controller?.ExfiltrationPoints?.Where(x => x != null).ToList();
         if (pmcExfils == null || pmcExfils.Count == 0)
         {
+            Vagabond.Log("ApplyCustomExtracts: no PMC exfils available");
             return;
         }
 
@@ -106,7 +109,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 Vagabond.LogError($"No template exfil found for '{definition.Identifier}' on {raid}.");
                 continue;
             }
-
+            
             var cloneObject = LocationScene.Instantiate(template.gameObject);
             cloneObject.name = definition.Identifier;
             cloneObject.SetActive(true);
@@ -152,7 +155,9 @@ internal class CustomExfilPlacementPatch : ModulePatch
         return pmcExfils.FirstOrDefault(x =>
             !IsCustomExtract(x, definitions)
             && x.Settings != null
-            && !string.IsNullOrWhiteSpace(x.Settings.Name));
+            && !string.IsNullOrWhiteSpace(x.Settings.Name)
+            && x is not SharedExfiltrationPoint
+            && x.Switch == null);
     }
 
     public static void ApplyCustomTransits(TransitControllerAbstractClass transitController, RaidLocation raid,
@@ -313,6 +318,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         clone.Settings.EntryPoints = settings.EntryPoints;
         clone.EligibleEntryPoints = eligibleEntryPoints;
         clone.Reusable = true;
+        clone.Switch = null;
 
         var collider = clone.GetComponent<Collider>();
         if (collider != null)
@@ -418,6 +424,55 @@ internal class CustomExfilPlacementPatch : ModulePatch
             CustomExfilRequirementType.EmptySlot => ERequirementState.Empty,
             _ => ERequirementState.None
         };
+    }
+    
+    private static void FilterExtractions(ExfiltrationControllerClass __instance)
+    {
+        var kept = new List<ExfiltrationPoint>();
+
+        foreach (var exfil in __instance.ExfiltrationPoints)
+        {
+            if (exfil?.Settings == null)
+            {
+                HideExfil(exfil);
+                continue;
+            }
+
+            if (IsCustomExfil(exfil.Settings))
+            {
+                kept.Add(exfil);
+                continue;
+            }
+
+            HideExfil(exfil);
+        }
+
+        __instance.ExfiltrationPoints = kept.ToArray();
+    }
+
+    private static void HideExfil(ExfiltrationPoint exfil)
+    {
+        exfil.Reusable = false;
+        exfil.Status = EExfiltrationStatus.NotPresent;
+        exfil.Disable();
+        exfil.DisableInteraction();
+
+        foreach (var collider in exfil.GetComponentsInChildren<Collider>(true))
+        {
+            collider.enabled = false;
+        }
+
+        exfil.gameObject.SetActive(false);
+    }
+
+    private static bool IsCustomExfil(ExitTriggerSettings settings)
+    {
+        return !string.IsNullOrWhiteSpace(settings?.Name)
+               && Vagabond.State.CustomExfils.Values
+                   .SelectMany(x => x)
+                   .Any(mapDefs => mapDefs.Value.Any(def =>
+                       !def.IsTransit &&
+                       string.Equals(def.DisplayName, settings.Name, StringComparison.OrdinalIgnoreCase)));
     }
 }
 

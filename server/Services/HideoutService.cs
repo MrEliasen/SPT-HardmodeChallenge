@@ -41,6 +41,8 @@ internal static class HideoutService
             traderId = TraderLocations.FirstOrDefault(t => t.Raid == raidE && t.ExitName == state.LastExit)?.Id ?? "";
         }
         
+        //VagabondLogger.Log($" ==============> Trader Access: {traderId} (raid: {raidE} exit: {state.LastExit})");
+        
         var tradersInfo = pmc.TradersInfo;
         foreach (KeyValuePair<MongoId, TraderInfo> entry in tradersInfo)
         {

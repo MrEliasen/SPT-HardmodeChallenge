@@ -41,8 +41,6 @@ public class Vagabond : BaseUnityPlugin
     {
         _logger = Logger;
         State = new VagabondState();
-        new ExfiltrationPointPatch().Enable();
-        //new MatchMakerLocationFilterPatch().Enable();
         new CustomExfilPlacementPatch().Enable();
         new CustomExfilCleanupPatch().Enable();
         new CustomTransitRetryPatch().Enable();

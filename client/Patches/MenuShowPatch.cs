@@ -41,7 +41,7 @@ internal class MenuShowPatch : ModulePatch
             return;
         }
 
-        if (!Vagabond.State.HasShownWarningMessage && Vagabond.State.CurrentMap.IsNullOrEmpty())
+        if (!Vagabond.State.HasShownWarningMessage && Vagabond.State.NewCharacter)
         {
             var message = Messages.FirstWarning(Vagabond.State.WipeFirstRaid,  Vagabond.State.WipeFirstMoney, Vagabond.State.PermaDeath);
             if (message != "")
@@ -74,6 +74,7 @@ internal class MenuShowPatch : ModulePatch
                 Vagabond.State.WipeFirstMoney = resp.WipeFirstMoney;
                 Vagabond.State.CurrentMap = resp.CurrentMap;
                 Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
+                Vagabond.State.NewCharacter = resp.NewCharacter;
                 Vagabond.Log($"current map: {resp.CurrentMap}/{Vagabond.State.CurrentMap}");
             }
             
