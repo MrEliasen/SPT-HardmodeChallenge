@@ -65,6 +65,12 @@ internal static class HideoutService
             Id = "579dc571d53a0658a154fbec", // Fence
             Raid = RaidLocation.Streets,
             ExitName = "VGB_EXT_FENCE",
+        },
+        new TraderLocation
+        {
+            Id = "579dc571d53a0658a154fbec", // Fence
+            Raid = RaidLocation.Lighthouse,
+            ExitName = "VGB_EXT_FENCE_DL",
         }
     };
 

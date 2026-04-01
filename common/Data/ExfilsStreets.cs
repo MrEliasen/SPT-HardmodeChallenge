@@ -32,7 +32,7 @@ public class ExfilsStreets : ICustomExtilData
         new CustomExfil
         {
             Identifier = "VGB_EXT_FENCE",
-            DisplayName = "Fence Smuggling Hub",
+            DisplayName = "Fence's Hub",
             IsTransit = false,
             TemplateExitName = "",// only fill if you want a specific template
             EntryPoints = "",
@@ -53,7 +53,7 @@ public class ExfilsStreets : ICustomExtilData
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Woods].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Woods].First(),
             Description = "Transit to Woods",
-            ExfiltrationTime = 5f,
+            ExfiltrationTime = 15f,
             ActivateAfterSeconds = 0,
             IsActive = true,
             Events = false,

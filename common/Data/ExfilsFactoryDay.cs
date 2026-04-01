@@ -22,7 +22,8 @@ public class ExfilsFactoryDay : ICustomExtilData
             IsTransit = false,
             TemplateExitName = "",// only fill if you want a specific template
             EntryPoints = "",
-            ExfiltrationTime = 20f,
+            ExfiltrationTime = 15f,
+            ActivateAfterSeconds = 0,
             X = -0.048f,
             Y = -2.633f,
             Z = 56.923f,
