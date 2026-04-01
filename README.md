@@ -21,17 +21,15 @@ Configuration is limited for now, and might always be, create and issue and make
 ```json
 {
   "PermaDeath": false, // if you die for whatever reason (according to the game), your profile gets wiped.
-  "StartingRoubles": 135000, // The amount of money a player starts with
+  "StartingRoubles": 175000, // The amount of money a player starts with
   "EnableFenceChanges": true, // makes fence less random and useful as a starter vendor - recommend removing other traders
   "DisableFlea": true,
+  "DisableEvents": true, // disables events such as halloween etc. They can break things
   "FixProfiles": false, // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful if you used older versions of this mod.
   "StripMailAttachments": true, // still allows mail, but removed all attachments from messages.
-  "WipeStashOnFirstRaidEntry": true,
-  "DisableFreePickRaidLocation": true, // if disabled, you can choose any map you want when starting a raid.
+  "EnablePickRaidLocation": false, // if enabled, you can choose what map you want to go to.
+  "WipeStashOnFirstRaidEntry": true, // first time you enter a raid, whatever is left over in your stash is wiped.
   "AlsoWipeCarriedMoneyOnFirstRaid": true, // this only works if "WipeStashOnFirstRaidEntry" is enabled
-  "AdjustRaidTimeMins": 60, // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
-  "IgnoredProfiles": [
-    // Enter IDs of profiles you don't want getting affected too much by this mod (not 100% isolation)
-  ]
+  "AdjustRaidTimeMins": 60 // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
 }
 ```
