@@ -4,7 +4,7 @@
 
 Vagabond is a SPTarkov gameplay overhaul mod, which aims to turn Tarkov into an open world game.
 
-You start with limited money to buy a simple loadout from Fence, with some meds if you are lucky, and your challenge is now to survive. Using only transits to move around Tarko, and specific extracts to get access to traders.
+You start with limited money to buy a simple loadout from Fence, with some meds if you are lucky, and your challenge is now to survive. Using only transits to move around Tarkov, and specific extracts to get access to traders.
 
 **Heavily inspired by Path To Tarkov, hopefully this mod can help scratch that itch.**
 
@@ -15,7 +15,7 @@ You start with limited money to buy a simple loadout from Fence, with some meds 
 
 ## Install
 
-1. Download the latest version [here](https://github.com/MrEliasen/SPT-Vagabond/releases/latest/download/spt-vagabond.zip)
+1. Download the latest version [here](https://github.com/MrEliasen/SPT-Vagabond/releases/latest)
 2. extract and copy the `spt-vagabond\server\Vagabond` folder to `SPT\user\mods` and the `spt-vagabond\client\Vagabond` to `bepinex\plugins`.
 3. If you use **Headless** clients, you will need to add the client plugin to the headless spt client as well.
 4. Create a new profile, and it will get enrolled as a new Vagabond.
@@ -28,7 +28,7 @@ Configuration is limited for now, and might always be, create and issue and make
 {
   "PermaDeath": false, // if you die for whatever reason (according to the game), your profile gets wiped.
   "StartingRoubles": 175000, // The amount of money a player starts with
-  "EnableFenceChanges": true, // makes fence less random and useful as a starter vendor - recommend removing other traders
+  "EnableFenceChanges": true, // makes fence less random and useful as a starter vendor
   "DisableFlea": true,
   "DisableEvents": true, // disables events such as halloween etc. They can break things
   "FixProfiles": false, // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful if you used older versions of this mod.
