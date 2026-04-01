@@ -14,6 +14,22 @@ public class ExfilsFactoryDay : ICustomExtilData
     public RaidLocation Raid => _raid;
 
     private static readonly string _mapName = "factory4_day";
-    private static readonly List<CustomExfil> _extracts = [];
+    private static List<CustomExfil> _extracts = [
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_MECHANIC",
+            DisplayName = "Mechanic's Workshop",
+            IsTransit = false,
+            TemplateExitName = "",// only fill if you want a specific template
+            EntryPoints = "",
+            ExfiltrationTime = 15f,
+            ActivateAfterSeconds = 0,
+            X = -0.048f,
+            Y = -2.633f,
+            Z = 56.923f,
+            RotationY = 179.542f,
+            Side = "Pmc"
+        },
+    ];
     private static  readonly List<CustomExfil> _transits = [];
 }

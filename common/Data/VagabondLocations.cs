@@ -8,7 +8,7 @@ public static class VagabondLocations
     {
         [RaidLocation.FactoryDay] = ["55f2d3fd4bdc2d5f408b4567"],
         [RaidLocation.FactoryNight] = ["59fc81d786f774390775787e"],
-        [RaidLocation.GroundZero] = ["65b8d6f5cdde2479cb2a3125"],
+        [RaidLocation.GroundZero] = ["65b8d6f5cdde2479cb2a3125", "653e6760052c01c1c805532f"],
         [RaidLocation.Streets] = ["5714dc692459777137212e12"],
         [RaidLocation.Woods] = ["5704e3c2d2720bac5b8b4567"],
         [RaidLocation.Customs] = ["56f40101d2720b2a4d8b45d6"],
@@ -26,6 +26,7 @@ public static class VagabondLocations
         ["56f40101d2720b2a4d8b45d6"] = "bigmap",
         ["55f2d3fd4bdc2d5f408b4567"] = "factory4_day",
         ["65b8d6f5cdde2479cb2a3125"] = "Sandbox_high",
+        ["653e6760052c01c1c805532f"] = "Sandbox",
         ["5714dbc024597771384a510d"] = "Interchange",
         ["5704e4dad2720bb55b8b4567"] = "Lighthouse",
         ["59fc81d786f774390775787e"] = "factory4_night",
@@ -43,6 +44,10 @@ public static class VagabondLocations
         {
             "factory4_day",
         },
+        [RaidLocation.FactoryDay] = new List<string>
+        {
+            "factory4_day",
+        },
         [RaidLocation.FactoryNight] = new List<string>
         {
             "factory4_night",
@@ -50,6 +55,7 @@ public static class VagabondLocations
         [RaidLocation.GroundZero] = new List<string>
         {
             "Sandbox_high",
+            "Sandbox",
         },
         [RaidLocation.Streets] = new List<string>
         {
@@ -95,6 +101,7 @@ public static class VagabondLocations
         ["factory4_day"] = RaidLocation.FactoryDay,
         ["factory4_night"] = RaidLocation.FactoryNight,
         ["Sandbox_high"] = RaidLocation.GroundZero,
+        ["Sandbox"] = RaidLocation.GroundZero,
         ["TarkovStreets"] = RaidLocation.Streets,
         ["Woods"] = RaidLocation.Woods,
         ["bigmap"] = RaidLocation.Customs,

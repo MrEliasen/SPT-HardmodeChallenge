@@ -27,7 +27,7 @@ internal static class ExfilService
                 continue;
             }
             
-            var ent = new Dictionary<string, List<CustomExfil>>();
+            var ent = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
             foreach (var map in maps)
             {
                 ent.Add(map, new List<CustomExfil>());
@@ -161,7 +161,7 @@ internal static class ExfilService
             .SelectMany(x => x!.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
-
+            
         return string.Join(",", entryPoints);
     }
 

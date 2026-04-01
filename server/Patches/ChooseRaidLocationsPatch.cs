@@ -6,12 +6,13 @@ using SPTarkov.Server.Core.Models.Common;
 using Vagabond.Common.Data;
 using Vagabond.Common.Models;
 using Vagabond.Common.Enums;
+using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
 namespace Vagabond.Server.Patches;
 
-public sealed class RaidLocationsPatch : AbstractPatch
+public sealed class ChooseRaidLocationsPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
@@ -48,13 +49,13 @@ public sealed class RaidLocationsPatch : AbstractPatch
         }
 
         var state = VagabondState.GetState(sessionId);
-        if (!state.ProfileInitialized)
+        if (!state.VagabondModeEnabled)
         {
             VagabondLogger.Error($"Missing state {sessionId}.");
             return jsonString;
         }
 
-        if (string.IsNullOrEmpty(state.CurrentMap))
+        if (string.IsNullOrEmpty(state.CurrentMap) || VagabondConfig.Config.EnablePickRaidLocation)
         {
             return jsonString;
         }
@@ -73,7 +74,6 @@ public sealed class RaidLocationsPatch : AbstractPatch
             VagabondLogger.Error($"locations is null {sessionId}.");
             return jsonString;
         }
-        
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
         
         RaidLocation transitMap = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
@@ -119,27 +119,36 @@ public sealed class RaidLocationsPatch : AbstractPatch
         {
             JsonObject? location = locations[locationKey]?.AsObject();
             JsonArray? exits = location?["exits"]?.AsArray();
+            JsonArray? secretExits = location?["secretExits"]?.AsArray();
             bool enabled = location?["enabled"]?.GetValue<bool>() ?? true;
 
-            if (exits is null || !enabled)
+            if (!enabled)
             {
                 continue;
             }
 
-            for (int i = exits.Count - 1; i >= 0; i--)
+            if (exits != null)
             {
-                JsonObject? exfil = exits[i]?.AsObject();
-
-                if (exfil is null)
+                for (int i = exits.Count - 1; i >= 0; i--)
                 {
-                    exits.RemoveAt(i);
-                    continue;
-                }
+                    JsonObject? exfil = exits[i]?.AsObject();
 
-                if (!IsVehicleExfil(exfil) && !IsCustomExtract(exfil, locationKey))
-                {
-                    exits.RemoveAt(i);
+                    if (exfil is null)
+                    {
+                        exits.RemoveAt(i);
+                        continue;
+                    }
+
+                    if (!IsCustomExtract(exfil, locationKey))
+                    {
+                        exits.RemoveAt(i);
+                    }
                 }
+            }
+
+            if (secretExits != null)
+            {
+                secretExits.Clear();
             }
         }
 
@@ -147,21 +156,6 @@ public sealed class RaidLocationsPatch : AbstractPatch
         {
             WriteIndented = false
         });
-    }
-
-    private static bool IsVehicleExfil(JsonObject exfil)
-    {
-        string? passageRequirement = exfil["PassageRequirement"]?.GetValue<string>();
-        string? requirementTip = exfil["RequirementTip"]?.GetValue<string>();
-        string? id = exfil["Id"]?.GetValue<string>();
-
-        int count = exfil["Count"]?.GetValue<int>() ?? 0;
-        int countPve = exfil["CountPVE"]?.GetValue<int>() ?? 0;
-
-        return string.Equals(passageRequirement, "TransferItem", StringComparison.OrdinalIgnoreCase)
-               && string.Equals(id, VagabondService.Roubles, StringComparison.OrdinalIgnoreCase)
-               && string.Equals(requirementTip, "EXFIL_Item", StringComparison.OrdinalIgnoreCase)
-               && (count > 0 || countPve > 0);
     }
 
     private static bool IsCustomExtract(JsonObject exfil, MongoId locationKey)

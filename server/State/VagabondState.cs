@@ -9,7 +9,7 @@ public sealed class VagabondState
 {
     private const string ModKey = "dev.oogabooga.spt-vagabond";
 
-    public bool ProfileInitialized { get; set; }
+    public bool VagabondModeEnabled { get; set; }
     public required string CurrentMap { get; set; }
     public required string LastExit { get; set; }
     public TransitState? TransitState { get; set; }

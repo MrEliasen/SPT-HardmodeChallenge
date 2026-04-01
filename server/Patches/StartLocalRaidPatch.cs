@@ -5,8 +5,9 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Services;
 using Vagabond.Common.Data;
+using Vagabond.Common.Enums;
 using Vagabond.Server.Data;
-using Vagabond.Server.Models;
+using Vagabond.Common.Models;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -31,24 +32,15 @@ public sealed class StartLocalRaidPatch : AbstractPatch
             }
 
             var state = VagabondState.GetState(serverOwnerSessionId);
-            var transitState = state.TransitState;
-            if (transitState == null)
+            var location = VagabondLocations.NormaliseMapName(request.Location);
+            
+            if (string.IsNullOrWhiteSpace(request.Location) || location == RaidLocation.Nil)
             {
                 return;
             }
-
-            if (string.IsNullOrWhiteSpace(request.Location) || VagabondLocations.NormaliseMapName(request.Location) !=
-                VagabondLocations.NormaliseMapName(transitState.ToMap))
-            {
-                return;
-            }
-
-            var forcedSpawn = StaticMapTransitions.GetSpawnLocation(transitState);
-            if (forcedSpawn == null)
-            {
-                VagabondLogger.Log($"Did not find a PMC spawn template to clone from");
-            }
-            else
+            
+            var forcedSpawn = StaticMapTransitions.GetSpawnLocation(state, location);
+            if (forcedSpawn != null)
             {
                 ApplyForcedSpawn(__result, forcedSpawn);
             }
@@ -95,11 +87,6 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         var template = GetSpawnPointTemplate(all, point);
         if (template == null)
         {
-            // foreach (var sp in all)
-            // {
-            //     VagabondLogger.Error($"Checked => {string.Join(",", sp.Categories)} && {string.Join(",", sp.Sides)}");
-            // }
-            
             VagabondLogger.Error("Could not find PMC player spawn template");
             return;
         }

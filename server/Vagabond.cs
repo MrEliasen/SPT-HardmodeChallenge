@@ -55,7 +55,7 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.ProfileCreatePatch().Enable();
         new Patches.RaidEndPatch().Enable();
         new Patches.RaidJoinPatch().Enable();
-        new Patches.RaidLocationsPatch().Enable();
+        new Patches.ChooseRaidLocationsPatch().Enable();
         new Patches.StartLocalRaidPatch().Enable();
         
         // remove old trader from profiles
@@ -129,17 +129,40 @@ public sealed class VagabondDbLoader : IOnLoad
 }
 
 [Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 2)]
-public class DifficultyChanges(DatabaseService databaseService) : IOnLoad
+public class GameChanges(DatabaseService databaseService) : IOnLoad
 {
     public Task OnLoad()
     {
         var locationsdb = databaseService.GetLocations();
         locationsdb.Sandbox.Base.RequiredPlayerLevelMax = 0;
+        locationsdb.SandboxHigh.Base.Enabled = true;
         
+        Globals globals = databaseService.GetGlobals();
+        globals.Configuration.SavagePlayCooldown = 14400;
+        globals.Configuration.Exp.MatchEnd.SurvivedExperienceRequirement = 0;
+        globals.Configuration.Exp.MatchEnd.SurvivedSecondsRequirement = 0;
+            
         if (VagabondConfig.Config.DisableFlea)
         {
-            Globals globals = databaseService.GetGlobals();
             globals.Configuration.RagFair.MinUserLevel = 99;
+        }
+
+        if (VagabondConfig.Config.DisableEvents)
+        {
+            globals.Configuration.EventSettings.EventActive = false;
+        }
+        
+        
+            
+        if (VagabondConfig.Config.AdjustRaidTimeMins != 0)
+        {
+            foreach (Location names in locationsdb.GetDictionary().Values)
+            {
+                names.Base.ExitAccessTime += VagabondConfig.Config.AdjustRaidTimeMins;
+                names.Base.EscapeTimeLimit += VagabondConfig.Config.AdjustRaidTimeMins;
+                names.Base.EscapeTimeLimitCoop += VagabondConfig.Config.AdjustRaidTimeMins;
+                names.Base.EscapeTimeLimitPVE += VagabondConfig.Config.AdjustRaidTimeMins;
+            }
         }
 
         return Task.CompletedTask;
@@ -164,8 +187,6 @@ public class FenceTweaks(
 
         var traderConfig = configServer.GetConfig<TraderConfig>();
         traderConfig.Fence.DiscountOptions.AssortSize = 0;
-        traderConfig.Fence.PresetPriceMult = 1.0;
-        traderConfig.Fence.ItemPriceMult = 1.0;
 
         // durability
         traderConfig.Fence.WeaponDurabilityPercentMinMax.Max.Min = 90;

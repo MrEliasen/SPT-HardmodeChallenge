@@ -14,7 +14,22 @@ public class ExfilsShoreline : ICustomExtilData
     public RaidLocation Raid => _raid;
     
     private static string _mapName = "Shoreline";
-    private static List<CustomExfil> _extracts = [];
+    private static List<CustomExfil> _extracts = [
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_PEACEKEEPER",
+            DisplayName = "Peacekeeper's Safe Zone",
+            IsTransit = false,
+            TemplateExitName = "",// only fill if you want a specific template
+            EntryPoints = "",
+            ExfiltrationTime = 20f,
+            X = -968.499f,
+            Y = -59.614f,
+            Z = 377.603f,
+            RotationY = 150.939f,
+            Side = "Pmc"
+        },
+    ];
     private static  List<CustomExfil>_transits = [
         new CustomExfil
         {
@@ -24,15 +39,15 @@ public class ExfilsShoreline : ICustomExtilData
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Customs].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Customs].First(),
             Description = "Transit to Customs",
-            ExfiltrationTime = 5f,
-            ActivateAfterSeconds = 5,
+            ExfiltrationTime = 15f,
+            ActivateAfterSeconds = 0,
             IsActive = true,
             Events = false,
             HideIfNoKey = false,
             X = -855.903f,
             Y = -42.52f,
             Z = 10.129f,
-            RotationY = 7.715f
+            RotationY = 7.715f,
         },
         new CustomExfil
         {
@@ -42,8 +57,8 @@ public class ExfilsShoreline : ICustomExtilData
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Reserve].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Reserve].First(),
             Description = "Mountain climb to Reserve",
-            ExfiltrationTime = 5f,
-            ActivateAfterSeconds = 5,
+            ExfiltrationTime = 15f,
+            ActivateAfterSeconds = 0,
             IsActive = true,
             Events = false,
             HideIfNoKey = false,
@@ -78,8 +93,8 @@ public class ExfilsShoreline : ICustomExtilData
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Lighthouse].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Lighthouse].First(),
             Description = "Transit to Lighthouse",
-            ExfiltrationTime = 5f,
-            ActivateAfterSeconds = 5,
+            ExfiltrationTime = 15f,
+            ActivateAfterSeconds = 0,
             IsActive = true,
             Events = false,
             HideIfNoKey = false,

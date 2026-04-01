@@ -1,24 +1,13 @@
 {
   "PermaDeath": false, // if you die for whatever reason (according to the game), your profile gets wiped.
-  "StartingRoubles": 135000, // The amount of money a player starts with
+  "StartingRoubles": 175000, // The amount of money a player starts with
   "EnableFenceChanges": true, // makes fence less random and useful as a starter vendor - recommend removing other traders
   "DisableFlea": true,
-  "FixProfiles": false, // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful for removing the old Spectator trader which is no longer in this mod
+  "DisableEvents": true, // disables events such as halloween etc. They can break things
+  "FixProfiles": false, // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful if you used older versions of this mod.
   "StripMailAttachments": true, // still allows mail, but removed all attachments from messages.
+  "EnablePickRaidLocation": false, // if enabled, you can choose what map you want to go to.
+  "WipeStashOnFirstRaidEntry": true, // first time you enter a raid, whatever is left over in your stash is wiped.
   "AlsoWipeCarriedMoneyOnFirstRaid": true, // this only works if "WipeStashOnFirstRaidEntry" is enabled
-  "WipeStashOnFirstRaidEntry": true,
-  "StarterTraders": [
-    // add ID's of traders here.
-    // access will be removed after player enters first raid, if setting is enabled
-    // I recommend trying with just Fence and the fence changes first.
-  ],
-  "PermanentTraders": [
-    // add ID's of traders here.
-    // these are permanently available, regardless of how many raids the player has done
-    "579dc571d53a0658a154fbec" // fence
-  ],
-  "IgnoredProfiles": [
-    // Enter IDs of profiles you don't want getting affected (too much) by this mod
-    // Note: trader changes will still affect these profilers, but everything else should be toggled off.
-  ]
+  "AdjustRaidTimeMins": 60 // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
 }

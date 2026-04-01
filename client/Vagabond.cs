@@ -18,11 +18,11 @@ public class Vagabond : BaseUnityPlugin
 {
     private static ManualLogSource _logger;
     public static VagabondState State { get; private set; } = new();
-    
+
     private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomExtractHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;
-    
+
     private string _locationDumpPath = null!;
     private string _customExtractDumpPath = null!;
     private string _customTransitDumpPath = null!;
@@ -41,8 +41,6 @@ public class Vagabond : BaseUnityPlugin
     {
         _logger = Logger;
         State = new VagabondState();
-        new ExfiltrationPointPatch().Enable();
-        new MatchMakerLocationFilterPatch().Enable();
         new CustomExfilPlacementPatch().Enable();
         new CustomExfilCleanupPatch().Enable();
         new CustomTransitRetryPatch().Enable();
@@ -54,9 +52,10 @@ public class Vagabond : BaseUnityPlugin
             return;
         }
 
+        new HideUnavailableTraderCardsPatch().Enable();
+        new SelectAvailableTraderPatch().Enable();
         new TransitInteractionPatch().Enable();
-        new SkipInsuranceScreenPatch().Enable();
-        new DisableInsuranceBackNavigationPatch().Enable();
+        new SkipInsuranceFlowPatch().Enable();
         NotificationService.Create(transform);
 
         _dumpHotkey = Config.Bind(
@@ -159,10 +158,10 @@ public class Vagabond : BaseUnityPlugin
             {
                 $"new CustomExfil",
                 "{",
-                $"    Identifier = \"unique_identifier\",",
+                $"    Identifier = \"VGB_EXT_\",",
                 $"    DisplayName = \"Human Readable Label\",",
                 "    IsTransit = false,",
-                "    TemplateExitName = \"REPLACE_WITH_TEMPLATE_EXIT_NAME\",",
+                "    TemplateExitName = \"\",// only fill if you want a specific template",
                 "    EntryPoints = \"\",",
                 "    ExfiltrationTime = 20f,",
                 $"    X = {snapshot.Position.x:0.###}f,",

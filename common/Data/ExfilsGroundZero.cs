@@ -14,7 +14,22 @@ public class ExfilsGroundZero : ICustomExtilData
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "Sandbox_high";
-    private static List<CustomExfil> _extracts = [];
+    private static List<CustomExfil> _extracts = [
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_THERAPIST",
+            DisplayName = "Therapist's Clinic",
+            TemplateExitName = "",
+            IsTransit = false,
+            EntryPoints = "",
+            ExfiltrationTime = 10f,
+            X = -27.104f,
+            Y = 29.715f,
+            Z = 91.594f,
+            RotationY = 178.348f,
+            Side = "Pmc"
+        },
+    ];
     private static  List<CustomExfil>_transits = [
         new CustomExfil
         {
@@ -24,7 +39,7 @@ public class ExfilsGroundZero : ICustomExtilData
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Interchange].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Interchange].First(),
             Description = "Transit to Interchange",
-            ExfiltrationTime = 5f,
+            ExfiltrationTime = 15f,
             ActivateAfterSeconds = 0,
             IsActive = true,
             Events = false,

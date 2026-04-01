@@ -20,11 +20,6 @@ internal class TransitInteractionPatch : ModulePatch
     [PatchPrefix]
     private static bool Prefix(int pointId, Player player)
     {
-        if (!Vagabond.State.VagabondModeEnabled)
-        {
-            return true;
-        }
-
         if (!CustomExfilPlacementPatch.CustomTransitDefinitions.TryGetValue(pointId, out var definition))
         {
             return true;
@@ -35,7 +30,9 @@ internal class TransitInteractionPatch : ModulePatch
             return true;
         }
 
-        NotificationManagerClass.DisplayWarningNotification(string.IsNullOrWhiteSpace(failReason) ? "Requirements not met" : failReason);
+        NotificationManagerClass.DisplayWarningNotification(string.IsNullOrWhiteSpace(failReason)
+            ? "Requirements not met"
+            : failReason);
         return false;
     }
 
