@@ -1,8 +1,9 @@
 {
   "PermaDeath": false, // if you die for whatever reason (according to the game), your profile gets wiped.
-  "StartingRoubles": 135000, // The amount of money a player starts with
+  "StartingRoubles": 175000, // The amount of money a player starts with
   "EnableFenceChanges": true, // makes fence less random and useful as a starter vendor - recommend removing other traders
   "DisableFlea": true,
+  "DisableEvents": true, // disables events such as halloween etc.
   "FixProfiles": false, // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful if you used older versions of this mod.
   "StripMailAttachments": true, // still allows mail, but removed all attachments from messages.
   "WipeStashOnFirstRaidEntry": true,

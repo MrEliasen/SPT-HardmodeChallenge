@@ -129,7 +129,7 @@ public sealed class VagabondDbLoader : IOnLoad
 }
 
 [Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 2)]
-public class DifficultyChanges(DatabaseService databaseService) : IOnLoad
+public class GameChanges(DatabaseService databaseService) : IOnLoad
 {
     public Task OnLoad()
     {
@@ -137,12 +137,17 @@ public class DifficultyChanges(DatabaseService databaseService) : IOnLoad
         locationsdb.Sandbox.Base.RequiredPlayerLevelMax = 0;
         locationsdb.SandboxHigh.Base.Enabled = true;
         
+        Globals globals = databaseService.GetGlobals();
         if (VagabondConfig.Config.DisableFlea)
         {
-            Globals globals = databaseService.GetGlobals();
             globals.Configuration.RagFair.MinUserLevel = 99;
         }
 
+        if (VagabondConfig.Config.DisableEvents)
+        {
+            globals.Configuration.EventSettings.EventActive = false;
+        }
+            
         if (VagabondConfig.Config.AdjustRaidTimeMins != 0)
         {
             foreach (Location names in locationsdb.GetDictionary().Values)
@@ -176,8 +181,6 @@ public class FenceTweaks(
 
         var traderConfig = configServer.GetConfig<TraderConfig>();
         traderConfig.Fence.DiscountOptions.AssortSize = 0;
-        traderConfig.Fence.PresetPriceMult = 1.0;
-        traderConfig.Fence.ItemPriceMult = 1.0;
 
         // durability
         traderConfig.Fence.WeaponDurabilityPercentMinMax.Max.Min = 90;

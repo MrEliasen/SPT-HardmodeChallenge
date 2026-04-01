@@ -74,7 +74,6 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
             VagabondLogger.Error($"locations is null {sessionId}.");
             return jsonString;
         }
-        
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
         
         RaidLocation transitMap = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
@@ -120,27 +119,36 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
         {
             JsonObject? location = locations[locationKey]?.AsObject();
             JsonArray? exits = location?["exits"]?.AsArray();
+            JsonArray? secretExits = location?["secretExits"]?.AsArray();
             bool enabled = location?["enabled"]?.GetValue<bool>() ?? true;
 
-            if (exits is null || !enabled)
+            if (!enabled)
             {
                 continue;
             }
 
-            for (int i = exits.Count - 1; i >= 0; i--)
+            if (exits != null)
             {
-                JsonObject? exfil = exits[i]?.AsObject();
-
-                if (exfil is null)
+                for (int i = exits.Count - 1; i >= 0; i--)
                 {
-                    exits.RemoveAt(i);
-                    continue;
-                }
+                    JsonObject? exfil = exits[i]?.AsObject();
 
-                if (!IsCustomExtract(exfil, locationKey))
-                {
-                    exits.RemoveAt(i);
+                    if (exfil is null)
+                    {
+                        exits.RemoveAt(i);
+                        continue;
+                    }
+
+                    if (!IsCustomExtract(exfil, locationKey))
+                    {
+                        exits.RemoveAt(i);
+                    }
                 }
+            }
+
+            if (secretExits != null)
+            {
+                secretExits.Clear();
             }
         }
 

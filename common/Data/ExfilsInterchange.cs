@@ -14,7 +14,22 @@ public class ExfilsInterchange : ICustomExtilData
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "Interchange";
-    private static List<CustomExfil> _extracts = [];
+    private static List<CustomExfil> _extracts = [
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_RAGMAN",
+            DisplayName = "Ragman's Outlet",
+            IsTransit = false,
+            TemplateExitName = "",// only fill if you want a specific template
+            EntryPoints = "",
+            ExfiltrationTime = 20f,
+            X = -52.581f,
+            Y = 21.377f,
+            Z = 46.974f,
+            RotationY = 36.619f,
+            Side = "Pmc"
+        },
+    ];
     private static  List<CustomExfil>_transits = [
         new CustomExfil
         {

@@ -18,15 +18,15 @@ public class ExfilsCustoms : ICustomExtilData
         new CustomExfil
         {
             Identifier = "VGB_EXT_SKIER",
-            DisplayName = "Skier's Bunker",
+            DisplayName = "Skier's Hangar",
             IsTransit = false,
             TemplateExitName = "",// only fill if you want a specific template
             EntryPoints = "",
             ExfiltrationTime = 20f,
-            X = 104.18f,
-            Y = -5.66f,
-            Z = -43.974f,
-            RotationY = 78.79f,
+            X = 65.594f,
+            Y = 1.162f,
+            Z = -174.755f,
+            RotationY = 356.056f,
             Side = "Pmc"
         },
     ];
@@ -34,7 +34,6 @@ public class ExfilsCustoms : ICustomExtilData
         new CustomExfil
         {
             Identifier = "VGB_CT_WD",
-            DisplayName = "Label",
             IsTransit = true,
             TransitPointId = 0,// gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Woods].First(),

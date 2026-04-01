@@ -14,7 +14,22 @@ public class ExfilsShoreline : ICustomExtilData
     public RaidLocation Raid => _raid;
     
     private static string _mapName = "Shoreline";
-    private static List<CustomExfil> _extracts = [];
+    private static List<CustomExfil> _extracts = [
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_PEACEKPR",
+            DisplayName = "Peacekeeper's Hub",
+            IsTransit = false,
+            TemplateExitName = "",// only fill if you want a specific template
+            EntryPoints = "",
+            ExfiltrationTime = 20f,
+            X = -968.499f,
+            Y = -59.614f,
+            Z = 377.603f,
+            RotationY = 150.939f,
+            Side = "Pmc"
+        },
+    ];
     private static  List<CustomExfil>_transits = [
         new CustomExfil
         {

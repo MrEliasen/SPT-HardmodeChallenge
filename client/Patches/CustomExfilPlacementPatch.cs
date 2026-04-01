@@ -5,6 +5,7 @@ using System.Reflection;
 using Comfort.Common;
 using EFT;
 using EFT.Interactive;
+using EFT.Interactive.SecretExfiltrations;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UnityEngine;
@@ -84,10 +85,9 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         if (definitions.Count == 0)
         {
-            Vagabond.Log("ApplyCustomExtracts: no definitions");
             return;
         }
-        
+
         var pmcExfils = controller?.ExfiltrationPoints?.Where(x => x != null).ToList();
         if (pmcExfils == null || pmcExfils.Count == 0)
         {
@@ -109,7 +109,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 Vagabond.LogError($"No template exfil found for '{definition.Identifier}' on {raid}.");
                 continue;
             }
-            
+
             var cloneObject = LocationScene.Instantiate(template.gameObject);
             cloneObject.name = definition.Identifier;
             cloneObject.SetActive(true);
@@ -135,29 +135,123 @@ internal class CustomExfilPlacementPatch : ModulePatch
         controller.ExfiltrationPoints = pmcExfils.ToArray();
         ExtractsAppliedThisRaid = true;
     }
-    
+
     private static ExfiltrationPoint FindTemplateExfil(
         List<ExfiltrationPoint> pmcExfils,
         CustomExfil definition,
         List<CustomExfil> definitions)
     {
+        var currentEntry = Singleton<GameWorld>.Instance?.MainPlayer?.Profile?.Info?.EntryPoint;
+
+        bool MatchesExplicitTemplate(ExfiltrationPoint x) =>
+            string.Equals(x.Settings?.Name, definition.TemplateExitName, StringComparison.OrdinalIgnoreCase);
+
+        bool IsGoodTemplate(ExfiltrationPoint x, bool requireActiveStatus)
+        {
+            if (x == null || x.Settings == null)
+            {
+                return false;
+            }
+
+            if (IsCustomExtract(x, definitions))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(x.Settings.Name))
+            {
+                return false;
+            }
+
+            if (x is SharedExfiltrationPoint)
+            {
+                return false;
+            }
+
+            if (x.Switch != null)
+            {
+                return false;
+            }
+
+            if (x.Settings.ExfiltrationType != EExfiltrationType.Individual)
+            {
+                return false;
+            }
+
+            if (x.Requirements != null && x.Requirements.Length > 0)
+            {
+                return false;
+            }
+
+            if (IsVehicleTemplate(x))
+            {
+                return false;
+            }
+
+            if (x.Settings.Chance < 100f)
+            {
+                return false;
+            }
+
+            if (x.Settings.MinTime > 0f || x.Settings.MaxTime > 0f)
+            {
+                return false;
+            }
+
+            if (x.Settings.EventAvailable)
+            {
+                return false;
+            }
+
+            if (requireActiveStatus && x.Status == EExfiltrationStatus.NotPresent)
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(currentEntry))
+            {
+                if (x.EligibleEntryPoints == null || x.EligibleEntryPoints.Length == 0)
+                {
+                    return false;
+                }
+
+                if (!x.EligibleEntryPoints.Any(ep =>
+                        string.Equals(ep, currentEntry, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         if (!string.IsNullOrWhiteSpace(definition.TemplateExitName))
         {
             var explicitTemplate = pmcExfils.FirstOrDefault(x =>
-                string.Equals(x.Settings?.Name, definition.TemplateExitName, StringComparison.OrdinalIgnoreCase));
+                MatchesExplicitTemplate(x) && IsGoodTemplate(x, requireActiveStatus: false));
 
             if (explicitTemplate != null)
             {
                 return explicitTemplate;
             }
+
+            Vagabond.LogError(
+                $"template '{definition.TemplateExitName}' for '{definition.Identifier}' is not a safe template.");
         }
 
-        return pmcExfils.FirstOrDefault(x =>
-            !IsCustomExtract(x, definitions)
-            && x.Settings != null
-            && !string.IsNullOrWhiteSpace(x.Settings.Name)
-            && x is not SharedExfiltrationPoint
-            && x.Switch == null);
+        var preferred = pmcExfils.FirstOrDefault(x => IsGoodTemplate(x, requireActiveStatus: true));
+        if (preferred != null)
+        {
+            return preferred;
+        }
+
+        var fallback = pmcExfils.FirstOrDefault(x => IsGoodTemplate(x, requireActiveStatus: false));
+        if (fallback != null)
+        {
+            return fallback;
+        }
+
+        return null;
     }
 
     public static void ApplyCustomTransits(TransitControllerAbstractClass transitController, RaidLocation raid,
@@ -425,7 +519,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             _ => ERequirementState.None
         };
     }
-    
+
     private static void FilterExtractions(ExfiltrationControllerClass __instance)
     {
         var kept = new List<ExfiltrationPoint>();
@@ -448,6 +542,18 @@ internal class CustomExfilPlacementPatch : ModulePatch
         }
 
         __instance.ExfiltrationPoints = kept.ToArray();
+        
+        foreach (var secret in __instance.SecretExfiltrationPoints)
+        {
+            if (secret == null)
+            {
+                continue;
+            }
+
+            HideExfil(secret);
+        }
+
+        __instance.SecretExfiltrationPoints = Array.Empty<SecretExfiltrationPoint>();
     }
 
     private static void HideExfil(ExfiltrationPoint exfil)
@@ -467,12 +573,41 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
     private static bool IsCustomExfil(ExitTriggerSettings settings)
     {
-        return !string.IsNullOrWhiteSpace(settings?.Name)
-               && Vagabond.State.CustomExfils.Values
-                   .SelectMany(x => x)
-                   .Any(mapDefs => mapDefs.Value.Any(def =>
-                       !def.IsTransit &&
-                       string.Equals(def.DisplayName, settings.Name, StringComparison.OrdinalIgnoreCase)));
+        if (string.IsNullOrWhiteSpace(settings?.Name))
+        {
+            return false;
+        }
+
+        var locationId = Singleton<GameWorld>.Instance?.LocationId;
+        if (string.IsNullOrWhiteSpace(locationId))
+        {
+            return false;
+        }
+
+        var raid = VagabondLocations.NormaliseMapName(locationId);
+        if (raid == RaidLocation.Nil)
+        {
+            return false;
+        }
+
+        if (!Vagabond.State.CustomExfils.TryGetValue(raid, out var mapExfils))
+        {
+            return false;
+        }
+
+        if (!mapExfils.TryGetValue(locationId, out var definitions) || definitions == null)
+        {
+            return false;
+        }
+
+        return definitions.Any(def =>
+            !def.IsTransit &&
+            string.Equals(def.DisplayName, settings.Name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool IsVehicleTemplate(ExfiltrationPoint point)
+    {
+        return string.Equals(point.Settings?.Id, Currencies.Ruble, StringComparison.OrdinalIgnoreCase);
     }
 }
 

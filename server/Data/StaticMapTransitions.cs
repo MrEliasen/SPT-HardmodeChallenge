@@ -164,7 +164,7 @@ public static class StaticMapTransitions
         var exfil = fromMapData.Extracts.Concat(fromMapData.Transits).FirstOrDefault(x=> x.Identifier ==  transitState.ExitName);
         if (exfil == null)
         {
-            VagabondLogger.Error($"No exfils for map {to} from exit {transitState.ExitName}");
+            //VagabondLogger.Error($"No exfils for map {to} from exit {transitState.ExitName}");
             return false;
         }
         
