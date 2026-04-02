@@ -34,9 +34,9 @@ public class ExfilsStreets : ICustomExtilData
             Identifier = "VGB_EXT_FENCE",
             DisplayName = "Fence's Hub",
             IsTransit = false,
-            TemplateExitName = "",// only fill if you want a specific template
-            EntryPoints = "",
-            ExfiltrationTime = 20f,
+            TemplateExitName = "Sewer River",
+            EntryPoints = "e1_2,e2_3,e3_4,e4_5,e5_6,e6_1",
+            ExfiltrationTime = 10f,
             X = 74.785f,
             Y = -2.046f,
             Z = 49.224f,
