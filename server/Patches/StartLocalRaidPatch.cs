@@ -39,7 +39,6 @@ public sealed class StartLocalRaidPatch : AbstractPatch
             {
                 return;
             }
-            
 
             var forcedSpawn = StaticMapTransitions.GetSpawnLocation(state, location);
             if (forcedSpawn != null)

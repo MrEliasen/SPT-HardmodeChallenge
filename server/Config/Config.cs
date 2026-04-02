@@ -13,7 +13,7 @@ public sealed class VagabondConfig
     public int AdjustRaidTimeMins { get; set; } = 60;
     public bool EnableFenceChanges { get; set; } = true;
     public bool DisableFlea { get; set; } = true;
-    public bool StripMailAttachments { get; set; } = true;
+    public bool StripMailAttachments { get; set; }
     public bool EnablePickRaidLocation { get; set; }
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
     public bool AlsoWipeCarriedMoneyOnFirstRaid { get; set; } = true;

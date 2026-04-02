@@ -74,15 +74,31 @@ internal static class HideoutService
         }
     };
 
+    public static IReadOnlyCollection<string> GetAllTraderIds()
+    {
+        return TraderLocations
+            .Select(x => x.Id)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+    }
+
+    public static string? GetCurrentTraderId(VagabondState state)
+    {
+        var raid = VagabondLocations.NormaliseMapName(state.CurrentMap);
+        if (raid == RaidLocation.Nil || string.IsNullOrWhiteSpace(state.LastExit))
+        {
+            return null;
+        }
+
+        return TraderLocations.FirstOrDefault(x =>
+            x.Raid == raid
+            && string.Equals(x.ExitName, state.LastExit, StringComparison.OrdinalIgnoreCase))?.Id;
+    }
+
     public static void UpdateTraderAccess(PmcData pmc, VagabondState state)
     {
-        var traderId = "";
-        var raidE = VagabondLocations.NormaliseMapName(state.CurrentMap);
-        if (raidE != RaidLocation.Nil)
-        {
-            traderId = TraderLocations.FirstOrDefault(t => t.Raid == raidE && t.ExitName == state.LastExit)?.Id ?? "";
-        }
-        
+        var traderId = GetCurrentTraderId(state) ?? string.Empty;
+
         var tradersInfo = pmc.TradersInfo;
         foreach (KeyValuePair<MongoId, TraderInfo> entry in tradersInfo)
         {
