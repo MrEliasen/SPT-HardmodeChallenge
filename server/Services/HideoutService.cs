@@ -92,7 +92,7 @@ internal static class HideoutService
                 entry.Value.Unlocked = true;
                 continue;
             }
-            
+
             entry.Value.Disabled = true;
             entry.Value.Unlocked = false;
         }

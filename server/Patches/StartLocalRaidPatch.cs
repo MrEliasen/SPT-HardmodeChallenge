@@ -21,7 +21,8 @@ public sealed class StartLocalRaidPatch : AbstractPatch
     }
 
     [PatchPostfix]
-    public static void Postfix(MongoId sessionId, StartLocalRaidRequestData request, ref StartLocalRaidResponseData __result)
+    public static void Postfix(MongoId sessionId, StartLocalRaidRequestData request,
+        ref StartLocalRaidResponseData __result)
     {
         try
         {
@@ -33,12 +34,13 @@ public sealed class StartLocalRaidPatch : AbstractPatch
 
             var state = VagabondState.GetState(serverOwnerSessionId);
             var location = VagabondLocations.NormaliseMapName(request.Location);
-            
+
             if (string.IsNullOrWhiteSpace(request.Location) || location == RaidLocation.Nil)
             {
                 return;
             }
             
+
             var forcedSpawn = StaticMapTransitions.GetSpawnLocation(state, location);
             if (forcedSpawn != null)
             {
@@ -59,7 +61,9 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         return spawnPoints?
             .Where(sp =>
                 (sp.Categories?.Any(c => string.Equals(c, "Player", StringComparison.OrdinalIgnoreCase)) ?? false) &&
-                (sp.Sides?.Any(s => string.Equals(s, "All", StringComparison.OrdinalIgnoreCase) || string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false) &&
+                (sp.Sides?.Any(s =>
+                    string.Equals(s, "All", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false) &&
                 sp.Position != null)
             .OrderBy(sp =>
             {
@@ -82,7 +86,9 @@ public sealed class StartLocalRaidPatch : AbstractPatch
 
         bool IsPmcPlayerSpawn(SpawnPointParam sp) =>
             (sp.Categories?.Any(c => string.Equals(c, "Player", StringComparison.OrdinalIgnoreCase)) ?? false) &&
-            (sp.Sides?.Any(s => string.Equals(s, "All", StringComparison.OrdinalIgnoreCase) || string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false);
+            (sp.Sides?.Any(s =>
+                string.Equals(s, "All", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false);
 
         var template = GetSpawnPointTemplate(all, point);
         if (template == null)

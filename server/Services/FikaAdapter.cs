@@ -43,7 +43,7 @@ public static class FikaAdapter
         _available = _headlessClientsProp != null;
         return _available;
     }
-    
+
     public static MongoId GetRaidOwnerSessionId(MongoId sessionId)
     {
         if (!_available || _headlessService == null || _headlessClientsProp == null)
@@ -75,7 +75,7 @@ public static class FikaAdapter
         {
             return sessionId;
         }
-        
+
         var requesterProp = client.GetType().GetProperty("RequesterSessionID");
         var requesterSessionId = requesterProp?.GetValue(client) as string;
 

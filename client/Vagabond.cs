@@ -10,10 +10,11 @@ using UnityEngine.Rendering;
 using Vagabond.Client.Patches;
 using Vagabond.Client.Services;
 using Vagabond.Client.State;
+using Vagabond.Common;
 
 namespace Vagabond.Client;
 
-[BepInPlugin("dev.oogabooga.spt-vagabond", "Vagabond", BuildInfo.Version)]
+[BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
 public class Vagabond : BaseUnityPlugin
 {
     private static ManualLogSource _logger;

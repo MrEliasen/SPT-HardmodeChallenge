@@ -65,7 +65,7 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
         {
             return jsonString;
         }
-        
+
         JsonObject? data = root["data"]?.AsObject();
         JsonObject? locations = data?["locations"]?.AsObject();
 
@@ -74,8 +74,9 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
             VagabondLogger.Error($"locations is null {sessionId}.");
             return jsonString;
         }
+
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
-        
+
         RaidLocation transitMap = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
         if (transitMap != RaidLocation.Nil)
         {
@@ -102,7 +103,7 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
         {
             return jsonString;
         }
-        
+
         foreach (string locationKey in locations.Select(kv => kv.Key).ToList())
         {
             if (!allowedMapIds.Contains(locationKey))
@@ -166,7 +167,7 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
         {
             return false;
         }
-        
+
         return ExfilService.IsCustomExtractName(name, raid, mapName);
     }
 }

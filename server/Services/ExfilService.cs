@@ -17,38 +17,38 @@ internal static class ExfilService
     {
         foreach (var loc in Enum.GetValues(typeof(RaidLocation)).Cast<RaidLocation>())
         {
-            if (loc ==  RaidLocation.Nil)
+            if (loc == RaidLocation.Nil)
             {
                 continue;
             }
-            
+
             if (!VagabondLocations.InverseLookupTable.TryGetValue(loc, out var maps))
             {
                 continue;
             }
-            
+
             var ent = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
             foreach (var map in maps)
             {
                 ent.Add(map, new List<CustomExfil>());
             }
-            
+
             CustomExfils.Add(loc, ent);
         }
-        
+
         var locations = databaseService.GetLocations();
-        AddExtractions(9000, locations.Bigmap, new ExfilsCustoms()); 
-        AddExtractions(9100, locations.Factory4Day, new ExfilsFactoryDay()); 
-        AddExtractions(9200,locations.Factory4Night, new ExfilsFactoryNight()); 
-        AddExtractions(9300,locations.SandboxHigh, new ExfilsGroundZero()); 
-        AddExtractions(9400,locations.Interchange, new ExfilsInterchange()); 
-        AddExtractions(9500,locations.Lighthouse, new ExfilsLighthouse()); 
-        AddExtractions(9600,locations.RezervBase, new ExfilsReserve()); 
-        AddExtractions(9700,locations.Shoreline, new ExfilsShoreline()); 
-        AddExtractions(9800,locations.TarkovStreets, new ExfilsStreets()); 
-        AddExtractions(9900,locations.Woods, new ExfilsWoods());
-        AddExtractions(10000,locations.Laboratory, new ExfilsLabs()); 
-        AddExtractions(1100,locations.Labyrinth, new ExfilsLabyrinth());
+        AddExtractions(9000, locations.Bigmap, new ExfilsCustoms());
+        AddExtractions(9100, locations.Factory4Day, new ExfilsFactoryDay());
+        AddExtractions(9200, locations.Factory4Night, new ExfilsFactoryNight());
+        AddExtractions(9300, locations.SandboxHigh, new ExfilsGroundZero());
+        AddExtractions(9400, locations.Interchange, new ExfilsInterchange());
+        AddExtractions(9500, locations.Lighthouse, new ExfilsLighthouse());
+        AddExtractions(9600, locations.RezervBase, new ExfilsReserve());
+        AddExtractions(9700, locations.Shoreline, new ExfilsShoreline());
+        AddExtractions(9800, locations.TarkovStreets, new ExfilsStreets());
+        AddExtractions(9900, locations.Woods, new ExfilsWoods());
+        AddExtractions(10000, locations.Laboratory, new ExfilsLabs());
+        AddExtractions(1100, locations.Labyrinth, new ExfilsLabyrinth());
     }
 
     private static void AddExtractions(int pointIdOffset, Location location, ICustomExtilData data)
@@ -88,7 +88,8 @@ internal static class ExfilService
     {
         var allExtracts = location.AllExtracts.ToList();
         allExtracts.RemoveAll(x => string.Equals(x.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase)
-                                   || string.Equals(x.SptName, definition.Identifier, StringComparison.OrdinalIgnoreCase));
+                                   || string.Equals(x.SptName, definition.Identifier,
+                                       StringComparison.OrdinalIgnoreCase));
         allExtracts.Add(CreateExit(definition));
         location.AllExtracts = allExtracts;
 
@@ -104,7 +105,7 @@ internal static class ExfilService
         transits.RemoveAll(x =>
             string.Equals(x.Name, definition.Identifier, StringComparison.OrdinalIgnoreCase)
             || (definition.TransitPointId.HasValue && x.Id == definition.TransitPointId.Value));
-        
+
         transits.Add(new Transit
         {
             Name = definition.Identifier,
@@ -112,7 +113,9 @@ internal static class ExfilService
             Conditions = string.Empty,
             Id = definition.TransitPointId,
             Location = definition.DestinationLocation,
-            Target = string.IsNullOrWhiteSpace(definition.TargetLocation) ? definition.DestinationLocation : definition.TargetLocation,
+            Target = string.IsNullOrWhiteSpace(definition.TargetLocation)
+                ? definition.DestinationLocation
+                : definition.TargetLocation,
             ActivateAfterSeconds = definition.ActivateAfterSeconds,
             Time = (long)Math.Round(definition.ExfiltrationTime),
             IsActive = definition.IsActive,
@@ -161,7 +164,7 @@ internal static class ExfilService
             .SelectMany(x => x!.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
-            
+
         return string.Join(",", entryPoints);
     }
 
@@ -181,7 +184,8 @@ internal static class ExfilService
             (RaidLocation.Woods) => new ExfilsWoods(),
             (RaidLocation.Labs) => new ExfilsLabs(),
             (RaidLocation.Labyrinth) => new ExfilsLabyrinth(),
-            RaidLocation.Nil => throw new ArgumentOutOfRangeException(nameof(raid), raid, "RaidLocation.Nil has no custom map data."),
+            RaidLocation.Nil => throw new ArgumentOutOfRangeException(nameof(raid), raid,
+                "RaidLocation.Nil has no custom map data."),
             _ => throw new ArgumentOutOfRangeException(nameof(raid), raid, "Unsupported raid location.")
         };
     }

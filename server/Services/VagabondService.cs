@@ -15,7 +15,7 @@ namespace Vagabond.Server.Services;
 
 internal static class VagabondService
 {
-    public static Dictionary<string, List<string>> TraderLocations = new(); 
+    public static Dictionary<string, List<string>> TraderLocations = new();
 
     public static void ResetProfile(MongoId sessionId, PmcData pmc)
     {
@@ -73,8 +73,9 @@ internal static class VagabondService
             VagabondLogger.Error($"PersistProfileIfPossible failed: {ex}");
         }
     }
-    
-    public static void WipeItems(MongoId sessionId, PmcData pmc, bool wipeEquipment = false, bool wipeStash = false, bool removeAllMoney = false)
+
+    public static void WipeItems(MongoId sessionId, PmcData pmc, bool wipeEquipment = false, bool wipeStash = false,
+        bool removeAllMoney = false)
     {
         var inventory = pmc.Inventory;
         if (inventory?.Items == null)
@@ -237,7 +238,7 @@ internal static class VagabondService
         {
             return "";
         }
-        
+
         if (VagabondConfig.Config.EnablePickRaidLocation)
         {
             return "";
@@ -248,7 +249,7 @@ internal static class VagabondService
         {
             return "";
         }
-        
+
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
         RaidLocation transitMap = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
         if (transitMap != RaidLocation.Nil)

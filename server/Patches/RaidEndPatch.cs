@@ -58,14 +58,14 @@ public sealed class RaidEndPatch : AbstractPatch
         {
             return;
         }
-        
+
         var locationMapE = VagabondLocations.NormaliseMapName(locationName);
         var locationMapStr = locationMapE.ToString();
-        
+
         state.TransitState = null;
         state.CurrentMap = locationMapStr;
         state.LastExit = GetExtractIdentifier(request.Results?.ExitName, locationMapE, locationName);
-        
+
         if (isDead)
         {
             state.ResetProfile = VagabondConfig.Config.PermaDeath;
@@ -74,27 +74,27 @@ public sealed class RaidEndPatch : AbstractPatch
             VagabondState.SaveState(sessionId, state);
             return;
         }
-        
+
         if (isTransfer)
         {
             state.TransitState = new TransitState
             {
-                FromMap =  locationMapStr,
+                FromMap = locationMapStr,
                 ToMap = VagabondLocations.NormaliseMapName(request.LocationTransit?.Location).ToString(),
                 ExitName = state.LastExit
             };
-            
+
             state.CurrentMap = state.TransitState.ToMap;
         }
         else
         {
             HideoutService.UpdateTraderAccess(profile.CharacterData!.PmcData!, state);
         }
-        
+
         VagabondService.PersistProfileIfPossible(sessionId);
         VagabondState.SaveState(sessionId, state);
     }
-    
+
     public static string GetExtractIdentifier(string? exitName, RaidLocation raid, string mapName)
     {
         if (string.IsNullOrWhiteSpace(exitName))

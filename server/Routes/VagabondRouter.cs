@@ -28,7 +28,7 @@ public class VagabondRouter(
         var response = new SyncStateResponse();
         response.CustomExfils = ExfilService.CustomExfils;
         response.CurrentMap = "";
-        
+
         if (VagabondService.ShouldApplyVagabondRules(sessionId))
         {
             var pmc = VagabondService.GetPmcProfile(sessionId);
@@ -36,7 +36,7 @@ public class VagabondRouter(
             {
                 return response;
             }
-            
+
             var state = VagabondState.GetState(sessionId);
             response.PermaDeath = VagabondConfig.Config.PermaDeath;
             response.WipeFirstRaid = VagabondConfig.Config.WipeStashOnFirstRaidEntry;

@@ -36,7 +36,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             {
                 return;
             }
-            
+
             if (state.ResetProfile)
             {
                 state.ResetProfile = false;
