@@ -28,6 +28,8 @@ public class VagabondRouter(
         var response = new SyncStateResponse();
         response.CustomExfils = ExfilService.CustomExfils;
         response.CurrentMap = "";
+        // failsafe, as it is hit in main menu
+        RaidRuntimeState.Left(sessionId);
 
         if (VagabondService.ShouldApplyVagabondRules(sessionId))
         {

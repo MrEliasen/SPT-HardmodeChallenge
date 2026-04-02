@@ -60,6 +60,7 @@ public sealed class RaidJoinPatch : AbstractPatch
             state.LastExit = "";
         }
 
+        RaidRuntimeState.Entered(sessionId);
         VagabondState.SaveState(sessionId, state);
 
         if (VagabondConfig.Config.WipeStashOnFirstRaidEntry && string.IsNullOrEmpty(state.CurrentMap))

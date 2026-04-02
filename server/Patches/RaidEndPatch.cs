@@ -65,6 +65,7 @@ public sealed class RaidEndPatch : AbstractPatch
         state.TransitState = null;
         state.CurrentMap = locationMapStr;
         state.LastExit = GetExtractIdentifier(request.Results?.ExitName, locationMapE, locationName);
+        RaidRuntimeState.Left(sessionId);
 
         if (isDead)
         {

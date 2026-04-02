@@ -33,6 +33,7 @@ internal static class VagabondService
             return;
         }
 
+        RaidRuntimeState.Left(sessionId);
         var state = VagabondState.GetState(sessionId);
         state.ResetProfile = false;
         state.CurrentMap = "Streets";
