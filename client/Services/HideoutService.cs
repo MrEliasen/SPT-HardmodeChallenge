@@ -10,7 +10,7 @@ namespace Vagabond.Client.Services;
 
 public static class HideoutService
 {
-    public static void ApplyHideoutExfil(string raidName, MongoID mapName, CustomExfil extract)
+    public static void ApplyHideoutExfil(string raidName, string mapName, CustomExfil extract)
     {
         if (raidName == null || mapName == null || extract == null)
         {

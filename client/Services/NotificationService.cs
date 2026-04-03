@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 namespace Vagabond.Client.Services;
 
+// AI generated UI code, UI is not me, I have no idea what the hell I am doing with that.
+
 public sealed class NotificationService : MonoBehaviour
 {
     public sealed class UiSettings
@@ -63,20 +65,20 @@ public sealed class NotificationService : MonoBehaviour
     private Text _titleText = null!;
     private Text _messageText = null!;
 
-    private RectTransform _buttonsRoot = null!;
     private Button _primaryButton = null!;
     private Button _secondaryButton = null!;
     private Image _primaryButtonImage = null!;
     private Image _secondaryButtonImage = null!;
     private Text _primaryButtonText = null!;
     private Text _secondaryButtonText = null!;
+    private RectTransform _buttonsRoot = null!;
 
-    private Action? _primaryAction;
-    private Action? _secondaryAction;
+    private Action _primaryAction;
+    private Action _secondaryAction;
 
-    private Coroutine? _hideCoroutine;
+    private Coroutine _hideCoroutine;
 
-    public static void Create(Transform? parent = null, UiSettings? settings = null)
+    public static void Create(Transform parent = null, UiSettings settings = null)
     {
         if (Instance != null)
             return;
@@ -103,9 +105,9 @@ public sealed class NotificationService : MonoBehaviour
     public void ShowMessage(
         string text,
         float durationSeconds = 0f,
-        string? title = null,
+        string title = null,
         string buttonText = "OK",
-        Action? onClose = null)
+        Action onClose = null)
     {
         ConfigureDialog(
             title ?? _ui.Title,
@@ -122,9 +124,9 @@ public sealed class NotificationService : MonoBehaviour
 
     public void ShowConfirmation(
         string text,
-        Action? onAccept,
-        Action? onCancel = null,
-        string? title = null,
+        Action onAccept,
+        Action onCancel = null,
+        string title = null,
         string acceptText = "Accept",
         string cancelText = "Cancel")
     {
@@ -183,9 +185,9 @@ public sealed class NotificationService : MonoBehaviour
         string title,
         string text,
         string primaryText,
-        string? secondaryText,
-        Action? primaryAction,
-        Action? secondaryAction,
+        string secondaryText,
+        Action primaryAction,
+        Action secondaryAction,
         Color primaryColor,
         Color secondaryColor)
     {

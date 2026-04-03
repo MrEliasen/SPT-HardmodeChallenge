@@ -43,19 +43,24 @@ public sealed class ProfileCreatePatch : AbstractPatch
             return;
         }
 
+        var state = VagabondState.GetState(sessionId);
+        state.CurrentMap = "Streets";
+        state.LastExit = "VGB_EXT_FENCE";
+        state.VagabondModeEnabled = true;
+        VagabondState.SaveState(sessionId, state);
+        
         var changed = InitializeNewCharacter(sessionId, pmc);
         if (!changed)
         {
+            state.CurrentMap = "";
+            state.LastExit = "";
+            state.VagabondModeEnabled = false;
+            VagabondState.SaveState(sessionId, state);
             VagabondLogger.Error(
                 $"BootstrapProfile did not modify profile for {sessionId}; InitializeNewCharacter did not complete.");
             return;
         }
 
-        var state = VagabondState.GetState(sessionId);
-        state.VagabondModeEnabled = true;
-        state.CurrentMap = "Streets";
-        state.LastExit = "VGB_EXT_FENCE";
-        VagabondState.SaveState(sessionId, state);
         HideoutService.UpdateTraderAccess(pmc.CharacterData.PmcData, state);
         VagabondService.PersistProfileIfPossible(sessionId);
         MailerService.SendMail(sessionId, Messages.WelcomeOpenWorld());
@@ -87,7 +92,9 @@ public sealed class ProfileCreatePatch : AbstractPatch
         RaidRuntimeState.Left(sessionId);
         VagabondService.WipeItems(sessionId, pmc.CharacterData.PmcData, true, true);
         VirtualStashService.ClearAllTraderStashes(sessionId);
+        var stashState = VirtualStashService.OpenStash(sessionId, pmc.CharacterData.PmcData);
         VagabondService.AddMoney(sessionId, pmc.CharacterData.PmcData);
+        stashState.Dispose();
         return true;
     }
 }

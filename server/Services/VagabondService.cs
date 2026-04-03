@@ -44,7 +44,9 @@ internal static class VagabondService
         VagabondState.SaveState(sessionId, state);
 
         WipeItems(sessionId, pmc, true, true, true);
+        var stashState = VirtualStashService.OpenStash(sessionId, pmc);
         AddMoney(sessionId, pmc);
+        stashState.Dispose();
     }
 
     public static SptProfile? GetPmcProfile(MongoId sessionId)

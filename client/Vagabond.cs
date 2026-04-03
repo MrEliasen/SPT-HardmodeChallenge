@@ -25,11 +25,16 @@ public class Vagabond : BaseUnityPlugin
     private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomExtractHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;
-    private ConfigEntry<KeyboardShortcut> _hideoutHotkey = null!;
 
     private string _locationDumpPath = null!;
     private string _customExtractDumpPath = null!;
     private string _customTransitDumpPath = null!;
+    
+    // hideout placement
+    private ConfigEntry<KeyboardShortcut> _hideoutHotkey = null!;
+    private bool _hideoutPlacementArmed;
+    private float _hideoutPlacementArmExpiresAt;
+    private bool _hideoutPlacementLoading;
 
     public static void Log(string message)
     {
@@ -64,7 +69,7 @@ public class Vagabond : BaseUnityPlugin
         
         _hideoutHotkey = Config.Bind(
             "Vagabond",
-            "Place Hideout Entrance ",
+            "Place Hideout Entrance",
             new KeyboardShortcut(KeyCode.P, KeyCode.LeftControl),
             "Press in raid to place the entrance to your hideout at your current location."
         );
@@ -104,6 +109,11 @@ public class Vagabond : BaseUnityPlugin
         {
             return;
         }
+        
+        if (_hideoutPlacementArmed && Time.realtimeSinceStartup > _hideoutPlacementArmExpiresAt)
+        {
+            _hideoutPlacementArmed = false;
+        }
 
         if (_hideoutHotkey.Value.IsDown())
         {
@@ -124,46 +134,55 @@ public class Vagabond : BaseUnityPlugin
         {
             DumpCustomTransitDefinition();
         }
-
-        if (_dumpCustomTransitHotkey.Value.IsDown())
-        {
-            PromptCreateHideoutExtract();
-        }
     }
     
     private void PromptCreateHideoutExtract()
     {
-        NotificationService.Instance.ShowConfirmation(
-            text: "Create a hideout extraction at your current position?\nFace the direction you want to have when you leave your hideout.",
-            onAccept: () => _ = TryCreateHideoutExtractAsync(),
-            onCancel: () => { },
-            title: "Establish Hideout",
-            acceptText: "Create",
-            cancelText: "Cancel"
-        );
-    } 
-    
-    private static async Task TryCreateHideoutExtractAsync()
-    {
-        try
+        if (_hideoutPlacementLoading)
         {
-            var gameWorld = Singleton<GameWorld>.Instance;
-            var player = gameWorld?.MainPlayer;
+            NotificationManagerClass.DisplayWarningNotification("Hideout placement request already in progress.");
+            return;
+        }
 
-            if (player == null)
+        if (!_hideoutPlacementArmed)
+        {
+            if (!TryGetCurrentSnapshot(out var snapshot))
             {
+                NotificationManagerClass.DisplayWarningNotification("You must be in raid.");
                 return;
             }
 
-            var pos = player.Position;
-            var yaw = player.Transform.eulerAngles.y;
+            _hideoutPlacementArmed = true;
+            _hideoutPlacementArmExpiresAt = Time.realtimeSinceStartup + 10f;
+
+            NotificationManagerClass.DisplayWarningNotification(
+                "Press the hotkey again within 10 seconds to place your hideout at your current position."
+            );
+            return;
+        }
+
+        _hideoutPlacementArmed = false;
+        TryCreateHideoutExtractAsync();
+    } 
+    
+    private async Task TryCreateHideoutExtractAsync()
+    {
+        try
+        {
+            if (!TryGetCurrentSnapshot(out var snapshot))
+            {
+                NotificationManagerClass.DisplayWarningNotification("You must be in raid.");
+                return;
+            }
+
+            _hideoutPlacementLoading = true;
             
             var resp = await Networking.ApiClient.EstablishHideoutExtract(new PlaceHideoutRequest
             {
-                X = pos.x,
-                Y = pos.y,
-                Z = pos.z,
-                R = yaw,
+                X = snapshot.Position.x,
+                Y = snapshot.Position.y,
+                Z = snapshot.Position.z,
+                R = snapshot.Yaw,
             });
             
             if (!resp.Success)
@@ -179,6 +198,10 @@ public class Vagabond : BaseUnityPlugin
         {
             LogError($"Establish hideout request failed: {ex}");
             NotificationManagerClass.DisplayWarningNotification("Establish hideout request failed.");
+        }
+        finally
+        {
+            _hideoutPlacementLoading = false;
         }
     }
 

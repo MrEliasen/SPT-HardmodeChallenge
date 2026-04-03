@@ -6,6 +6,7 @@ using SPTarkov.Server.Core.Utils;
 using Vagabond.Common.Data;
 using Vagabond.Common.Models;
 using Vagabond.Server.Config;
+using Vagabond.Server.Models;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -21,7 +22,7 @@ public class VagabondRouter(JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
                                         throw new NullReferenceException("Could not serialize sync response"));
         }
     ),
-    new RouteAction<PlaceHideoutRequest>(
+    new RouteAction<PlaceHideoutServerRequest>(
         "/vagabond/place-hideout",
         (_, payload, sessionID, _) =>
         {
@@ -59,7 +60,7 @@ public class VagabondRouter(JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
     }
     
     
-    private static PlaceHideoutResponse HandleEstablishHideoutRoute(MongoId sessionId, PlaceHideoutRequest payload)
+    private static PlaceHideoutResponse HandleEstablishHideoutRoute(MongoId sessionId, PlaceHideoutServerRequest payload)
     {
         var response = new PlaceHideoutResponse();
 
