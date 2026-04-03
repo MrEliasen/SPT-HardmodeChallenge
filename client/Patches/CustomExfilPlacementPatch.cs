@@ -105,7 +105,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             var template = FindTemplateExfil(pmcExfils, definition, definitions);
             if (template == null)
             {
-                Vagabond.LogError($"No template exfil found for '{definition.Identifier}' on {raid}.");
+                //Vagabond.LogError($"No template exfil found for '{definition.Identifier}' on {raid}.");
                 continue;
             }
 

@@ -33,20 +33,20 @@ internal static class VagabondService
             return;
         }
 
-        RaidRuntimeState.Left(sessionId);
         var state = VagabondState.GetState(sessionId);
         state.ResetProfile = false;
+        
+        RaidRuntimeState.Left(sessionId);
         VirtualStashService.ClearAllTraderStashes(sessionId);
+        WipeItems(sessionId, pmc, true, true, true);
+        
         state.CurrentMap = "Streets";
         state.LastExit = "VGB_EXT_FENCE";
         state.TransitState = null;
         HideoutService.UpdateTraderAccess(pmc, state);
         VagabondState.SaveState(sessionId, state);
-
-        WipeItems(sessionId, pmc, true, true, true);
-        var stashState = VirtualStashService.OpenStash(sessionId, pmc);
+        using var stashState = VirtualStashService.OpenStash(sessionId, pmc);
         AddMoney(sessionId, pmc);
-        stashState.Dispose();
     }
 
     public static SptProfile? GetPmcProfile(MongoId sessionId)

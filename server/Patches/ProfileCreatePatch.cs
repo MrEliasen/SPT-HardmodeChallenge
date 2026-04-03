@@ -92,9 +92,8 @@ public sealed class ProfileCreatePatch : AbstractPatch
         RaidRuntimeState.Left(sessionId);
         VagabondService.WipeItems(sessionId, pmc.CharacterData.PmcData, true, true);
         VirtualStashService.ClearAllTraderStashes(sessionId);
-        var stashState = VirtualStashService.OpenStash(sessionId, pmc.CharacterData.PmcData);
+        using var stashState = VirtualStashService.OpenStash(sessionId, pmc.CharacterData.PmcData);
         VagabondService.AddMoney(sessionId, pmc.CharacterData.PmcData);
-        stashState.Dispose();
         return true;
     }
 }
