@@ -38,6 +38,6 @@ public static class HideoutService
 
         list.Add(extract);
 
-        CustomExfilPlacementPatch.ApplyCustomExtracts(gameWorld.ExfiltrationController, raid, list.Where(x => !x.IsTransit).ToList());
+        CustomExfilPlacementPatch.ApplyCustomExtracts(gameWorld.ExfiltrationController, raid, list.Where(x => !x.IsTransit).ToList(), true);
     }
 }

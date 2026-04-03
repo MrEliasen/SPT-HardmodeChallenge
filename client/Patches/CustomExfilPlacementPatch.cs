@@ -75,9 +75,9 @@ internal class CustomExfilPlacementPatch : ModulePatch
     }
 
     public static void ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid,
-        List<CustomExfil> definitions)
+        List<CustomExfil> definitions, bool force = false)
     {
-        if (ExtractsAppliedThisRaid)
+        if (ExtractsAppliedThisRaid && !force)
         {
             return;
         }
