@@ -1,31 +1,53 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using HarmonyLib;
+using EFT;
+using EFT.HealthSystem;
+using EFT.InventoryLogic;
 using EFT.UI;
+using HarmonyLib;
 using SPT.Reflection.Patching;
 
 namespace Vagabond.Client.Patches;
 
 public class HideUnavailableTraderCardsPatch : ModulePatch
 {
-    private static readonly FieldInfo Cards = AccessTools.Field(typeof(TraderScreensGroup), "list_1");
-
     protected override MethodBase GetTargetMethod()
     {
-        return AccessTools.Method(typeof(TraderScreensGroup), nameof(TraderScreensGroup.method_4));
+        return AccessTools.Constructor(
+            typeof(TraderScreensGroup.GClass3888),
+            new[]
+            {
+                typeof(TraderClass),
+                typeof(IEnumerable<TraderClass>),
+                typeof(Profile),
+                typeof(InventoryController),
+                typeof(IHealthController),
+                typeof(AbstractQuestControllerClass),
+                typeof(AbstractAchievementControllerClass),
+                typeof(ISession)
+            });
     }
 
-    [PatchPostfix]
-    public static void Postfix(TraderScreensGroup __instance)
+    [PatchPrefix]
+    public static void Prefix(ref TraderClass trader, ref IEnumerable<TraderClass> tradersList)
     {
-        var traders = __instance.IEnumerable_0.ToList();
-        var cards = (List<TraderCard>)Cards.GetValue(__instance);
-
-        for (var i = 0; i < cards.Count; i++)
+        if (tradersList == null)
         {
-            var shouldShow = i < traders.Count && traders[i].Info.Available;
-            cards[i].gameObject.SetActive(shouldShow);
+            return;
+        }
+
+        var filtered = tradersList.Where(x => x != null && x.Info != null && x.Info.Available).ToArray();
+        if (filtered.Length == 0)
+        {
+            return;
+        }
+
+        tradersList = filtered;
+
+        if (trader == null || trader.Info == null || !trader.Info.Available || !filtered.Contains(trader))
+        {
+            trader = filtered[0];
         }
     }
 }
