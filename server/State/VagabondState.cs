@@ -13,6 +13,7 @@ public sealed class VagabondState
     public required string CurrentMap { get; set; }
     public required string LastExit { get; set; }
     public TransitState? TransitState { get; set; }
+    public HideoutState? HideoutState { get; set; }
     public bool ResetProfile { get; set; }
 
     [SetsRequiredMembers]

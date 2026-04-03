@@ -36,6 +36,7 @@ internal static class VagabondService
         RaidRuntimeState.Left(sessionId);
         var state = VagabondState.GetState(sessionId);
         state.ResetProfile = false;
+        VirtualStashService.ClearAllTraderStashes(sessionId);
         state.CurrentMap = "Streets";
         state.LastExit = "VGB_EXT_FENCE";
         state.TransitState = null;
@@ -59,6 +60,14 @@ internal static class VagabondService
 
     public static void PersistProfileIfPossible(MongoId sessionId)
     {
+        // prevent saving if virtual stash is enabled, to avoid overwriting player profile with incorrect stash data.
+        // it could still happen elsewhere, like if spt saves somewhere internally right when we have a virtual stash loaded up..
+        // not sure what I can do then..
+        if (VirtualStashService.IsStashActive(sessionId))
+        {
+            return;
+        }
+
         try
         {
             var server = ReflectionUtil.GetService<SaveServer>();

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -11,6 +12,7 @@ using Vagabond.Client.Patches;
 using Vagabond.Client.Services;
 using Vagabond.Client.State;
 using Vagabond.Common;
+using Vagabond.Common.Models;
 
 namespace Vagabond.Client;
 
@@ -23,6 +25,7 @@ public class Vagabond : BaseUnityPlugin
     private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomExtractHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;
+    private ConfigEntry<KeyboardShortcut> _hideoutHotkey = null!;
 
     private string _locationDumpPath = null!;
     private string _customExtractDumpPath = null!;
@@ -58,24 +61,31 @@ public class Vagabond : BaseUnityPlugin
         new TransitInteractionPatch().Enable();
         new SkipInsuranceFlowPatch().Enable();
         NotificationService.Create(transform);
-
+        
+        _hideoutHotkey = Config.Bind(
+            "Vagabond",
+            "Place Hideout Entrance ",
+            new KeyboardShortcut(KeyCode.P, KeyCode.LeftControl),
+            "Press in raid to place the entrance to your hideout at your current location."
+        );
+        
         _dumpHotkey = Config.Bind(
-            "Location Capture (Dev)",
-            "Dump Location Hotkey",
+            "Development",
+            "Save Current Location",
             new KeyboardShortcut(KeyCode.F8),
             "Press in raid to dump current map, position and yaw to file."
         );
 
         _dumpCustomExtractHotkey = Config.Bind(
-            "Generate Extraction From Location (Dev)",
-            "Dump Custom Extract Snippet Hotkey",
+            "Development",
+            "Generate Extraction From Location",
             new KeyboardShortcut(KeyCode.F9),
             "Press in raid to dump a copy/paste ready custom extract snippet using the current player position"
         );
 
         _dumpCustomTransitHotkey = Config.Bind(
-            "Generate Transit From Location (Dev)",
-            "Dump Custom Transit Snippet Hotkey",
+            "Development",
+            "Generate Transit From Location",
             new KeyboardShortcut(KeyCode.F10),
             "Press in raid to dump a copy/paste ready custom transit snippet using the current player position"
         );
@@ -95,6 +105,11 @@ public class Vagabond : BaseUnityPlugin
             return;
         }
 
+        if (_hideoutHotkey.Value.IsDown())
+        {
+            PromptCreateHideoutExtract();
+        }
+
         if (_dumpHotkey.Value.IsDown())
         {
             DumpCurrentLocation();
@@ -108,6 +123,62 @@ public class Vagabond : BaseUnityPlugin
         if (_dumpCustomTransitHotkey.Value.IsDown())
         {
             DumpCustomTransitDefinition();
+        }
+
+        if (_dumpCustomTransitHotkey.Value.IsDown())
+        {
+            PromptCreateHideoutExtract();
+        }
+    }
+    
+    private void PromptCreateHideoutExtract()
+    {
+        NotificationService.Instance.ShowConfirmation(
+            text: "Create a hideout extraction at your current position?\nFace the direction you want to have when you leave your hideout.",
+            onAccept: () => _ = TryCreateHideoutExtractAsync(),
+            onCancel: () => { },
+            title: "Establish Hideout",
+            acceptText: "Create",
+            cancelText: "Cancel"
+        );
+    } 
+    
+    private static async Task TryCreateHideoutExtractAsync()
+    {
+        try
+        {
+            var gameWorld = Singleton<GameWorld>.Instance;
+            var player = gameWorld?.MainPlayer;
+
+            if (player == null)
+            {
+                return;
+            }
+
+            var pos = player.Position;
+            var yaw = player.Transform.eulerAngles.y;
+            
+            var resp = await Networking.ApiClient.EstablishHideoutExtract(new PlaceHideoutRequest
+            {
+                X = pos.x,
+                Y = pos.y,
+                Z = pos.z,
+                R = yaw,
+            });
+            
+            if (!resp.Success)
+            {
+                NotificationManagerClass.DisplayWarningNotification(resp.Message);
+                return;
+            }
+
+            HideoutService.ApplyHideoutExfil(resp.CurrentRaid, resp.MapName, resp.Exfil);
+            NotificationManagerClass.DisplayMessageNotification(resp.Message);
+        }
+        catch (Exception ex)
+        {
+            LogError($"Establish hideout request failed: {ex}");
+            NotificationManagerClass.DisplayWarningNotification("Establish hideout request failed.");
         }
     }
 

@@ -1,4 +1,6 @@
-﻿using Vagabond.Common.Enums;
+﻿using Vagabond.Common.Definitions;
+using Vagabond.Common.Enums;
+using Vagabond.Common.Interfaces;
 using Vagabond.Common.Models;
 
 namespace Vagabond.Common.Data;
@@ -99,5 +101,44 @@ public class StaticTransitionSpawns
             // any other combination
             _ => null
         };
+    }
+
+    public static CustomExfil GetMapExtractTemplate(RaidLocation raid) {
+        ICustomExtilData? exfilTemplate = (raid) switch
+        {
+            (RaidLocation.Customs) =>  new ExfilsCustoms(),
+            (RaidLocation.FactoryDay) =>  new ExfilsFactoryDay(),
+            (RaidLocation.FactoryNight) =>  new ExfilsFactoryNight(),
+            (RaidLocation.GroundZero) =>  new ExfilsGroundZero(),
+            (RaidLocation.Interchange) =>  new ExfilsInterchange(),
+            (RaidLocation.Labs) =>  new ExfilsLabs(),
+            (RaidLocation.Labyrinth) =>  new ExfilsLabyrinth(),
+            (RaidLocation.Lighthouse) =>  new ExfilsLighthouse(),
+            (RaidLocation.Reserve) =>  new ExfilsReserve(),
+            (RaidLocation.Shoreline) =>  new ExfilsShoreline(),
+            (RaidLocation.Streets) =>  new ExfilsStreets(),
+            (RaidLocation.Woods) =>  new ExfilsWoods(),
+            _ => null
+        };
+        
+        if (exfilTemplate == null || exfilTemplate.Extracts.Count == 0)
+        {
+            return new CustomExfil
+            {
+                Identifier = "",
+                DisplayName = "",
+                IsTransit = false,
+                TemplateExitName = "",
+                EntryPoints = "",
+                ExfiltrationTime = 0f,
+                X = 0f,
+                Y = 0f,
+                Z = 0f,
+                RotationY = 0f,
+                Side = "Pmc"
+            };
+        }
+
+        return exfilTemplate.Extracts.First();
     }
 }

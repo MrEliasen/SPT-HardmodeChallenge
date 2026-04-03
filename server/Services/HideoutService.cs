@@ -2,6 +2,7 @@
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using Vagabond.Common.Data;
+using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Definitions;
 using Vagabond.Server.State;
@@ -112,5 +113,23 @@ internal static class HideoutService
             entry.Value.Disabled = true;
             entry.Value.Unlocked = false;
         }
+    }
+
+    public static CustomExfil? GenerateHideoutExfil(VagabondState state)
+    {
+        if (state.HideoutState == null)
+        {
+            return null;
+        }
+        
+        var template = StaticTransitionSpawns.GetMapExtractTemplate(VagabondLocations.NormaliseMapName(state.CurrentMap));
+        template.Identifier = "VGB_EXT_HIDEOUT";
+        template.DisplayName = "Hideout Entrance";
+        template.ExfiltrationTime = 20f;
+        template.X = state.HideoutState?.X ?? 0f;
+        template.Y = state.HideoutState?.Y ?? 0f;
+        template.Z = state.HideoutState?.Z ?? 0f;
+        template.RotationY = state.HideoutState?.R ?? 0f;
+        return template;
     }
 }

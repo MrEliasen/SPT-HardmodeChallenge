@@ -72,6 +72,7 @@ public sealed class RaidJoinPatch : AbstractPatch
                 true,
                 VagabondConfig.Config.AlsoWipeCarriedMoneyOnFirstRaid
             );
+            VirtualStashService.ClearAllTraderStashes(sessionId);
         }
 
         VagabondService.PersistProfileIfPossible(sessionId);

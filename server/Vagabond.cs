@@ -1,3 +1,4 @@
+using System.Reflection;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Spt.Mod;
@@ -11,10 +12,12 @@ using SPTarkov.Server.Core.Controllers;
 using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using Vagabond.Common;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
+using Path = System.IO.Path;
 
 namespace Vagabond.Server;
 
@@ -57,6 +60,18 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.StartLocalRaidPatch().Enable();
         new Patches.GetCompleteProfilePatch().Enable();
         
+        new Patches.ItemEventRouterHandleEventsPatch().Enable();
+        new Patches.TradeHelperBuyItemPatch().Enable();
+        new Patches.TradeHelperSellItemPatch().Enable();
+        new Patches.PaymentServicePayMoneyPatch().Enable();
+        new Patches.InventoryHelperAddItemsToStashPatch().Enable();
+        new Patches.InventoryHelperAddItemToStashPatch().Enable();
+        new Patches.InventoryHelperCanPlaceItemsInInventoryPatch().Enable();
+        new Patches.InventoryCallbacksTagItemPatch().Enable();
+        new Patches.InventoryCallbacksSortInventoryPatch().Enable();
+        new Patches.InventoryCallbacksPinOrLockPatch().Enable();
+        new Patches.InventoryCallbacksSetFavoriteItemPatch().Enable();
+
         // remove old trader from profiles
         // this will be removed in some later version
         if (VagabondConfig.Config.FixProfiles)

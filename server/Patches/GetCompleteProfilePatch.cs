@@ -35,5 +35,6 @@ public sealed class GetCompleteProfilePatch : AbstractPatch
         }
 
         HideoutService.UpdateTraderAccess(__result[0], state);
+        VirtualStashService.ApplyToClientProfile(sessionId, __result[0]);
     }
 }

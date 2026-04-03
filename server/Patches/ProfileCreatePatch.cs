@@ -86,6 +86,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
 
         RaidRuntimeState.Left(sessionId);
         VagabondService.WipeItems(sessionId, pmc.CharacterData.PmcData, true, true);
+        VirtualStashService.ClearAllTraderStashes(sessionId);
         VagabondService.AddMoney(sessionId, pmc.CharacterData.PmcData);
         return true;
     }

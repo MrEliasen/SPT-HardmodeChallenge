@@ -6,15 +6,16 @@
   // makes fence less random and useful as a starter vendor - recommend removing other traders
   "EnableFenceChanges": true,
   "DisableFlea": true,
-  // disables events such as halloween etc. They can break things
+  // disables events such as halloween etc.
   "DisableEvents": true,
   // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful if you used older versions of this mod.
+  // will be removed in a future version.
   "FixProfiles": false,
-  // if enabled, will removed all attachments from messages.
+  // if enabled, will removed all attachments from messages, including rewards
   "StripMailAttachments": false,
-  // if enabled, you can choose what map you want to go to.
+  // if enabled, you can choose what map you want to go to and won't be locked to your current location.
   "EnablePickRaidLocation": false,
-  // first time you enter a raid, whatever is left over in your stash is wiped.
+  // first time you enter a raid, whatever is left over in the stash is wiped.
   "WipeStashOnFirstRaidEntry": true,
   // this only works if "WipeStashOnFirstRaidEntry" is enabled
   "AlsoWipeCarriedMoneyOnFirstRaid": true,

@@ -14,16 +14,16 @@ public static class Messages
 
     public static string FirstWarning(bool wipeFirstRaid, bool wipeFirstMoney, bool permadeath)
     {
-        var message = "";
+        var message ="Welcome, Vagabond.\n\n" +"Stashes at traders, like the one you are using right now, are unique to that trader and is not your personal permanent stash.";
 
         if (permadeath)
         {
-            message += "\n[X] Perma-death is enabled. If you die for any reason, your profile is wiped and you are reset back to the start map.\n";
+            message += "\nPerma-Death is enabled. If you die for any reason, your profile is wiped and you are reset back to the start map.\n";
         }
         
         if (wipeFirstRaid)
         {
-            message += $"\n[X] First time you enter a raid anything left in your stash gets wiped";
+            message += $"\nFirst time you enter a raid anything left in this stash will get wiped";
             
             if (wipeFirstMoney)
             {

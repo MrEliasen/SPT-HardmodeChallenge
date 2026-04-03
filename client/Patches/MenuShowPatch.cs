@@ -47,7 +47,7 @@ internal class MenuShowPatch : ModulePatch
                 Vagabond.State.PermaDeath);
             if (message != "")
             {
-                NotificationService.Instance.ShowMessage("New Character Warning!\n" + message);
+                NotificationService.Instance.ShowMessage(message);
                 Vagabond.State.HasShownWarningMessage = true;
             }
         }

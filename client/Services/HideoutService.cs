@@ -1,0 +1,43 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using Comfort.Common;
+using EFT;
+using Vagabond.Client.Patches;
+using Vagabond.Common.Data;
+using Vagabond.Common.Definitions;
+
+namespace Vagabond.Client.Services;
+
+public static class HideoutService
+{
+    public static void ApplyHideoutExfil(string raidName, MongoID mapName, CustomExfil extract)
+    {
+        if (raidName == null || mapName == null || extract == null)
+        {
+            return;
+        }
+        var gameWorld = Singleton<GameWorld>.Instance;
+        if (gameWorld?.ExfiltrationController == null)
+        {
+            return;
+        }
+
+        var raid = VagabondLocations.NormaliseMapName(raidName);
+
+        if (!Vagabond.State.CustomExfils.TryGetValue(raid, out var mapExfils) || mapExfils == null)
+        {
+            mapExfils = new Dictionary<string, List<CustomExfil>>();
+            Vagabond.State.CustomExfils[raid] = mapExfils;
+        }
+
+        if (!mapExfils.TryGetValue(mapName, out var list) || list == null)
+        {
+            list = new List<CustomExfil>();
+            mapExfils[mapName] = list;
+        }
+
+        list.Add(extract);
+
+        CustomExfilPlacementPatch.ApplyCustomExtracts(gameWorld.ExfiltrationController, raid, list.Where(x => !x.IsTransit).ToList());
+    }
+}
