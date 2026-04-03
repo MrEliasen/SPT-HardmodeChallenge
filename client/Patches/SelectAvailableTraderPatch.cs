@@ -16,17 +16,19 @@ public class SelectAvailableTraderPatch : ModulePatch
     [PatchPostfix]
     public static void Postfix(TraderScreensGroup __instance)
     {
-        if (__instance.TraderClass != null && __instance.TraderClass.Info.Available)
+        var available = __instance.IEnumerable_0?
+            .Where(x => x != null && x.Info != null && x.Info.Available)
+            .ToList();
+
+        if (available == null || available.Count == 0)
         {
             return;
         }
 
-        var firstAvailable = __instance.IEnumerable_0.FirstOrDefault(x => x.Info.Available);
-        if (firstAvailable == null)
+        if (!(__instance.TraderClass != null
+              && available.Any(x => x.Id == __instance.TraderClass.Id)))
         {
-            return;
+            __instance.method_6(available[0]);
         }
-
-        __instance.method_6(firstAvailable);
     }
 }

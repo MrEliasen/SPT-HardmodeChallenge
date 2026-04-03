@@ -1,4 +1,3 @@
-using System.Reflection;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Spt.Mod;
@@ -12,12 +11,10 @@ using SPTarkov.Server.Core.Controllers;
 using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
-using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using Vagabond.Common;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
-using Path = System.IO.Path;
 
 namespace Vagabond.Server;
 
@@ -58,6 +55,7 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.RaidJoinPatch().Enable();
         new Patches.ChooseRaidLocationsPatch().Enable();
         new Patches.StartLocalRaidPatch().Enable();
+        new Patches.GetCompleteProfilePatch().Enable();
         
         // remove old trader from profiles
         // this will be removed in some later version
