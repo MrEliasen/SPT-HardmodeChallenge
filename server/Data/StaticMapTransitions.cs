@@ -109,7 +109,7 @@ public static class StaticMapTransitions
         var position = toMapData.Extracts.Concat(toMapData.Transits).FirstOrDefault(x=> x.Identifier ==  exfil.ConnectedIdentifier);
         if (position == null)
         {
-            VagabondLogger.Error($"No connected spawn found for {state.TransitState.ExitName} on {to}");
+            VagabondLogger.Error($"No connected spawn found for {state?.TransitState?.ExitName} on {to}");
             return false;
         }
         
