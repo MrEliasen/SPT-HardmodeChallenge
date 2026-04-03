@@ -1,4 +1,4 @@
-﻿namespace Vagabond.Common.Models;
+namespace Vagabond.Common.Models;
 
 public class PlaceHideoutRequest
 {
@@ -6,4 +6,5 @@ public class PlaceHideoutRequest
     public float Y { get; set; }
     public float Z { get; set; }
     public float R { get; set; }
+    public string? LocationId { get; set; }
 }

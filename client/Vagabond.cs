@@ -183,6 +183,7 @@ public class Vagabond : BaseUnityPlugin
                 Y = snapshot.Position.y,
                 Z = snapshot.Position.z,
                 R = snapshot.Yaw,
+                LocationId = Singleton<GameWorld>.Instance?.LocationId,
             });
             
             if (!resp.Success)

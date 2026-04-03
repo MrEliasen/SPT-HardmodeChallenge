@@ -121,8 +121,10 @@ internal static class HideoutService
         {
             return null;
         }
-        
-        var template = StaticTransitionSpawns.GetMapExtractTemplate(VagabondLocations.NormaliseMapName(state.CurrentMap));
+
+        var template =
+            StaticTransitionSpawns.GetMapExtractTemplate(
+                VagabondLocations.NormaliseMapName(state.HideoutState?.Map ?? state.CurrentMap));
         template.Identifier = "VGB_EXT_HIDEOUT";
         template.DisplayName = "Hideout Entrance";
         template.ExfiltrationTime = 20f;

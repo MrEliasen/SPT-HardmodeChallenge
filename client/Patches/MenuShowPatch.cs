@@ -78,21 +78,21 @@ internal class MenuShowPatch : ModulePatch
                 Vagabond.State.NewCharacter = resp.NewCharacter;
             }
 
-            Vagabond.Log($"Loading Custom Extractions");
-            foreach (var raid in Vagabond.State.CustomExfils)
-            {
-                foreach (var map in raid.Value)
-                {
-                    foreach (var exfil in map.Value)
-                    {
-                        var kind = exfil.IsTransit ? "Transit" : "Extract";
-                        var desc = exfil.IsTransit
-                            ? $"{map.Key} To {exfil.DestinationLocation}"
-                            : $" {exfil.DisplayName}";
-                        Vagabond.Log($" => [{kind}] {exfil.Identifier} :: {desc}");
-                    }
-                }
-            }
+            // Vagabond.Log($"Loading Custom Extractions");
+            // foreach (var raid in Vagabond.State.CustomExfils)
+            // {
+            //     foreach (var map in raid.Value)
+            //     {
+            //         foreach (var exfil in map.Value)
+            //         {
+            //             var kind = exfil.IsTransit ? "Transit" : "Extract";
+            //             var desc = exfil.IsTransit
+            //                 ? $"{map.Key} To {exfil.DestinationLocation}"
+            //                 : $" {exfil.DisplayName}";
+            //             Vagabond.Log($" => [{kind}] {exfil.Identifier} :: {desc}");
+            //         }
+            //     }
+            // }
         }
         catch (Exception ex)
         {

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Comfort.Common;
 using EFT;
+using EFT.UI;
 using Vagabond.Client.Patches;
 using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
@@ -16,6 +18,7 @@ public static class HideoutService
         {
             return;
         }
+
         var gameWorld = Singleton<GameWorld>.Instance;
         if (gameWorld?.ExfiltrationController == null)
         {
@@ -36,8 +39,31 @@ public static class HideoutService
             mapExfils[mapName] = list;
         }
 
-        list.Add(extract);
+        if (!list.Any(x => string.Equals(x.Identifier, extract.Identifier, StringComparison.OrdinalIgnoreCase)))
+        {
+            list.Add(extract);
+        }
 
         CustomExfilPlacementPatch.ApplyCustomExtracts(gameWorld.ExfiltrationController, raid, list.Where(x => !x.IsTransit).ToList(), true);
+        RefreshGameExtractsUi();
+    }
+
+    public static void RefreshGameExtractsUi()
+    {
+        try
+        {
+            var timerPanel = MonoBehaviourSingleton<GameUI>.Instance?.TimerPanel;
+            if (timerPanel == null)
+            {
+                return;
+            }
+
+            timerPanel.ForceUpdateExfiltrationPointsVisitedStatus();
+            timerPanel.ShowTimer(true, false);
+        }
+        catch (Exception ex)
+        {
+            Vagabond.LogError($"Failed to refresh extract UI: {ex}");
+        }
     }
 }

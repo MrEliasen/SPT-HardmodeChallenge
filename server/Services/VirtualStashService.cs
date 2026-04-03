@@ -15,14 +15,14 @@ namespace Vagabond.Server.Services;
 
 internal static class VirtualStashService
 {
-    private const string ProfileDataKeyPrefix = ModInfo.Guid  + ".virtual_stash";
+    private const string ProfileDataKeyPrefix = ModInfo.Guid + ".virtual_stash";
     private const string StashRootIdPlaceholder = "vgb_stash_root";
     private const string SortingTableRootIdPlaceholder = "vgb_sorting_root";
     private const string BlockedActionMessage = "Action not available here.";
 
     private static readonly ConcurrentDictionary<MongoId, Lock> ActiveScopeLocks = new();
     private static readonly Dictionary<MongoId, ActiveVirtualStashState> ActiveStashes = new();
-    
+
     public static bool IsVirtualStashEnabled(MongoId sessionId)
     {
         return TryGetActiveTraderId(sessionId, out _);
@@ -462,13 +462,13 @@ internal static class VirtualStashService
     private static bool TryGetActiveTraderId(MongoId sessionId, out string traderId)
     {
         traderId = string.Empty;
-        
+
         // I want to make sure while in-raid, whatever you do does not involve any virtual stash
         if (RaidRuntimeState.IsInRaid(sessionId))
         {
             return false;
         }
-        
+
         if (!VagabondService.ShouldApplyVagabondRules(sessionId))
         {
             return false;

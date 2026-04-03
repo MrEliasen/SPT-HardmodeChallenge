@@ -35,11 +35,11 @@ internal static class VagabondService
 
         var state = VagabondState.GetState(sessionId);
         state.ResetProfile = false;
-        
+
         RaidRuntimeState.Left(sessionId);
         VirtualStashService.ClearAllTraderStashes(sessionId);
         WipeItems(sessionId, pmc, true, true, true);
-        
+
         state.CurrentMap = "Streets";
         state.LastExit = "VGB_EXT_FENCE";
         state.TransitState = null;

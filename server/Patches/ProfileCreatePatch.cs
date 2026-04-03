@@ -48,7 +48,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
         state.LastExit = "VGB_EXT_FENCE";
         state.VagabondModeEnabled = true;
         VagabondState.SaveState(sessionId, state);
-        
+
         var changed = InitializeNewCharacter(sessionId, pmc);
         if (!changed)
         {

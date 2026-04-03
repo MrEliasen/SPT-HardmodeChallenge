@@ -12,6 +12,7 @@ using UnityEngine;
 using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
+using Vagabond.Client.Services;
 
 namespace Vagabond.Client.Patches;
 
@@ -251,9 +252,9 @@ internal class CustomExfilPlacementPatch : ModulePatch
     }
 
     public static void ApplyCustomTransits(TransitControllerAbstractClass transitController, RaidLocation raid,
-        List<CustomExfil> definitions)
+        List<CustomExfil> definitions, bool force = false)
     {
-        if (TransitsAppliedThisRaid)
+        if (TransitsAppliedThisRaid && !force)
         {
             return;
         }
