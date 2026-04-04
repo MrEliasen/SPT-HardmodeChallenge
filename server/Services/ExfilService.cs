@@ -257,7 +257,7 @@ internal static class ExfilService
             return null;
         }
 
-        var raid = VagabondLocations.NormaliseMapName(state.CurrentMap);
+        var raid = VagabondLocations.NormaliseMapName(explicitMap);
         if (raid == RaidLocation.Nil)
         {
             return null;
@@ -280,6 +280,27 @@ internal static class ExfilService
                         exfils.Value.RemoveAt(i);
                     }
                 }
+            }
+        }
+
+        switch (raid)
+        {
+            case RaidLocation.FactoryDay:
+            {
+                if (VagabondLocations.Locations.TryGetValue(RaidLocation.FactoryNight, out var additionalIds))
+                {
+                    mapIds.AddRange(additionalIds);
+                }
+                break;
+            }
+                
+            case RaidLocation.FactoryNight:
+            {
+                if (VagabondLocations.Locations.TryGetValue(RaidLocation.FactoryDay, out var additionalIds))
+                {
+                    mapIds.AddRange(additionalIds);
+                }
+                break;
             }
         }
 

@@ -6,6 +6,7 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Ws;
 using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Utils;
+using Vagabond.Common.Data;
 using Vagabond.Common.Models;
 using Vagabond.Server.Config;
 using Vagabond.Server.Models;
@@ -129,14 +130,14 @@ public class VagabondRouter(
             return response;
         }
 
-        var locationId = !string.IsNullOrWhiteSpace(payload.LocationId)
+        var mapName  = !string.IsNullOrWhiteSpace(payload.LocationId)
             ? payload.LocationId
             : VagabondService.GetCurrentRaidId(state);
-
+        
         state.HideoutState = new HideoutState
         {
             Id = String.Format("{0:X}", sessionId.GetHashCode()),
-            Map = locationId,
+            Map = mapName,
             X = payload.X,
             Y = payload.Y,
             Z = payload.Z,
@@ -145,8 +146,8 @@ public class VagabondRouter(
 
         VagabondState.SaveState(stateSessionId, state);
         response.Success = true;
-        response.CurrentRaid = locationId;
-        response.MapName = locationId;
+        response.CurrentRaid = mapName;
+        response.MapName = mapName;
         response.Message = "Hideout Established.";
         response.Exfil = ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state);
 
