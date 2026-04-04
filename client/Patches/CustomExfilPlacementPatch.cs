@@ -641,6 +641,11 @@ internal class CustomExfilPlacementPatch : ModulePatch
     {
         var kept = new List<ExfiltrationPoint>();
 
+        if (__instance == null)
+        {
+            return;
+        }
+
         foreach (var exfil in __instance.ExfiltrationPoints)
         {
             if (exfil?.Settings == null)

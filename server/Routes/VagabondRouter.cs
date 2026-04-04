@@ -150,7 +150,7 @@ public class VagabondRouter(JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
         }
 
         var raid = VagabondLocations.NormaliseMapName(state.CurrentMap);
-        if (raid == Vagabond.Common.Enums.RaidLocation.Nil)
+        if (raid == RaidLocation.Nil)
         {
             return snapshot;
         }

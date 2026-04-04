@@ -44,7 +44,11 @@ internal static class VirtualStashService
             return Noop.Instance;
         }
 
-        pmcData = ResolvePmcData(sessionId);
+        if (pmcData == null)
+        {
+            pmcData = ResolvePmcData(sessionId);
+        }
+        
         if (pmcData?.Inventory?.Items == null)
         {
             return Noop.Instance;
