@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Services.Mod;
 using Vagabond.Server.Services;
@@ -10,18 +9,11 @@ public sealed class VagabondState
     private const string ModKey = "dev.oogabooga.spt-vagabond";
 
     public bool VagabondModeEnabled { get; set; }
-    public required string CurrentMap { get; set; }
-    public required string LastExit { get; set; }
+    public string CurrentMap { get; set; } = "";
+    public string LastExit { get; set; } = "";
     public TransitState? TransitState { get; set; }
     public HideoutState? HideoutState { get; set; }
     public bool ResetProfile { get; set; }
-
-    [SetsRequiredMembers]
-    public VagabondState()
-    {
-        CurrentMap = "";
-        LastExit = "";
-    }
 
     public static VagabondState GetState(MongoId sessionId)
     {

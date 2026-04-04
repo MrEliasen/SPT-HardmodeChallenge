@@ -12,14 +12,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="SPTarkov.Common" Version="4.0.13"/>
-        <PackageReference Include="SPTarkov.DI" Version="4.0.13"/>
-        <PackageReference Include="SPTarkov.Server.Core" Version="4.0.13"/>
-        <PackageReference Include="SPTarkov.Reflection" Version="4.0.13"/>
-        <ProjectReference Include="..\\common\\Vagabond.Common.csproj"/>
+        <PackageReference Include="shortid" Version="5.0.0" />
+        <PackageReference Include="SPTarkov.Common" Version="4.0.13" />
+        <PackageReference Include="SPTarkov.DI" Version="4.0.13" />
+        <PackageReference Include="SPTarkov.Server.Core" Version="4.0.13" />
+        <PackageReference Include="SPTarkov.Reflection" Version="4.0.13" />
+        <ProjectReference Include="..\\common\\Vagabond.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="Config\\vagabond.json" CopyToOutputDirectory="Always"/>
+        <None Include="Config\\vagabond.json" CopyToOutputDirectory="Always" />
     </ItemGroup>
 </Project>

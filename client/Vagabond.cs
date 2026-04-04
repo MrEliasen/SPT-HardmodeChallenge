@@ -6,6 +6,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
+using EFT.Communications;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Vagabond.Client.Patches;
@@ -35,6 +36,7 @@ public class Vagabond : BaseUnityPlugin
     private bool _hideoutPlacementArmed;
     private float _hideoutPlacementArmExpiresAt;
     private bool _hideoutPlacementLoading;
+    private bool _notifierSubscribed;
 
     public static void Log(string message)
     {
@@ -65,7 +67,7 @@ public class Vagabond : BaseUnityPlugin
         new SelectAvailableTraderPatch().Enable();
         new TransitInteractionPatch().Enable();
         new SkipInsuranceFlowPatch().Enable();
-        NotificationService.Create(transform);
+        UINotificationService.Create(transform);
         
         _hideoutHotkey = Config.Bind(
             "Vagabond",
@@ -108,6 +110,12 @@ public class Vagabond : BaseUnityPlugin
         if (IsHeadless())
         {
             return;
+        }
+        
+        if (!_notifierSubscribed && Singleton<NotificationManagerClass>.Instantiated)
+        {
+            Singleton<NotificationManagerClass>.Instance.OnNotificationReceived += OnNotificationReceived;
+            _notifierSubscribed = true;
         }
         
         if (_hideoutPlacementArmed && Time.realtimeSinceStartup > _hideoutPlacementArmExpiresAt)
@@ -340,6 +348,37 @@ public class Vagabond : BaseUnityPlugin
         {
             Position = position;
             Yaw = yaw;
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        if (_notifierSubscribed && Singleton<NotificationManagerClass>.Instantiated)
+        {
+            Singleton<NotificationManagerClass>.Instance.OnNotificationReceived -= OnNotificationReceived;
+            _notifierSubscribed = false;
+        }
+    }
+
+    private void OnNotificationReceived(NotificationAbstractClass notification)
+    {
+        if (notification is not GClass2504 popup)
+        {
+            return;
+        }
+
+        if (!string.Equals(popup.ImageUrl, "vagabond-exfil-refresh", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        try
+        {
+            _ = CommunicationService.RefreshExfilState();
+        }
+        catch (Exception ex)
+        {
+            LogError($"Failed to process exfil refresh notification: {ex}");
         }
     }
 }

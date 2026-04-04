@@ -5,6 +5,7 @@ using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Interfaces;
 using Vagabond.Common.Enums;
+using Vagabond.Server.State;
 using Location = SPTarkov.Server.Core.Models.Eft.Common.Location;
 
 namespace Vagabond.Server.Services;
@@ -12,6 +13,8 @@ namespace Vagabond.Server.Services;
 internal static class ExfilService
 {
     public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils = new();
+    private static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> _hideoutExfils = new(); 
+    private static HashSet<string> _loadedHideoutExfils = new(); 
 
     public static void Apply(DatabaseService databaseService)
     {
@@ -188,5 +191,134 @@ internal static class ExfilService
                 "RaidLocation.Nil has no custom map data."),
             _ => throw new ArgumentOutOfRangeException(nameof(raid), raid, "Unsupported raid location.")
         };
+    }
+
+    public static CustomExfil? AddHideoutExfil(PmcData pmc, VagabondState state)
+    {
+        if (string.IsNullOrEmpty(state.HideoutState?.Id) || _loadedHideoutExfils.Contains(state.HideoutState.Id))
+        {
+            return null;
+        }
+        
+        foreach (var raidEntry in _hideoutExfils)
+        {
+            var byMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var mapEntry in raidEntry.Value)
+            {
+                byMap[mapEntry.Key] = [.. mapEntry.Value];
+            }
+
+            _hideoutExfils[raidEntry.Key] = byMap;
+        }
+
+        var hideoutExfil = GenerateHideoutExfil(pmc.Info?.MainProfileNickname!, state);
+        if (hideoutExfil == null)
+        {
+            return null;
+        }
+
+        var explicitMap = state.HideoutState.Map;
+        if (string.IsNullOrWhiteSpace(explicitMap) || !VagabondLocations.LookupTable.TryGetValue(explicitMap, out _))
+        {
+            return null;
+        }
+
+        var raid = VagabondLocations.NormaliseMapName(state.CurrentMap);
+        if (raid == RaidLocation.Nil)
+        {
+            return null;
+        }
+
+        if (!VagabondLocations.Locations.TryGetValue(raid, out var mapIds))
+        {
+            return null;
+        }
+
+        // remove existing exfil
+        foreach (var raids  in _hideoutExfils)
+        {
+            foreach (var exfils  in raids.Value)
+            {
+                for (var i = exfils.Value.Count - 1; i >= 0; i--)
+                {
+                    if (exfils.Value[i].Identifier == hideoutExfil.Identifier)
+                    {
+                        exfils.Value.RemoveAt(i);
+                    }
+                }
+            }
+        }
+        
+        // patch in new one
+        foreach (var mapId in mapIds)
+        {
+            if (!_hideoutExfils.TryGetValue(raid, out var byMap))
+            {
+                byMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+                _hideoutExfils[raid] = byMap;
+            }
+
+            if (!byMap.TryGetValue(mapId, out var list))
+            {
+                list = [];
+                byMap[mapId] = list;
+            }
+
+            list.Add(hideoutExfil);
+        }
+        
+        _loadedHideoutExfils.Add(state.HideoutState.Id);
+        return hideoutExfil;
+    }
+
+    private static CustomExfil? GenerateHideoutExfil(string profileName, VagabondState state)
+    {
+        if (string.IsNullOrEmpty(state.HideoutState?.Id))
+        {
+            return null;
+        }
+
+        var template =
+            StaticTransitionSpawns.GetMapExtractTemplate(
+                VagabondLocations.NormaliseMapName(state.HideoutState?.Map ?? state.CurrentMap));
+        template.Identifier = $"VGB_HO_{state.HideoutState?.Id}";
+        template.DisplayName = $"Hideout Entrance ({profileName})";
+        template.ExfiltrationTime = 20f;
+        template.X = state.HideoutState?.X ?? 0f;
+        template.Y = state.HideoutState?.Y ?? 0f;
+        template.Z = state.HideoutState?.Z ?? 0f;
+        template.RotationY = state.HideoutState?.R ?? 0f;
+        return template;
+    }
+
+    public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> BuildCustomExfilSnapshot()
+    {
+        var snapshot = new Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>();
+
+        // fixed exfils
+        foreach (var raidEntry in CustomExfils)
+        {
+            var byMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var mapEntry in raidEntry.Value)
+            {
+                byMap[mapEntry.Key] = [.. mapEntry.Value];
+            }
+
+            snapshot[raidEntry.Key] = byMap;
+        }
+
+        //hideout exfils
+        foreach (var raidEntry in _hideoutExfils)
+        {
+            var byMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var mapEntry in raidEntry.Value)
+            {
+                byMap[mapEntry.Key] = [.. mapEntry.Value];
+            }
+
+            snapshot[raidEntry.Key] = byMap;
+        }
+
+        return snapshot;
     }
 }

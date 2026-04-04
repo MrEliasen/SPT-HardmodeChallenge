@@ -1,11 +1,12 @@
-﻿using SPTarkov.DI.Annotations;
+﻿using shortid;
+using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
+using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Eft.Ws;
+using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Utils;
-using Vagabond.Common.Data;
-using Vagabond.Common.Definitions;
-using Vagabond.Common.Enums;
 using Vagabond.Common.Models;
 using Vagabond.Server.Config;
 using Vagabond.Server.Models;
@@ -15,26 +16,37 @@ using Vagabond.Server.State;
 namespace Vagabond.Server.Routes;
 
 [Injectable]
-public class VagabondRouter(JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
+public class VagabondRouter(
+    JsonUtil jsonUtil,
+    NotificationSendHelper notificationSendHelper,
+    SaveServer saveServer) : StaticRouter(jsonUtil, [
     new RouteAction<EmptyRequestData>(
-        "/vagabond/sync",
+        "/vagabond/sync/state",
         (_, _, sessionID, _) =>
         {
-            return ValueTask.FromResult(jsonUtil.Serialize(HandleSyncRoute(sessionID)) ??
+            return ValueTask.FromResult(jsonUtil.Serialize(HandleSyncStateRoute(sessionID)) ??
+                                        throw new NullReferenceException("Could not serialize sync response"));
+        }
+    ),
+    new RouteAction<EmptyRequestData>(
+        "/vagabond/sync/exfils",
+        (_, _, sessionID, _) =>
+        {
+            return ValueTask.FromResult(jsonUtil.Serialize(HandleSyncExfilRoute(sessionID)) ??
                                         throw new NullReferenceException("Could not serialize sync response"));
         }
     ),
     new RouteAction<PlaceHideoutServerRequest>(
-        "/vagabond/place-hideout",
+        "/vagabond/hideout/establish",
         (_, payload, sessionID, _) =>
         {
-            return ValueTask.FromResult(jsonUtil.Serialize(HandleEstablishHideoutRoute(sessionID, payload)) ??
+            return ValueTask.FromResult(jsonUtil.Serialize(HandleEstablishHideoutRoute(sessionID, payload, notificationSendHelper, saveServer)) ??
                                         throw new NullReferenceException("Could not serialize hideout response"));
         }
     ),
 ])
 {
-    private static SyncStateResponse HandleSyncRoute(MongoId sessionId)
+    private static SyncStateResponse HandleSyncStateRoute(MongoId sessionId)
     {
         var stateSessionId = FikaAdapter.GetCanonicalSessionId(sessionId);
         var response = new SyncStateResponse
@@ -49,19 +61,22 @@ public class VagabondRouter(JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
 
         if (!VagabondService.ShouldApplyVagabondRules(stateSessionId))
         {
-            response.CustomExfils = BuildCustomExfilSnapshot(new VagabondState());
+            response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
             return response;
         }
 
         var pmc = VagabondService.GetPmcProfile(stateSessionId);
-        if (pmc == null)
+        if (pmc == null || pmc?.CharacterData?.PmcData == null)
         {
-            response.CustomExfils = BuildCustomExfilSnapshot(new VagabondState());
+            response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
             return response;
         }
-
+        
         var state = VagabondState.GetState(stateSessionId);
-        response.CustomExfils = BuildCustomExfilSnapshot(state);
+        // load their hideout first time
+        ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state);
+
+        response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
         response.PermaDeath = VagabondConfig.Config.PermaDeath;
         response.WipeFirstRaid = VagabondConfig.Config.WipeStashOnFirstRaidEntry;
         response.WipeFirstMoney = VagabondConfig.Config.AlsoWipeCarriedMoneyOnFirstRaid;
@@ -70,9 +85,21 @@ public class VagabondRouter(JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
 
         return response;
     }
+    private static SyncExfilResponse HandleSyncExfilRoute(MongoId sessionId)
+    {
+        var response = new SyncExfilResponse
+        {
+            CustomExfils = ExfilService.BuildCustomExfilSnapshot()
+        };
 
-    private static PlaceHideoutResponse HandleEstablishHideoutRoute(MongoId sessionId,
-        PlaceHideoutServerRequest payload)
+        return response;
+    }
+    
+    private static PlaceHideoutResponse HandleEstablishHideoutRoute(
+        MongoId sessionId,
+        PlaceHideoutServerRequest payload,
+        NotificationSendHelper notificationSendHelper,
+        SaveServer saveServer)
     {
         var response = new PlaceHideoutResponse();
         var stateSessionId = FikaAdapter.GetCanonicalSessionId(sessionId);
@@ -83,7 +110,7 @@ public class VagabondRouter(JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
         }
 
         var pmc = VagabondService.GetPmcProfile(stateSessionId);
-        if (pmc == null)
+        if (pmc?.CharacterData?.PmcData == null)
         {
             return response;
         }
@@ -103,6 +130,7 @@ public class VagabondRouter(JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
 
         state.HideoutState = new HideoutState
         {
+            Id = ShortId.Generate(new ShortIdOptions(length: 8, useNumbers: true, useSpecialCharacters: false)),
             Map = locationId,
             X = payload.X,
             Y = payload.Y,
@@ -115,80 +143,32 @@ public class VagabondRouter(JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
         response.CurrentRaid = locationId;
         response.MapName = locationId;
         response.Message = "Hideout Established.";
-        response.Exfil = HideoutService.GenerateHideoutExfil(state);
+        response.Exfil = ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state);
+
+        BroadcastExfilRefresh(notificationSendHelper, saveServer);
         return response;
     }
 
-    private static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> BuildCustomExfilSnapshot(
-        VagabondState state)
+    private static void BroadcastExfilRefresh(
+        NotificationSendHelper notificationSendHelper,
+        SaveServer saveServer)
     {
-        var snapshot = new Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>();
-
-        foreach (var raidEntry in ExfilService.CustomExfils)
+        var popup = new WsNotificationPopup
         {
-            var byMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
-            foreach (var mapEntry in raidEntry.Value)
+            EventType = NotificationEventType.NotificationPopup,
+            EventIdentifier = new MongoId(),
+            Message = new MongoId(),
+            Image = "vagabond-exfil-refresh"
+        };
+
+        foreach (var profileId in saveServer.GetProfiles().Keys)
+        {
+            if (!RaidRuntimeState.IsInRaid(profileId))
             {
-                byMap[mapEntry.Key] = [.. mapEntry.Value];
+                continue;
             }
 
-            snapshot[raidEntry.Key] = byMap;
+            notificationSendHelper.SendMessage(profileId, popup);
         }
-
-        var hideoutExfil = HideoutService.GenerateHideoutExfil(state);
-        if (hideoutExfil == null)
-        {
-            return snapshot;
-        }
-
-        var explicitMap = state.HideoutState?.Map;
-        if (!string.IsNullOrWhiteSpace(explicitMap) && VagabondLocations.LookupTable.TryGetValue(explicitMap, out _))
-        {
-            var explicitRaid = VagabondLocations.NormaliseMapName(explicitMap);
-            AddDynamicExtract(snapshot, explicitRaid, explicitMap, hideoutExfil);
-            return snapshot;
-        }
-
-        var raid = VagabondLocations.NormaliseMapName(state.CurrentMap);
-        if (raid == RaidLocation.Nil)
-        {
-            return snapshot;
-        }
-
-        if (VagabondLocations.Locations.TryGetValue(raid, out var mapIds))
-        {
-            foreach (var mapId in mapIds)
-            {
-                AddDynamicExtract(snapshot, raid, mapId, hideoutExfil);
-            }
-        }
-
-        return snapshot;
-    }
-
-    private static void AddDynamicExtract(
-        Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> snapshot,
-        RaidLocation raid,
-        string mapId,
-        CustomExfil exfil)
-    {
-        if (!snapshot.TryGetValue(raid, out var byMap))
-        {
-            byMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
-            snapshot[raid] = byMap;
-        }
-
-        if (!byMap.TryGetValue(mapId, out var list))
-        {
-            list = [];
-            byMap[mapId] = list;
-        }
-
-        if (list.Any(x => string.Equals(x.Identifier, exfil.Identifier, StringComparison.OrdinalIgnoreCase)))
-        {
-            return;
-        }
-
-        list.Add(exfil);
     }
 }
