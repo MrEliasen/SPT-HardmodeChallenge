@@ -12,7 +12,6 @@ using UnityEngine;
 using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
-using Vagabond.Client.Services;
 
 namespace Vagabond.Client.Patches;
 
@@ -21,6 +20,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
     public static bool ExtractsAppliedThisRaid;
     public static bool TransitsAppliedThisRaid;
     public static readonly Dictionary<int, CustomExfil> CustomTransitDefinitions = new();
+    public static Dictionary<string, ExfiltrationPoint> _exfilPointTemplateCache = new();
 
     private static readonly FieldInfo TransitPointLookupField =
         AccessTools.Field(typeof(TransitControllerAbstractClass), "Dictionary_0");
@@ -105,7 +105,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             var template = FindTemplateExfil(pmcExfils, definition, definitions);
             if (template == null)
             {
-                //Vagabond.LogError($"No template exfil found for '{definition.Identifier}' on {raid}.");
+                Vagabond.LogError($"No template exfil found for '{definition.Identifier}' on {raid}.");
                 continue;
             }
 
@@ -142,6 +142,26 @@ internal class CustomExfilPlacementPatch : ModulePatch
         CustomExfil definition,
         List<CustomExfil> definitions)
     {
+        // Hit cache first
+        if (!string.IsNullOrWhiteSpace(definition.TemplateExitName))
+        {
+            if (_exfilPointTemplateCache.TryGetValue(definition.TemplateExitName, out ExfiltrationPoint cachedSpecific))
+            {
+                return cachedSpecific;
+            }
+        }
+        
+        if (_exfilPointTemplateCache.TryGetValue("preferred", out ExfiltrationPoint cachedPreferred))
+        {
+            return cachedPreferred;
+        }
+        
+        if (_exfilPointTemplateCache.TryGetValue("fallback", out ExfiltrationPoint cachedFallback))
+        {
+            return cachedFallback;
+        }
+        // cache miss
+        
         var currentEntry = Singleton<GameWorld>.Instance?.MainPlayer?.Profile?.Info?.EntryPoint;
 
         bool MatchesExplicitTemplate(ExfiltrationPoint x) =>
@@ -231,6 +251,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             var explicitTemplate = pmcExfils.FirstOrDefault(MatchesExplicitTemplate);
             if (explicitTemplate != null)
             {
+                _exfilPointTemplateCache.Add(definition.TemplateExitName, explicitTemplate);
                 return explicitTemplate;
             }
         }
@@ -238,15 +259,17 @@ internal class CustomExfilPlacementPatch : ModulePatch
         var preferred = pmcExfils.FirstOrDefault(x => IsGoodTemplate(x, requireActiveStatus: true));
         if (preferred != null)
         {
+            _exfilPointTemplateCache.Add("preferred", preferred);
             return preferred;
         }
 
         var fallback = pmcExfils.FirstOrDefault(x => IsGoodTemplate(x, requireActiveStatus: false));
         if (fallback != null)
         {
+            _exfilPointTemplateCache.Add("fallback", fallback);
             return fallback;
         }
-
+        
         return null;
     }
 
