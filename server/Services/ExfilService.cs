@@ -315,14 +315,23 @@ internal static class ExfilService
         var template =
             StaticTransitionSpawns.GetMapExtractTemplate(
                 VagabondLocations.NormaliseMapName(state.HideoutState?.Map ?? state.CurrentMap));
-        template.Identifier = $"VGB_HO_{state.HideoutState?.Id}";
-        template.DisplayName = $"Hideout Entrance ({profileName})";
-        template.ExfiltrationTime = 20f;
-        template.X = state.HideoutState?.X ?? 0f;
-        template.Y = state.HideoutState?.Y ?? 0f;
-        template.Z = state.HideoutState?.Z ?? 0f;
-        template.RotationY = state.HideoutState?.R ?? 0f;
-        return template;
+
+        var hideoutExfil = new CustomExfil
+        {
+            Identifier = $"VGB_HO_{state.HideoutState?.Id}",
+            DisplayName = $"Hideout Entrance ({profileName})",
+            TemplateExitName = template.TemplateExitName,
+            EntryPoints = template.EntryPoints,
+            IsTransit = false,
+            ExfiltrationTime = 20f,
+            X = state.HideoutState?.X ?? 0f,
+            Y = state.HideoutState?.Y ?? 0f,
+            Z = state.HideoutState?.Z ?? 0f,
+            RotationY = state.HideoutState?.R ?? 0f,
+            Side = "Pmc"
+        };
+        
+        return hideoutExfil;
     }
 
     public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> BuildCustomExfilSnapshot()
