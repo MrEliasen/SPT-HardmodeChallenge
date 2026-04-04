@@ -72,15 +72,18 @@ internal static class ExfilService
                 continue;
             }
 
-            var ent = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+            var entExfils = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+            var entHideout = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
             foreach (var map in maps)
             {
-                ent.Add(map, new List<CustomExfil>());
+                entExfils.Add(map, new List<CustomExfil>());
+                entHideout.Add(map, new List<CustomExfil>());
             }
 
-            CustomExfils.Add(loc, ent);
+            CustomExfils.Add(loc, entExfils);
+            _hideoutExfils.Add(loc, entHideout);
         }
-
+        
         var locations = databaseService.GetLocations();
         AddExtractions(9000, locations.Bigmap, new ExfilsCustoms());
         AddExtractions(9100, locations.Factory4Day, new ExfilsFactoryDay());
@@ -242,21 +245,7 @@ internal static class ExfilService
             return null;
         }
 
-        var cloned = new Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>();
-        foreach (var raidEntry in _hideoutExfils)
-        {
-            var byMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
-            foreach (var mapEntry in raidEntry.Value)
-            {
-                byMap[mapEntry.Key] = [.. mapEntry.Value];
-            }
-
-            cloned[raidEntry.Key] = byMap;
-        }
-
-        _hideoutExfils = cloned;
-
-        var hideoutExfil = GenerateHideoutExfil(pmc.Info?.MainProfileNickname!, state);
+        var hideoutExfil = GenerateHideoutExfil(pmc.Info?.Nickname!, state);
         if (hideoutExfil == null)
         {
             return null;
@@ -339,6 +328,29 @@ internal static class ExfilService
     public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> BuildCustomExfilSnapshot()
     {
         var snapshot = new Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>();
+        foreach (var raidEntry in CustomExfils)
+        {
+            if (!snapshot.TryGetValue(raidEntry.Key, out var snapshotByMap))
+            {
+                snapshotByMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+                snapshot[raidEntry.Key] = snapshotByMap;
+            }
+
+            foreach (var mapEntry in raidEntry.Value)
+            {
+                if (!snapshotByMap.TryGetValue(mapEntry.Key, out var snapshotList))
+                {
+                    snapshotList = new List<CustomExfil>();
+                    snapshotByMap[mapEntry.Key] = snapshotList;
+                }
+
+                foreach (var exfil in mapEntry.Value)
+                {
+                    snapshotList.Add(exfil);
+                }
+            }
+        }
+        
         foreach (var raidEntry in _hideoutExfils)
         {
             if (!snapshot.TryGetValue(raidEntry.Key, out var snapshotByMap))
@@ -357,11 +369,7 @@ internal static class ExfilService
 
                 foreach (var exfil in mapEntry.Value)
                 {
-                    if (!snapshotList.Any(x =>
-                            string.Equals(x.Identifier, exfil.Identifier, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        snapshotList.Add(exfil);
-                    }
+                    snapshotList.Add(exfil);
                 }
             }
         }

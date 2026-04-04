@@ -79,10 +79,11 @@ public static class RaidService
             RegisterLiveExfilPoint(gameWorld, game, timerPanel, controller, point);
         }
 
+        RefreshPlayerInteractions(gameWorld.MainPlayer);
         timerPanel.ShowTimer(true, true);
     }
 
-    // DISCLAIMER: AI GENERATED CODE START 
+    // DISCLAIMER: AI GENERATED CODE START
     private static void RegisterLiveExfilPoint(
         GameWorld gameWorld,
         AbstractGame game,
@@ -112,8 +113,7 @@ public static class RaidService
             var eligible = controller.EligiblePoints(gameWorld.MainPlayer.Profile);
             var index = Array.FindIndex(
                             eligible,
-                            x => string.Equals(x.Settings?.Name, point.Settings?.Name,
-                                StringComparison.OrdinalIgnoreCase))
+                            x => string.Equals(x.Settings?.Name, point.Settings?.Name, StringComparison.OrdinalIgnoreCase))
                         + 1;
 
             if (index <= 0)
@@ -178,5 +178,29 @@ public static class RaidService
         point.OnStatusChanged += handler;
     }
 
+    private static void RefreshPlayerInteractions(Player player)
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        var owner = player.GetComponent<GamePlayerOwner>();
+        if (owner == null)
+        {
+            return;
+        }
+
+        owner.ClearInteractionState();
+
+        try
+        {
+            owner.InteractionsChangedHandler();
+        }
+        catch
+        {
+            // ignore
+        }
+    }
     // DISCLAIMER: AI GENERATED CODE END
 }

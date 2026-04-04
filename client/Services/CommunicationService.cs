@@ -28,10 +28,27 @@ public static class CommunicationService
         try
         {
             var resp = await Networking.ApiClient.SyncVagabondState();
+            Vagabond.Log($"Loading Custom Extractions");
             Vagabond.State.CustomExfils = resp.CustomExfils;
+
+            foreach (var raid in Vagabond.State.CustomExfils)
+            {
+                foreach (var map in raid.Value)
+                {
+                    foreach (var exfil in map.Value)
+                    {
+                        var kind = exfil.IsTransit ? "Transit" : "Extract";
+                        var desc = exfil.IsTransit
+                            ? $"{map.Key} To {exfil.DestinationLocation}"
+                            : $" {exfil.DisplayName}";
+                        Vagabond.Log($" => [{kind}] {exfil.Identifier} :: {desc}");
+                    }
+                }
+            }
 
             if (!Vagabond.IsHeadless())
             {
+                Vagabond.Log($"Loading More information");
                 Vagabond.State.PermaDeath = resp.PermaDeath;
                 Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
                 Vagabond.State.WipeFirstMoney = resp.WipeFirstMoney;
@@ -39,22 +56,6 @@ public static class CommunicationService
                 Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
                 Vagabond.State.NewCharacter = resp.NewCharacter;
             }
-
-            // Vagabond.Log($"Loading Custom Extractions");
-            // foreach (var raid in Vagabond.State.CustomExfils)
-            // {
-            //     foreach (var map in raid.Value)
-            //     {
-            //         foreach (var exfil in map.Value)
-            //         {
-            //             var kind = exfil.IsTransit ? "Transit" : "Extract";
-            //             var desc = exfil.IsTransit
-            //                 ? $"{map.Key} To {exfil.DestinationLocation}"
-            //                 : $" {exfil.DisplayName}";
-            //             Vagabond.Log($" => [{kind}] {exfil.Identifier} :: {desc}");
-            //         }
-            //     }
-            // }
         }
         catch (Exception ex)
         {

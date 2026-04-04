@@ -91,7 +91,6 @@ internal class CustomExfilPlacementPatch : ModulePatch
         var pmcExfils = controller?.ExfiltrationPoints?.Where(x => x != null).ToList();
         if (pmcExfils == null || pmcExfils.Count == 0)
         {
-            Vagabond.Log("ApplyCustomExtracts: no PMC exfils available");
             return;
         }
 

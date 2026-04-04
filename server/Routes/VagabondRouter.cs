@@ -1,5 +1,4 @@
-﻿using shortid;
-using SPTarkov.DI.Annotations;
+﻿using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
@@ -63,13 +62,15 @@ public class VagabondRouter(
 
         if (!VagabondService.ShouldApplyVagabondRules(stateSessionId))
         {
+            VagabondLogger.Error($"Not able to apply vagabond rules {stateSessionId}");
             response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
             return response;
         }
 
         var pmc = VagabondService.GetPmcProfile(stateSessionId);
-        if (pmc == null || pmc?.CharacterData?.PmcData == null)
+        if (pmc == null || pmc.CharacterData?.PmcData == null)
         {
+            VagabondLogger.Error($"PMC data is null {stateSessionId}");
             response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
             return response;
         }
@@ -78,6 +79,7 @@ public class VagabondRouter(
         // load their hideout first time
         ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state);
 
+        VagabondLogger.Error($"Building exfils{stateSessionId}");
         response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
         response.PermaDeath = VagabondConfig.Config.PermaDeath;
         response.WipeFirstRaid = VagabondConfig.Config.WipeStashOnFirstRaidEntry;
@@ -133,7 +135,7 @@ public class VagabondRouter(
 
         state.HideoutState = new HideoutState
         {
-            Id = ShortId.Generate(new ShortIdOptions(length: 8, useNumbers: true, useSpecialCharacters: false)),
+            Id = String.Format("{0:X}", sessionId.GetHashCode()),
             Map = locationId,
             X = payload.X,
             Y = payload.Y,
