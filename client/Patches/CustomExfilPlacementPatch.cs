@@ -5,7 +5,6 @@ using System.Reflection;
 using Comfort.Common;
 using EFT;
 using EFT.Interactive;
-using EFT.Interactive.SecretExfiltrations;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UnityEngine;
@@ -150,18 +149,18 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 return cachedSpecific;
             }
         }
-        
+
         if (_exfilPointTemplateCache.TryGetValue("preferred", out ExfiltrationPoint cachedPreferred))
         {
             return cachedPreferred;
         }
-        
+
         if (_exfilPointTemplateCache.TryGetValue("fallback", out ExfiltrationPoint cachedFallback))
         {
             return cachedFallback;
         }
         // cache miss
-        
+
         var currentEntry = Singleton<GameWorld>.Instance?.MainPlayer?.Profile?.Info?.EntryPoint;
 
         bool MatchesExplicitTemplate(ExfiltrationPoint x) =>
@@ -269,7 +268,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             _exfilPointTemplateCache.Add("fallback", fallback);
             return fallback;
         }
-        
+
         return null;
     }
 
