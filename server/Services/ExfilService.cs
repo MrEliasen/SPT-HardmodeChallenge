@@ -83,7 +83,7 @@ internal static class ExfilService
             CustomExfils.Add(loc, entExfils);
             _hideoutExfils.Add(loc, entHideout);
         }
-        
+
         var locations = databaseService.GetLocations();
         AddExtractions(9000, locations.Bigmap, new ExfilsCustoms());
         AddExtractions(9100, locations.Factory4Day, new ExfilsFactoryDay());
@@ -292,7 +292,7 @@ internal static class ExfilService
                 raidsToAdd.Add(RaidLocation.FactoryNight);
                 break;
             }
-                
+
             case RaidLocation.FactoryNight:
             {
                 raidsToAdd.Add(RaidLocation.FactoryDay);
@@ -306,8 +306,8 @@ internal static class ExfilService
             if (!VagabondLocations.InverseLookupTable.TryGetValue(r, out var mapNames))
             {
                 continue;
-            } 
-            
+            }
+
             foreach (var m in mapNames)
             {
                 _hideoutExfils[r][m].Add(hideoutExfil);
@@ -343,7 +343,7 @@ internal static class ExfilService
             RotationY = state.HideoutState?.R ?? 0f,
             Side = "Pmc"
         };
-        
+
         return hideoutExfil;
     }
 
@@ -374,7 +374,7 @@ internal static class ExfilService
                 }
             }
         }
-        
+
         foreach (var raidEntry in _hideoutExfils)
         {
             VagabondLogger.Log($"Pupulating Hideouts for {raidEntry.Key}");

@@ -113,7 +113,8 @@ public static class RaidService
             var eligible = controller.EligiblePoints(gameWorld.MainPlayer.Profile);
             var index = Array.FindIndex(
                             eligible,
-                            x => string.Equals(x.Settings?.Name, point.Settings?.Name, StringComparison.OrdinalIgnoreCase))
+                            x => string.Equals(x.Settings?.Name, point.Settings?.Name,
+                                StringComparison.OrdinalIgnoreCase))
                         + 1;
 
             if (index <= 0)

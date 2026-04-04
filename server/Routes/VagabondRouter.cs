@@ -130,10 +130,10 @@ public class VagabondRouter(
             return response;
         }
 
-        var mapName  = !string.IsNullOrWhiteSpace(payload.LocationId)
+        var mapName = !string.IsNullOrWhiteSpace(payload.LocationId)
             ? payload.LocationId
             : VagabondService.GetCurrentRaidId(state);
-        
+
         state.HideoutState = new HideoutState
         {
             Id = String.Format("{0:X}", sessionId.GetHashCode()),
