@@ -33,6 +33,7 @@ public static class CommunicationService
 
             foreach (var raid in Vagabond.State.CustomExfils)
             {
+                Vagabond.Log($" === {raid.Key} ===");
                 foreach (var map in raid.Value)
                 {
                     foreach (var exfil in map.Value)

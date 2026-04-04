@@ -55,7 +55,7 @@ internal static class ExfilService
             }
         }
 
-        _loadedHideoutExfils.Remove(exfileId);
+        _loadedHideoutExfils.Remove(state.Id);
     }
 
     public static void Apply(DatabaseService databaseService)
