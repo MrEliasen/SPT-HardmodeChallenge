@@ -40,8 +40,10 @@ public class VagabondRouter(
         "/vagabond/hideout/establish",
         (_, payload, sessionID, _) =>
         {
-            return ValueTask.FromResult(jsonUtil.Serialize(HandleEstablishHideoutRoute(sessionID, payload, notificationSendHelper, saveServer)) ??
-                                        throw new NullReferenceException("Could not serialize hideout response"));
+            return ValueTask.FromResult(
+                jsonUtil.Serialize(HandleEstablishHideoutRoute(sessionID, payload, notificationSendHelper,
+                    saveServer)) ??
+                throw new NullReferenceException("Could not serialize hideout response"));
         }
     ),
 ])
@@ -71,7 +73,7 @@ public class VagabondRouter(
             response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
             return response;
         }
-        
+
         var state = VagabondState.GetState(stateSessionId);
         // load their hideout first time
         ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state);
@@ -85,6 +87,7 @@ public class VagabondRouter(
 
         return response;
     }
+
     private static SyncExfilResponse HandleSyncExfilRoute(MongoId sessionId)
     {
         var response = new SyncExfilResponse
@@ -94,7 +97,7 @@ public class VagabondRouter(
 
         return response;
     }
-    
+
     private static PlaceHideoutResponse HandleEstablishHideoutRoute(
         MongoId sessionId,
         PlaceHideoutServerRequest payload,

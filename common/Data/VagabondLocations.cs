@@ -116,7 +116,7 @@ public static class VagabondLocations
         ["Factory4Night"] = RaidLocation.FactoryNight,
         ["SandboxHigh"] = RaidLocation.GroundZero,
     };
-    
+
     public static RaidLocation NormaliseMapName(string? mapName)
     {
         if (string.IsNullOrWhiteSpace(mapName))

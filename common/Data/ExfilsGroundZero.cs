@@ -9,12 +9,14 @@ public class ExfilsGroundZero : ICustomExtilData
     public string MapName => _mapName;
     public List<CustomExfil> Extracts => _extracts;
     public List<CustomExfil> Transits => _transits;
-    
+
     private static RaidLocation _raid = RaidLocation.GroundZero;
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "Sandbox_high";
-    private static List<CustomExfil> _extracts = [
+
+    private static List<CustomExfil> _extracts =
+    [
         new CustomExfil
         {
             Identifier = "VGB_EXT_THERAPIST",
@@ -30,12 +32,14 @@ public class ExfilsGroundZero : ICustomExtilData
             Side = "Pmc"
         },
     ];
-    private static  List<CustomExfil>_transits = [
+
+    private static List<CustomExfil> _transits =
+    [
         new CustomExfil
         {
             Identifier = "VGB_GZ_IC",
             IsTransit = true,
-            TransitPointId = 0,// gets auto generated
+            TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Interchange].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Interchange].First(),
             Description = "Transit to Interchange",

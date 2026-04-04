@@ -659,7 +659,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 kept.Add(exfil);
                 continue;
             }
-            
+
             // Keep shared exits alive for scavs
             if (exfil is SharedExfiltrationPoint shared)
             {
@@ -799,7 +799,7 @@ internal class CustomTransitRetryPatch : ModulePatch
         {
             return;
         }
-        
+
         CustomExfilPlacementPatch.ApplyCustomExtracts(__instance.ExfiltrationController, raid,
             definitions.Where(x => !x.IsTransit).ToList());
         CustomExfilPlacementPatch.ApplyCustomTransits(__instance.TransitController, raid,

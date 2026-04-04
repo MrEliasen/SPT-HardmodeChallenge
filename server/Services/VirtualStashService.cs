@@ -48,7 +48,7 @@ internal static class VirtualStashService
         {
             pmcData = ResolvePmcData(sessionId);
         }
-        
+
         if (pmcData?.Inventory?.Items == null)
         {
             return Noop.Instance;

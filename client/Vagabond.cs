@@ -30,7 +30,7 @@ public class Vagabond : BaseUnityPlugin
     private string _locationDumpPath = null!;
     private string _customExtractDumpPath = null!;
     private string _customTransitDumpPath = null!;
-    
+
     // hideout placement
     private ConfigEntry<KeyboardShortcut> _hideoutHotkey = null!;
     private bool _hideoutPlacementArmed;
@@ -68,14 +68,14 @@ public class Vagabond : BaseUnityPlugin
         new TransitInteractionPatch().Enable();
         new SkipInsuranceFlowPatch().Enable();
         UINotificationService.Create(transform);
-        
+
         _hideoutHotkey = Config.Bind(
             "Vagabond",
             "Place Hideout Entrance",
             new KeyboardShortcut(KeyCode.P, KeyCode.LeftControl),
             "Press in raid to place the entrance to your hideout at your current location."
         );
-        
+
         _dumpHotkey = Config.Bind(
             "Development",
             "Save Current Location",
@@ -107,17 +107,17 @@ public class Vagabond : BaseUnityPlugin
 
     private void Update()
     {
-        if (IsHeadless())
-        {
-            return;
-        }
-        
         if (!_notifierSubscribed && Singleton<NotificationManagerClass>.Instantiated)
         {
             Singleton<NotificationManagerClass>.Instance.OnNotificationReceived += OnNotificationReceived;
             _notifierSubscribed = true;
         }
-        
+
+        if (IsHeadless())
+        {
+            return;
+        }
+
         if (_hideoutPlacementArmed && Time.realtimeSinceStartup > _hideoutPlacementArmExpiresAt)
         {
             _hideoutPlacementArmed = false;
@@ -143,7 +143,7 @@ public class Vagabond : BaseUnityPlugin
             DumpCustomTransitDefinition();
         }
     }
-    
+
     private void PromptCreateHideoutExtract()
     {
         if (_hideoutPlacementLoading)
@@ -171,8 +171,8 @@ public class Vagabond : BaseUnityPlugin
 
         _hideoutPlacementArmed = false;
         TryCreateHideoutExtractAsync();
-    } 
-    
+    }
+
     private async Task TryCreateHideoutExtractAsync()
     {
         try
@@ -184,7 +184,7 @@ public class Vagabond : BaseUnityPlugin
             }
 
             _hideoutPlacementLoading = true;
-            
+
             var resp = await Networking.ApiClient.EstablishHideoutExtract(new PlaceHideoutRequest
             {
                 X = snapshot.Position.x,
@@ -193,7 +193,7 @@ public class Vagabond : BaseUnityPlugin
                 R = snapshot.Yaw,
                 LocationId = Singleton<GameWorld>.Instance?.LocationId,
             });
-            
+
             if (!resp.Success)
             {
                 NotificationManagerClass.DisplayWarningNotification(resp.Message);
@@ -350,7 +350,7 @@ public class Vagabond : BaseUnityPlugin
             Yaw = yaw;
         }
     }
-    
+
     private void OnDestroy()
     {
         if (_notifierSubscribed && Singleton<NotificationManagerClass>.Instantiated)

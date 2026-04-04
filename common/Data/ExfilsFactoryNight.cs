@@ -9,18 +9,20 @@ public class ExfilsFactoryNight : ICustomExtilData
     public string MapName => _mapName;
     public List<CustomExfil> Extracts => _extracts;
     public List<CustomExfil> Transits => _transits;
-    
+
     private static RaidLocation _raid = RaidLocation.FactoryNight;
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "factory4_night";
-    private static List<CustomExfil> _extracts = [
+
+    private static List<CustomExfil> _extracts =
+    [
         new CustomExfil
         {
             Identifier = "VGB_EXT_MECHANIC",
             DisplayName = "Mechanic's Workshop",
             IsTransit = false,
-            TemplateExitName = "",// only fill if you want a specific template
+            TemplateExitName = "", // only fill if you want a specific template
             EntryPoints = "",
             ExfiltrationTime = 15f,
             ActivateAfterSeconds = 0,
@@ -31,5 +33,6 @@ public class ExfilsFactoryNight : ICustomExtilData
             Side = "Pmc"
         },
     ];
-    private static  List<CustomExfil>_transits = [];
+
+    private static List<CustomExfil> _transits = [];
 }

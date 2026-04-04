@@ -56,7 +56,7 @@ public sealed class CustomExfil
     /// Ignored for TransitPoint.
     /// </summary>
     public string EntryPoints { get; set; } = string.Empty;
-    
+
     public string Side { get; set; } = "Pmc";
     public float ExfiltrationTime { get; set; } = 20f;
     public int ActivateAfterSeconds { get; set; } = 60;

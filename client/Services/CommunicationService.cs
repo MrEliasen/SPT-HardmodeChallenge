@@ -11,8 +11,7 @@ public static class CommunicationService
         {
             var resp = await Networking.ApiClient.SyncExfilData();
             Vagabond.State.CustomExfils = resp.CustomExfils;
-            
-            //CustomExfilPlacementPatch.ApplyCustomExtracts(__instance, raid, definitions.Where(x => !x.IsTransit).ToList());
+            RaidService.UpdateCurrentRaidExfils();
         }
         catch (Exception ex)
         {
@@ -23,7 +22,7 @@ public static class CommunicationService
             Vagabond.State.IsRefreshing = false;
         }
     }
-    
+
     public static async Task RefreshVagabondState()
     {
         try
