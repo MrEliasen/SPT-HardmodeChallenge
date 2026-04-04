@@ -283,43 +283,35 @@ internal static class ExfilService
             }
         }
 
+        List<RaidLocation> raidsToAdd = [raid];
+
         switch (raid)
         {
             case RaidLocation.FactoryDay:
             {
-                if (VagabondLocations.Locations.TryGetValue(RaidLocation.FactoryNight, out var additionalIds))
-                {
-                    mapIds.AddRange(additionalIds);
-                }
+                raidsToAdd.Add(RaidLocation.FactoryNight);
                 break;
             }
                 
             case RaidLocation.FactoryNight:
             {
-                if (VagabondLocations.Locations.TryGetValue(RaidLocation.FactoryDay, out var additionalIds))
-                {
-                    mapIds.AddRange(additionalIds);
-                }
+                raidsToAdd.Add(RaidLocation.FactoryDay);
                 break;
             }
         }
 
         // patch in new one
-        foreach (var mapId in mapIds)
+        foreach (var r in raidsToAdd)
         {
-            if (!_hideoutExfils.TryGetValue(raid, out var byMap))
+            if (!VagabondLocations.InverseLookupTable.TryGetValue(r, out var mapNames))
             {
-                byMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
-                _hideoutExfils[raid] = byMap;
-            }
-
-            if (!byMap.TryGetValue(mapId, out var list))
+                continue;
+            } 
+            
+            foreach (var m in mapNames)
             {
-                list = [];
-                byMap[mapId] = list;
+                _hideoutExfils[r][m].Add(hideoutExfil);
             }
-
-            list.Add(hideoutExfil);
         }
 
         _loadedHideoutExfils.Add(state.HideoutState.Id);
@@ -360,6 +352,7 @@ internal static class ExfilService
         var snapshot = new Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>();
         foreach (var raidEntry in CustomExfils)
         {
+            VagabondLogger.Log($"Pupulating Exfil for {raidEntry.Key}");
             if (!snapshot.TryGetValue(raidEntry.Key, out var snapshotByMap))
             {
                 snapshotByMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
@@ -376,6 +369,7 @@ internal static class ExfilService
 
                 foreach (var exfil in mapEntry.Value)
                 {
+                    VagabondLogger.Log($"Adding Exfil to {mapEntry.Key}");
                     snapshotList.Add(exfil);
                 }
             }
@@ -383,6 +377,7 @@ internal static class ExfilService
         
         foreach (var raidEntry in _hideoutExfils)
         {
+            VagabondLogger.Log($"Pupulating Hideouts for {raidEntry.Key}");
             if (!snapshot.TryGetValue(raidEntry.Key, out var snapshotByMap))
             {
                 snapshotByMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
@@ -399,6 +394,7 @@ internal static class ExfilService
 
                 foreach (var exfil in mapEntry.Value)
                 {
+                    VagabondLogger.Log($"Adding hideout to {mapEntry.Key}");
                     snapshotList.Add(exfil);
                 }
             }

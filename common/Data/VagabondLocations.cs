@@ -44,10 +44,6 @@ public static class VagabondLocations
         {
             "factory4_day",
         },
-        [RaidLocation.FactoryDay] = new List<string>
-        {
-            "factory4_day",
-        },
         [RaidLocation.FactoryNight] = new List<string>
         {
             "factory4_night",
