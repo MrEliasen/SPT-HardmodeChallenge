@@ -14,9 +14,10 @@ namespace Vagabond.Client.Networking
             return JsonConvert.DeserializeObject<SyncStateResponse>(payload);
         }
 
-        public static async Task<SyncExfilResponse> SyncExfilData()
+        public static async Task<SyncExfilResponse> SyncExfilData(GetExfilDataRequest body)
         {
-            string payload = await RequestHandler.GetJsonAsync("/vagabond/sync/exfils");
+            string payload =
+                await RequestHandler.PostJsonAsync("/vagabond/sync/exfils", JsonConvert.SerializeObject(body));
             return JsonConvert.DeserializeObject<SyncExfilResponse>(payload);
         }
 

@@ -468,7 +468,7 @@ internal static class VirtualStashService
         traderId = string.Empty;
 
         // I want to make sure while in-raid, whatever you do does not involve any virtual stash
-        if (RaidRuntimeState.IsInRaid(sessionId))
+        if (VagabondService.IsInRaid(sessionId))
         {
             return false;
         }

@@ -660,15 +660,19 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
     public static void FilterExtractions(ExfiltrationControllerClass __instance)
     {
-        var kept = new List<ExfiltrationPoint>();
-
         if (__instance == null)
         {
             return;
         }
 
+        var kept = new List<ExfiltrationPoint>();
         foreach (var exfil in __instance.ExfiltrationPoints)
         {
+            if (exfil == null)
+            {
+                continue;
+            }
+
             if (exfil?.Settings == null)
             {
                 HideExfil(exfil);

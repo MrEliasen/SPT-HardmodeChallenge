@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Comfort.Common;
 using EFT;
 using EFT.Interactive;
@@ -18,19 +19,111 @@ namespace Vagabond.Client.Services;
 
 public static class RaidService
 {
-    public static void UpdateCurrentRaidExfils()
+    // exfil updates check
+    private const long ExfilPollIntervalMs = 5000;
+    private static bool _exfilPollInFlight;
+    private static long _nextExfilPollAtMs;
+    private static bool _wasInRaid;
+
+    public static bool IsInRaid()
     {
         var gameWorld = Singleton<GameWorld>.Instance;
         var game = Singleton<AbstractGame>.Instance;
         var controller = gameWorld?.ExfiltrationController;
         var timerPanel = game?.GameUi?.TimerPanel;
 
-        if (gameWorld == null || game == null || controller == null || timerPanel == null)
+        if (controller == null || timerPanel == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static void HandleExfilUpdatePolling()
+    {
+        // don't run all the expensive logic all the time, its fine to gate the start and end behind the first check
+        var nowMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        if (nowMs < _nextExfilPollAtMs)
         {
             return;
         }
 
-        var locationId = gameWorld.LocationId;
+        // intentionally rounding, align poll to nearest 5s interval to try and sync all players at the same time.
+        _nextExfilPollAtMs = ((nowMs / ExfilPollIntervalMs) + 1) * ExfilPollIntervalMs;
+
+        var isInRaid = IsInRaid();
+
+        if (isInRaid && !_wasInRaid)
+        {
+            StartPolling();
+        }
+        else if (!isInRaid && _wasInRaid)
+        {
+            StopPolling();
+        }
+
+        _wasInRaid = isInRaid;
+
+        if (!isInRaid || _exfilPollInFlight)
+        {
+            return;
+        }
+
+        PollExfilStateAsync();
+    }
+
+    private static void StartPolling()
+    {
+        _exfilPollInFlight = false;
+        var nowMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        // intentionally rounding, align poll to nearest 5s interval to try and sync all players at the same time.
+        _nextExfilPollAtMs = ((nowMs / ExfilPollIntervalMs) + 1) * ExfilPollIntervalMs;
+    }
+
+    private static void StopPolling()
+    {
+        _exfilPollInFlight = false;
+        _nextExfilPollAtMs = 0;
+    }
+
+    private static async Task PollExfilStateAsync()
+    {
+        if (_exfilPollInFlight)
+        {
+            return;
+        }
+
+        _exfilPollInFlight = true;
+
+        try
+        {
+            await CommunicationService.RefreshExfilState();
+        }
+        catch (Exception ex)
+        {
+            Vagabond.Log($"Exfil polling failed: {ex}");
+        }
+        finally
+        {
+            _exfilPollInFlight = false;
+        }
+    }
+
+    public static void UpdateCurrentRaidExfils()
+    {
+        if (!IsInRaid())
+        {
+            return;
+        }
+
+        var gameWorld = Singleton<GameWorld>.Instance;
+        var game = Singleton<AbstractGame>.Instance;
+        var controller = gameWorld?.ExfiltrationController;
+        var timerPanel = game?.GameUi?.TimerPanel;
+        var locationId = gameWorld?.LocationId;
+
         if (string.IsNullOrWhiteSpace(locationId))
         {
             return;
@@ -53,7 +146,7 @@ public static class RaidService
         }
 
         var before = new HashSet<string>(
-            controller.ExfiltrationPoints?
+            controller?.ExfiltrationPoints?
                 .Where(x => x?.Settings?.Name != null)
                 .Select(x => x.Settings.Name) ??
             Enumerable.Empty<string>(),
@@ -65,7 +158,7 @@ public static class RaidService
             definitions.Where(x => !x.IsTransit).ToList(),
             true);
 
-        var livePoints = controller.ExfiltrationPoints?
+        var livePoints = controller?.ExfiltrationPoints?
             .Where(x => x?.Settings?.Name != null && !before.Contains(x.Settings.Name))
             .ToList();
 
@@ -80,7 +173,7 @@ public static class RaidService
         }
 
         RefreshPlayerInteractions(gameWorld.MainPlayer);
-        timerPanel.ShowTimer(true, true);
+        timerPanel?.ShowTimer(true, true);
     }
 
     // DISCLAIMER: AI GENERATED CODE START
@@ -178,6 +271,8 @@ public static class RaidService
         point.OnStatusChanged -= handler;
         point.OnStatusChanged += handler;
     }
+    
+    
 
     private static void RefreshPlayerInteractions(Player player)
     {

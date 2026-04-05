@@ -17,9 +17,7 @@ namespace Vagabond.Server.Routes;
 
 [Injectable]
 public class VagabondRouter(
-    JsonUtil jsonUtil,
-    NotificationSendHelper notificationSendHelper,
-    SaveServer saveServer) : StaticRouter(jsonUtil, [
+    JsonUtil jsonUtil) : StaticRouter(jsonUtil, [
     new RouteAction<EmptyRequestData>(
         "/vagabond/sync/state",
         (_, _, sessionID, _) =>
@@ -28,11 +26,11 @@ public class VagabondRouter(
                                         throw new NullReferenceException("Could not serialize sync response"));
         }
     ),
-    new RouteAction<EmptyRequestData>(
+    new RouteAction<GetExfilDataServerRequest>(
         "/vagabond/sync/exfils",
-        (_, _, sessionID, _) =>
+        (_, payload, sessionID, _) =>
         {
-            return ValueTask.FromResult(jsonUtil.Serialize(HandleSyncExfilRoute(sessionID)) ??
+            return ValueTask.FromResult(jsonUtil.Serialize(HandleSyncExfilRoute(sessionID, payload)) ??
                                         throw new NullReferenceException("Could not serialize sync response"));
         }
     ),
@@ -41,8 +39,7 @@ public class VagabondRouter(
         (_, payload, sessionID, _) =>
         {
             return ValueTask.FromResult(
-                jsonUtil.Serialize(HandleEstablishHideoutRoute(sessionID, payload, notificationSendHelper,
-                    saveServer)) ??
+                jsonUtil.Serialize(HandleEstablishHideoutRoute(sessionID, payload)) ??
                 throw new NullReferenceException("Could not serialize hideout response"));
         }
     ),
@@ -56,7 +53,7 @@ public class VagabondRouter(
             CurrentMap = ""
         };
 
-        if (!RaidRuntimeState.IsInRaid(stateSessionId))
+        if (!VagabondService.IsInRaid(stateSessionId))
         {
             RaidRuntimeState.Left(stateSessionId);
         }
@@ -78,7 +75,10 @@ public class VagabondRouter(
 
         var state = VagabondState.GetState(stateSessionId);
         // load their hideout first time
-        ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state);
+        if (ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state))
+        {
+            ExfilService.BuildCustomExfilSnapshot(true);
+        }
 
         VagabondLogger.Error($"Building exfils{stateSessionId}");
         response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
@@ -91,21 +91,24 @@ public class VagabondRouter(
         return response;
     }
 
-    private static SyncExfilResponse HandleSyncExfilRoute(MongoId sessionId)
+    private static SyncExfilResponse HandleSyncExfilRoute(MongoId sessionId, GetExfilDataServerRequest payload)
     {
         var response = new SyncExfilResponse
         {
-            CustomExfils = ExfilService.BuildCustomExfilSnapshot()
+            Version = ExfilService.SnapshotCacheVersion,
         };
+
+        if (payload.Version != ExfilService.SnapshotCacheVersion)
+        {
+            response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
+        }
 
         return response;
     }
 
     private static PlaceHideoutResponse HandleEstablishHideoutRoute(
         MongoId sessionId,
-        PlaceHideoutServerRequest payload,
-        NotificationSendHelper notificationSendHelper,
-        SaveServer saveServer)
+        PlaceHideoutServerRequest payload)
     {
         var response = new PlaceHideoutResponse();
         var stateSessionId = FikaAdapter.GetCanonicalSessionId(sessionId);
@@ -123,7 +126,7 @@ public class VagabondRouter(
 
         var state = VagabondState.GetState(stateSessionId);
 
-        if (state.HideoutState != null)
+        if (state.HideoutState != null && !VagabondConfig.Config.AllowHideoutRelocation)
         {
             response.Success = false;
             response.Message = $"You have already established your hideout in {state.HideoutState.Map}.";
@@ -134,47 +137,27 @@ public class VagabondRouter(
             ? payload.LocationId
             : VagabondService.GetCurrentRaidId(state);
 
-        state.HideoutState = new HideoutState
+        if (state.HideoutState == null)
         {
-            Id = String.Format("{0:X}", sessionId.GetHashCode()),
-            Map = mapName,
-            X = payload.X,
-            Y = payload.Y,
-            Z = payload.Z,
-            R = payload.R
-        };
+            state.HideoutState = new HideoutState
+            {
+                Id = String.Format("{0:X}", sessionId.GetHashCode()),
+            };
+        }
+
+        state.HideoutState.Map = mapName;
+        state.HideoutState.X = payload.X;
+        state.HideoutState.Y = payload.Y;
+        state.HideoutState.Z = payload.Z;
+        state.HideoutState.R = payload.R;
+
+        ExfilService.BuildCustomExfilSnapshot(true);
 
         VagabondState.SaveState(stateSessionId, state);
         response.Success = true;
         response.CurrentRaid = mapName;
         response.MapName = mapName;
-        response.Message = "Hideout Established.";
-        response.Exfil = ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state);
-
-        BroadcastExfilRefresh(notificationSendHelper, saveServer);
+        response.Message = "Hideout Established. Please wait..";
         return response;
-    }
-
-    private static void BroadcastExfilRefresh(
-        NotificationSendHelper notificationSendHelper,
-        SaveServer saveServer)
-    {
-        var popup = new WsNotificationPopup
-        {
-            EventType = NotificationEventType.NotificationPopup,
-            EventIdentifier = new MongoId(),
-            Message = new MongoId(),
-            Image = "vagabond-exfil-refresh"
-        };
-
-        foreach (var profileId in saveServer.GetProfiles().Keys)
-        {
-            if (!RaidRuntimeState.IsInRaid(profileId))
-            {
-                continue;
-            }
-
-            notificationSendHelper.SendMessage(profileId, popup);
-        }
     }
 }

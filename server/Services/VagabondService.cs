@@ -287,4 +287,26 @@ internal static class VagabondService
 
         return allowedMapIds.First();
     }
+
+    public static bool IsInRaid(MongoId profileId)
+    {
+        if (RaidRuntimeState.IsInRaid(profileId))
+        {
+            return true;
+        }
+
+        var canonicalId = FikaAdapter.GetCanonicalSessionId(profileId);
+        if (RaidRuntimeState.IsInRaid(canonicalId))
+        {
+            return true;
+        }
+
+        var ownerId = FikaAdapter.GetRaidOwnerSessionId(profileId);
+        if (RaidRuntimeState.IsInRaid(ownerId))
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -14,6 +14,8 @@ internal static class ExfilService
 {
     public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils = new();
     private static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> _hideoutExfils = new();
+    private static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>? _snapshotCache;
+    public static int SnapshotCacheVersion = 0;
     private static HashSet<string> _loadedHideoutExfils = new();
 
     public static void RemoveHideout(HideoutState? state)
@@ -238,34 +240,34 @@ internal static class ExfilService
         };
     }
 
-    public static CustomExfil? AddHideoutExfil(PmcData pmc, VagabondState state)
+    public static bool AddHideoutExfil(PmcData pmc, VagabondState state)
     {
         if (string.IsNullOrEmpty(state.HideoutState?.Id) || _loadedHideoutExfils.Contains(state.HideoutState.Id))
         {
-            return null;
+            return false;
         }
 
         var hideoutExfil = GenerateHideoutExfil(pmc.Info?.Nickname!, state);
         if (hideoutExfil == null)
         {
-            return null;
+            return false;
         }
 
         var explicitMap = state.HideoutState.Map;
         if (string.IsNullOrWhiteSpace(explicitMap) || !VagabondLocations.LookupTable.TryGetValue(explicitMap, out _))
         {
-            return null;
+            return false;
         }
 
         var raid = VagabondLocations.NormaliseMapName(explicitMap);
         if (raid == RaidLocation.Nil)
         {
-            return null;
+            return false;
         }
 
         if (!VagabondLocations.Locations.TryGetValue(raid, out var mapIds))
         {
-            return null;
+            return false;
         }
 
         // remove existing exfil
@@ -315,7 +317,7 @@ internal static class ExfilService
         }
 
         _loadedHideoutExfils.Add(state.HideoutState.Id);
-        return hideoutExfil;
+        return true;
     }
 
     private static CustomExfil? GenerateHideoutExfil(string profileName, VagabondState state)
@@ -347,8 +349,14 @@ internal static class ExfilService
         return hideoutExfil;
     }
 
-    public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> BuildCustomExfilSnapshot()
+    public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> BuildCustomExfilSnapshot(
+        bool forceRebuild = false)
     {
+        if (_snapshotCache != null && !forceRebuild)
+        {
+            return _snapshotCache;
+        }
+
         var snapshot = new Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>();
         foreach (var raidEntry in CustomExfils)
         {
@@ -400,6 +408,8 @@ internal static class ExfilService
             }
         }
 
+        _snapshotCache = snapshot;
+        SnapshotCacheVersion++;
         return snapshot;
     }
 }

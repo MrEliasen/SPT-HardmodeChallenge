@@ -8,7 +8,7 @@ namespace Vagabond.Client.Services;
 
 // AI generated UI code, UI is not me, I have no idea what the hell I am doing with that.
 
-public sealed class UINotificationService : MonoBehaviour
+public sealed class UIMessageService : MonoBehaviour
 {
     public sealed class UiSettings
     {
@@ -52,7 +52,7 @@ public sealed class UINotificationService : MonoBehaviour
             PanelWidth - PanelPadding.left - PanelPadding.right;
     }
 
-    public static UINotificationService Instance { get; private set; } = null!;
+    public static UIMessageService Instance { get; private set; } = null!;
 
     private static UiSettings _pendingSettings = new();
 
@@ -90,7 +90,7 @@ public sealed class UINotificationService : MonoBehaviour
             go.transform.SetParent(parent, false);
 
         DontDestroyOnLoad(go);
-        Instance = go.AddComponent<UINotificationService>();
+        Instance = go.AddComponent<UIMessageService>();
     }
 
     private void Awake()

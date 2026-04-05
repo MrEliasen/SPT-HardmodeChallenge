@@ -47,7 +47,7 @@ internal class MenuShowPatch : ModulePatch
                 Vagabond.State.PermaDeath);
             if (message != "")
             {
-                UINotificationService.Instance.ShowMessage(message);
+                UIMessageService.Instance.ShowMessage(message);
                 Vagabond.State.HasShownWarningMessage = true;
             }
         }

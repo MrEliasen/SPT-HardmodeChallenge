@@ -15,5 +15,6 @@ public sealed class VagabondState
     public bool WipeFirstRaid { get; set; }
     public bool WipeFirstMoney { get; set; }
     public bool NewCharacter { get; set; }
+    public int CustomExfilsCacheVersion = 0;
     public Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils { get; set; } = new();
 }

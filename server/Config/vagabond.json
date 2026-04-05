@@ -20,5 +20,7 @@
   // this only works if "WipeStashOnFirstRaidEntry" is enabled
   "AlsoWipeCarriedMoneyOnFirstRaid": true,
   // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
-  "AdjustRaidTimeMins": 60
+  "AdjustRaidTimeMins": 60,
+  // if enabled, you can continue to place the hideout without being told you already have.
+  "AllowHideoutRelocation": true
 }

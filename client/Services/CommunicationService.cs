@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Vagabond.Common.Models;
 
 namespace Vagabond.Client.Services;
 
@@ -9,9 +10,20 @@ public static class CommunicationService
     {
         try
         {
-            var resp = await Networking.ApiClient.SyncExfilData();
-            Vagabond.State.CustomExfils = resp.CustomExfils;
-            RaidService.UpdateCurrentRaidExfils();
+            var resp = await Networking.ApiClient.SyncExfilData(new GetExfilDataRequest
+            {
+                Version = Vagabond.State.CustomExfilsCacheVersion,
+            });
+
+            Vagabond.Log($"RefreshExfilState: version={resp.Version}");
+            Vagabond.State.CustomExfilsCacheVersion = resp.Version;
+
+            if (resp.CustomExfils != null)
+            {
+                Vagabond.Log($"RefreshExfilState: updating exfils");
+                Vagabond.State.CustomExfils = resp.CustomExfils;
+                RaidService.UpdateCurrentRaidExfils();
+            }
         }
         catch (Exception ex)
         {
@@ -49,7 +61,7 @@ public static class CommunicationService
 
             if (!Vagabond.IsHeadless())
             {
-                Vagabond.Log($"Loading More information");
+                //Vagabond.Log($"Loading More information");
                 Vagabond.State.PermaDeath = resp.PermaDeath;
                 Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
                 Vagabond.State.WipeFirstMoney = resp.WipeFirstMoney;
