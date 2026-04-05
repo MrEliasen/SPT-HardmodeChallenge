@@ -22,5 +22,11 @@
   // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
   "AdjustRaidTimeMins": 60,
   // if enabled, you can continue to place the hideout without being told you already have.
-  "AllowHideoutRelocation": true
+  // allowing relocation via an in-game feature will come in a later update.
+  "AllowHideoutRelocation": true,
+  // Where you will be placed when you die, options are: 
+  // "hideout" - will send you to your hideout if you have one, otherwise fence.
+  // "fence" - will send you to fence.
+  // "stay" - you stay at your last known map/transit
+  "OnDeathGoTo": "hideout"
 }

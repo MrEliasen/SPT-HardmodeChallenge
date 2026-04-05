@@ -16,6 +16,7 @@ public sealed class VagabondConfig
     public bool StripMailAttachments { get; set; }
     public bool AllowHideoutRelocation { get; set; }
     public bool EnablePickRaidLocation { get; set; }
+    public string OnDeathGoTo { get; set; }
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
     public bool AlsoWipeCarriedMoneyOnFirstRaid { get; set; } = true;
 
