@@ -63,6 +63,7 @@ public class Vagabond : BaseUnityPlugin
             return;
         }
 
+        new MatchMakerSideSelectionScreenPatch().Enable();
         new HideUnavailableTraderCardsPatch().Enable();
         new SelectAvailableTraderPatch().Enable();
         new TransitInteractionPatch().Enable();
