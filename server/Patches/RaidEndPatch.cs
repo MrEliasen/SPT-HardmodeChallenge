@@ -108,6 +108,12 @@ public sealed class RaidEndPatch : AbstractPatch
             return string.Empty;
         }
 
+        // its a hideout, we need the ID
+        if (exitName.IndexOf(HideoutService.HideoutIdPrefix, StringComparison.OrdinalIgnoreCase) == 0)
+        {
+            
+        }
+
         var match = ExfilService.CustomExfils[raid][mapName].FirstOrDefault(x =>
             string.Equals(x.Identifier, exitName, StringComparison.OrdinalIgnoreCase) ||
             string.Equals(x.DisplayName, exitName, StringComparison.OrdinalIgnoreCase));

@@ -11,6 +11,7 @@ namespace Vagabond.Server.Services;
 internal static class HideoutService
 {
     public const string HideoutIdPrefix = "VGB_HO_"; 
+    public const string HideoutNamePrefix = "VGB_HO_"; 
     
     private static readonly List<TraderLocation> TraderLocations = new()
     {
