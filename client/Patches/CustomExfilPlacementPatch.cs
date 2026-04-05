@@ -74,23 +74,25 @@ internal class CustomExfilPlacementPatch : ModulePatch
         FilterExtractions(__instance);
     }
 
-    public static void ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid,
+    public static List<ExfiltrationPoint> ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid,
         List<CustomExfil> definitions, bool force = false)
     {
+        var addedPoints = new List<ExfiltrationPoint>();
+
         if (ExtractsAppliedThisRaid && !force)
         {
-            return;
+            return addedPoints;
         }
 
-        if (definitions.Count == 0)
+        if (definitions == null || definitions.Count == 0)
         {
-            return;
+            return addedPoints;
         }
 
         var pmcExfils = controller?.ExfiltrationPoints?.Where(x => x != null).ToList();
         if (pmcExfils == null || pmcExfils.Count == 0)
         {
-            return;
+            return addedPoints;
         }
 
         foreach (var definition in definitions)
@@ -127,6 +129,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
             ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
             pmcExfils.Add(clone);
+            addedPoints.Add(clone);
 
             Vagabond.Log(
                 $"Added custom extract '{definition.DisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
@@ -134,6 +137,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         controller.ExfiltrationPoints = pmcExfils.ToArray();
         ExtractsAppliedThisRaid = true;
+        return addedPoints;
     }
 
     private static ExfiltrationPoint FindTemplateExfil(
@@ -780,6 +784,7 @@ internal class CustomExfilCleanupPatch : ModulePatch
         CustomExfilPlacementPatch.TransitsAppliedThisRaid = false;
         CustomExfilPlacementPatch.ExtractsAppliedThisRaid = false;
         CustomExfilPlacementPatch.CustomTransitDefinitions.Clear();
+        CustomExfilPlacementPatch._exfilPointTemplateCache.Clear();
     }
 }
 
