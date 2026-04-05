@@ -270,7 +270,8 @@ public static class RaidService
         }
         catch (Exception ex)
         {
-            Vagabond.LogError($"Failed to register live exfil '{point.Settings?.Name}' through CoopGame.UpdateExfilPointFromServer: {ex}");
+            Vagabond.LogError(
+                $"Failed to register live exfil '{point.Settings?.Name}' through CoopGame.UpdateExfilPointFromServer: {ex}");
             return false;
         }
 
@@ -281,7 +282,6 @@ public static class RaidService
 
         BindStatusUiHandler(game, point);
         AppendPointToFikaManager(game, point);
-        LogRegistration(point, "FikaExfilManager");
         return true;
     }
 
@@ -312,7 +312,6 @@ public static class RaidService
 
         AppendPointToScenario(scenario, point);
         BindStatusUiHandler(game, point);
-        LogRegistration(point, "EndByExitTrigerScenario");
         return true;
     }
 
@@ -383,7 +382,8 @@ public static class RaidService
         }
         catch (Exception ex)
         {
-            Vagabond.LogError($"Failed to register live exfil '{point.Settings?.Name}' through FikaExfilManager.UpdateExfilPointFromServer: {ex}");
+            Vagabond.LogError(
+                $"Failed to register live exfil '{point.Settings?.Name}' through FikaExfilManager.UpdateExfilPointFromServer: {ex}");
             return false;
         }
     }
@@ -474,13 +474,6 @@ public static class RaidService
         }
 
         point.Proceed(player, false);
-    }
-
-    private static void LogRegistration(ExfiltrationPoint point, string source)
-    {
-        Vagabond.Log(
-            $"Registered live exfil '{point.Settings?.Name}' via {source}: startHandlers={GetHandlerCount(point.OnStartExtraction)}, ");
-        //$"cancelHandlers={GetHandlerCount(point.OnCancelExtraction)}, statusHandlers={GetHandlerCount(point.OnStatusChanged)}");
     }
 
     private static int GetHandlerCount(Delegate handlers)

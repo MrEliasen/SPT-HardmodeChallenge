@@ -27,6 +27,12 @@ public static class StaticMapTransitions
             return customExitSpawn;
         }
 
+        // if we cannot map the exit directly to a spawn location, we fall back to the below switch.
+        if (GetHideoutLocation(state, location, out var customHideoutSpawn))
+        {
+            return customHideoutSpawn;
+        }
+
         // Honestly, I made this as my first version of custom spawn points and it works well for
         // original transits, but if you have two transits going in the same direction, it falls apart.
         // So, leave this for original transits, and we only worry about mapping our custom transits.
@@ -72,7 +78,33 @@ public static class StaticMapTransitions
         }
 
         customExitSpawn = new ManualSpawnPoint { X = exfil.X, Y = exfil.Y, Z = exfil.Z, Rotation = exfil.RotationY };
-        //VagabondLogger.Error($"forcing spawn at {customExitSpawn.X},{customExitSpawn.Y},{customExitSpawn.Z},R={customExitSpawn.Rotation}");
+        return true;
+    }
+
+    private static bool GetHideoutLocation(VagabondState state, RaidLocation location,
+        out ManualSpawnPoint? customHideoutExitSpawn)
+    {
+        customHideoutExitSpawn = null;
+        var raid = VagabondLocations.NormaliseMapName(state.CurrentMap);
+        var exitName = state.LastExit;
+
+        if (location != raid || raid == RaidLocation.Nil || string.IsNullOrEmpty(exitName))
+        {
+            return false;
+        }
+        
+        var exfil = ExfilService.HideoutExfils[raid]
+            .SelectMany(x => x.Value)
+            .FirstOrDefault(y =>
+                string.Equals(y.Identifier, exitName, StringComparison.OrdinalIgnoreCase)
+            );
+        if (exfil == null)
+        {
+            return false;
+        }
+
+        customHideoutExitSpawn = new ManualSpawnPoint { X = exfil.X, Y = exfil.Y, Z = exfil.Z, Rotation = exfil.RotationY };
+        //VagabondLogger.Error($"forcing spawn at {customHideoutExitSpawn.X},{customHideoutExitSpawn.Y},{customHideoutExitSpawn.Z},R={customHideoutExitSpawn.Rotation}");
         return true;
     }
 

@@ -147,7 +147,7 @@ public class VagabondRouter(
         }
 
         ExfilService.RemoveHideout(state.HideoutState);
-        
+
         state.HideoutState.Map = mapName;
         state.HideoutState.X = payload.X;
         state.HideoutState.Y = payload.Y;
@@ -161,7 +161,7 @@ public class VagabondRouter(
         response.Success = true;
         response.CurrentRaid = mapName;
         response.MapName = mapName;
-        response.Message = "Hideout Established.";
+        response.Message = "Hideout Established, please wait...";
         return response;
     }
 }

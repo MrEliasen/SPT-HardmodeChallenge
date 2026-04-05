@@ -13,7 +13,7 @@ namespace Vagabond.Server.Services;
 internal static class ExfilService
 {
     public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils = new();
-    private static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> _hideoutExfils = new();
+    public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> HideoutExfils = new();
     private static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>? _snapshotCache;
     public static int SnapshotCacheVersion = 0;
     private static HashSet<string> _loadedHideoutExfils = new();
@@ -28,7 +28,7 @@ internal static class ExfilService
         var exfileId = $"{HideoutService.HideoutIdPrefix}{state.Id}";
 
         // remove hideout
-        foreach (var raids in _hideoutExfils)
+        foreach (var raids in HideoutExfils)
         {
             foreach (var exfils in raids.Value)
             {
@@ -83,7 +83,7 @@ internal static class ExfilService
             }
 
             CustomExfils.Add(loc, entExfils);
-            _hideoutExfils.Add(loc, entHideout);
+            HideoutExfils.Add(loc, entHideout);
         }
 
         var locations = databaseService.GetLocations();
@@ -271,7 +271,7 @@ internal static class ExfilService
         }
 
         // remove existing exfil
-        foreach (var raids in _hideoutExfils)
+        foreach (var raids in HideoutExfils)
         {
             foreach (var exfils in raids.Value)
             {
@@ -312,7 +312,7 @@ internal static class ExfilService
 
             foreach (var m in mapNames)
             {
-                _hideoutExfils[r][m].Add(hideoutExfil);
+                HideoutExfils[r][m].Add(hideoutExfil);
             }
         }
 
@@ -334,7 +334,7 @@ internal static class ExfilService
         var hideoutExfil = new CustomExfil
         {
             Identifier = $"{HideoutService.HideoutIdPrefix}{state.HideoutState?.Id}",
-            DisplayName = $"Hideout Entrance ({profileName})",
+            DisplayName = $"{HideoutService.HideoutNamePrefix} ({profileName})",
             TemplateExitName = template.TemplateExitName,
             EntryPoints = template.EntryPoints,
             IsTransit = false,
@@ -382,8 +382,8 @@ internal static class ExfilService
                 }
             }
         }
- 
-        foreach (var raidEntry in _hideoutExfils)
+
+        foreach (var raidEntry in HideoutExfils)
         {
             VagabondLogger.Log($"Pupulating Hideouts for {raidEntry.Key}");
             if (!snapshot.TryGetValue(raidEntry.Key, out var snapshotByMap))
