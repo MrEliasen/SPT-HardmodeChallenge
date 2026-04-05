@@ -398,7 +398,10 @@ internal class CustomExfilPlacementPatch : ModulePatch
         if (collider is BoxCollider box && templateCollider is BoxCollider templateBox)
         {
             box.center = templateBox.center;
-            box.size = templateBox.size;
+            //box.size = templateBox.size;
+            // I hope this is not too small now. 
+            // Going for 5x5m, and 2m high
+            box.size = new Vector3(5f, templateBox.size.y, 5f);
         }
     }
 
@@ -444,6 +447,16 @@ internal class CustomExfilPlacementPatch : ModulePatch
         {
             collider.enabled = true;
             collider.isTrigger = true;
+        }
+        
+        var templateCollider = template.GetComponent<Collider>();
+        if (collider is BoxCollider box && templateCollider is BoxCollider templateBox)
+        {
+            box.center = templateBox.center;
+            //box.size = templateBox.size;
+            // I hope this is not too small now. 
+            // Going for 5x5m, and 2m high
+            box.size = new Vector3(5f, templateBox.size.y, 5f);
         }
 
         clone.Enable();
