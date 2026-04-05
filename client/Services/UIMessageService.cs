@@ -1,11 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Vagabond.Client.Services;
 
-public sealed class NotificationService : MonoBehaviour
+// AI generated UI code, UI is not me, I have no idea what the hell I am doing with that.
+
+public sealed class UIMessageService : MonoBehaviour
 {
     public sealed class UiSettings
     {
@@ -17,7 +20,7 @@ public sealed class NotificationService : MonoBehaviour
         public Color OverlayColor = new(0f, 0f, 0f, 0.72f);
 
         // Panel
-        public float PanelWidth = 760f; // Main thing to tweak
+        public float PanelWidth = 760f;
         public float PanelYOffset = 120f;
         public Color PanelColor = new(0.12f, 0.12f, 0.12f, 1f);
         public RectOffset PanelPadding = new(24, 24, 18, 18);
@@ -27,10 +30,12 @@ public sealed class NotificationService : MonoBehaviour
         public string Title = "Vagabond";
         public int TitleFontSize = 14;
         public float TitleHeight = 32f;
+        public Color TitleColor = Color.white;
 
         // Message
         public int MessageFontSize = 11;
         public float MessageMinHeight = 40f;
+        public Color MessageColor = Color.white;
 
         // Buttons
         public float ButtonsRowHeight = 36f;
@@ -38,12 +43,16 @@ public sealed class NotificationService : MonoBehaviour
         public float ButtonHeight = 32f;
         public float ButtonSpacing = 10f;
         public Color ButtonColor = new(0.22f, 0.22f, 0.22f, 1f);
+        public Color PrimaryButtonColor = new(0.22f, 0.22f, 0.22f, 1f);
+        public Color SecondaryButtonColor = new(0.22f, 0.22f, 0.22f, 1f);
+        public Color ButtonTextColor = Color.white;
+        public int ButtonFontSize = 12;
 
         public float MessageWidth =>
             PanelWidth - PanelPadding.left - PanelPadding.right;
     }
 
-    public static NotificationService Instance { get; private set; } = null!;
+    public static UIMessageService Instance { get; private set; } = null!;
 
     private static UiSettings _pendingSettings = new();
 
@@ -52,7 +61,20 @@ public sealed class NotificationService : MonoBehaviour
     private GameObject _overlay = null!;
     private RectTransform _panel = null!;
     private RectTransform _messageRect = null!;
+
+    private Text _titleText = null!;
     private Text _messageText = null!;
+
+    private Button _primaryButton = null!;
+    private Button _secondaryButton = null!;
+    private Image _primaryButtonImage = null!;
+    private Image _secondaryButtonImage = null!;
+    private Text _primaryButtonText = null!;
+    private Text _secondaryButtonText = null!;
+    private RectTransform _buttonsRoot = null!;
+
+    private Action _primaryAction;
+    private Action _secondaryAction;
 
     private Coroutine _hideCoroutine;
 
@@ -68,7 +90,7 @@ public sealed class NotificationService : MonoBehaviour
             go.transform.SetParent(parent, false);
 
         DontDestroyOnLoad(go);
-        Instance = go.AddComponent<NotificationService>();
+        Instance = go.AddComponent<UIMessageService>();
     }
 
     private void Awake()
@@ -80,9 +102,70 @@ public sealed class NotificationService : MonoBehaviour
         HideMessage();
     }
 
-    public void ShowMessage(string text, float durationSeconds = 0f)
+    public void ShowMessage(
+        string text,
+        float durationSeconds = 0f,
+        string title = null,
+        string buttonText = "OK",
+        Action onClose = null)
     {
-        _messageText.text = text;
+        ConfigureDialog(
+            title ?? _ui.Title,
+            text,
+            primaryText: buttonText,
+            secondaryText: null,
+            primaryAction: onClose,
+            secondaryAction: null,
+            primaryColor: _ui.PrimaryButtonColor,
+            secondaryColor: _ui.SecondaryButtonColor);
+
+        ShowInternal(durationSeconds);
+    }
+
+    public void ShowConfirmation(
+        string text,
+        Action onAccept,
+        Action onCancel = null,
+        string title = null,
+        string acceptText = "Accept",
+        string cancelText = "Cancel")
+    {
+        ConfigureDialog(
+            title ?? _ui.Title,
+            text,
+            primaryText: acceptText,
+            secondaryText: cancelText,
+            primaryAction: onAccept,
+            secondaryAction: onCancel,
+            primaryColor: _ui.PrimaryButtonColor,
+            secondaryColor: _ui.SecondaryButtonColor);
+
+        ShowInternal(0f);
+    }
+
+    public void HideMessage()
+    {
+        if (_hideCoroutine != null)
+        {
+            StopCoroutine(_hideCoroutine);
+            _hideCoroutine = null;
+        }
+
+        _primaryAction = null;
+        _secondaryAction = null;
+
+        if (_overlay != null)
+            _overlay.SetActive(false);
+    }
+
+    public void SetPanelWidth(float width)
+    {
+        _ui.PanelWidth = width;
+        ApplySizing();
+    }
+
+    private void ShowInternal(float durationSeconds)
+    {
         _overlay.SetActive(true);
 
         Canvas.ForceUpdateCanvases();
@@ -98,22 +181,50 @@ public sealed class NotificationService : MonoBehaviour
             _hideCoroutine = StartCoroutine(HideAfterDelay(durationSeconds));
     }
 
-    public void HideMessage()
+    private void ConfigureDialog(
+        string title,
+        string text,
+        string primaryText,
+        string secondaryText,
+        Action primaryAction,
+        Action secondaryAction,
+        Color primaryColor,
+        Color secondaryColor)
     {
-        if (_hideCoroutine != null)
-        {
-            StopCoroutine(_hideCoroutine);
-            _hideCoroutine = null;
-        }
+        _titleText.text = title;
+        _messageText.text = text;
 
-        if (_overlay != null)
-            _overlay.SetActive(false);
+        _primaryAction = primaryAction;
+        _secondaryAction = secondaryAction;
+
+        _primaryButtonText.text = primaryText;
+        _primaryButtonImage.color = primaryColor;
+        _primaryButton.gameObject.SetActive(true);
+
+        if (string.IsNullOrWhiteSpace(secondaryText))
+        {
+            _secondaryButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            _secondaryButtonText.text = secondaryText;
+            _secondaryButtonImage.color = secondaryColor;
+            _secondaryButton.gameObject.SetActive(true);
+        }
     }
 
-    public void SetPanelWidth(float width)
+    private void OnPrimaryClicked()
     {
-        _ui.PanelWidth = width;
-        ApplySizing();
+        var action = _primaryAction;
+        HideMessage();
+        action?.Invoke();
+    }
+
+    private void OnSecondaryClicked()
+    {
+        var action = _secondaryAction;
+        HideMessage();
+        action?.Invoke();
     }
 
     private IEnumerator HideAfterDelay(float delay)
@@ -214,16 +325,16 @@ public sealed class NotificationService : MonoBehaviour
         var titleLayout = titleGo.GetComponent<LayoutElement>();
         titleLayout.preferredHeight = _ui.TitleHeight;
 
-        var titleText = titleGo.GetComponent<Text>();
-        titleText.font = font;
-        titleText.text = _ui.Title;
-        titleText.fontSize = _ui.TitleFontSize;
-        titleText.fontStyle = FontStyle.Bold;
-        titleText.alignment = TextAnchor.MiddleCenter;
-        titleText.color = Color.white;
-        titleText.horizontalOverflow = HorizontalWrapMode.Wrap;
-        titleText.verticalOverflow = VerticalWrapMode.Truncate;
-        titleText.raycastTarget = false;
+        _titleText = titleGo.GetComponent<Text>();
+        _titleText.font = font;
+        _titleText.text = _ui.Title;
+        _titleText.fontSize = _ui.TitleFontSize;
+        _titleText.fontStyle = FontStyle.Bold;
+        _titleText.alignment = TextAnchor.MiddleCenter;
+        _titleText.color = _ui.TitleColor;
+        _titleText.horizontalOverflow = HorizontalWrapMode.Wrap;
+        _titleText.verticalOverflow = VerticalWrapMode.Truncate;
+        _titleText.raycastTarget = false;
     }
 
     private void CreateMessage(Font font)
@@ -246,7 +357,7 @@ public sealed class NotificationService : MonoBehaviour
         _messageText.font = font;
         _messageText.fontSize = _ui.MessageFontSize;
         _messageText.alignment = TextAnchor.UpperLeft;
-        _messageText.color = Color.white;
+        _messageText.color = _ui.MessageColor;
         _messageText.horizontalOverflow = HorizontalWrapMode.Wrap;
         _messageText.verticalOverflow = VerticalWrapMode.Overflow;
         _messageText.supportRichText = true;
@@ -266,6 +377,7 @@ public sealed class NotificationService : MonoBehaviour
             typeof(LayoutElement));
 
         buttonsGo.transform.SetParent(_panel, false);
+        _buttonsRoot = (RectTransform)buttonsGo.transform;
 
         var rowLayout = buttonsGo.GetComponent<LayoutElement>();
         rowLayout.preferredHeight = _ui.ButtonsRowHeight;
@@ -279,10 +391,20 @@ public sealed class NotificationService : MonoBehaviour
         buttonsGroup.spacing = _ui.ButtonSpacing;
         buttonsGroup.padding = new RectOffset(0, 0, 0, 0);
 
-        CreateButton(buttonsGo.transform, font, "OK", HideMessage);
+        (_primaryButton, _primaryButtonImage, _primaryButtonText) =
+            CreateButton(buttonsGo.transform, font, "OK", OnPrimaryClicked);
+
+        (_secondaryButton, _secondaryButtonImage, _secondaryButtonText) =
+            CreateButton(buttonsGo.transform, font, "Cancel", OnSecondaryClicked);
+
+        _secondaryButton.gameObject.SetActive(false);
     }
 
-    private Button CreateButton(Transform parent, Font font, string text, UnityEngine.Events.UnityAction onClick)
+    private (Button Button, Image Image, Text Label) CreateButton(
+        Transform parent,
+        Font font,
+        string text,
+        UnityEngine.Events.UnityAction onClick)
     {
         var buttonGo = new GameObject(
             "Button_" + text,
@@ -313,12 +435,12 @@ public sealed class NotificationService : MonoBehaviour
         var label = labelGo.GetComponent<Text>();
         label.font = font;
         label.text = text;
-        label.fontSize = 12;
+        label.fontSize = _ui.ButtonFontSize;
         label.alignment = TextAnchor.MiddleCenter;
-        label.color = Color.white;
+        label.color = _ui.ButtonTextColor;
         label.raycastTarget = false;
 
-        return button;
+        return (button, image, label);
     }
 
     private void ApplySizing()

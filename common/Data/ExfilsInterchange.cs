@@ -9,18 +9,20 @@ public class ExfilsInterchange : ICustomExtilData
     public string MapName => _mapName;
     public List<CustomExfil> Extracts => _extracts;
     public List<CustomExfil> Transits => _transits;
-    
+
     private static RaidLocation _raid = RaidLocation.Interchange;
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "Interchange";
-    private static List<CustomExfil> _extracts = [
+
+    private static List<CustomExfil> _extracts =
+    [
         new CustomExfil
         {
             Identifier = "VGB_EXT_RAGMAN",
             DisplayName = "Ragman's Outlet",
             IsTransit = false,
-            TemplateExitName = "",// only fill if you want a specific template
+            TemplateExitName = "", // only fill if you want a specific template
             EntryPoints = "",
             ExfiltrationTime = 20f,
             X = -52.581f,
@@ -30,12 +32,14 @@ public class ExfilsInterchange : ICustomExtilData
             Side = "Pmc"
         },
     ];
-    private static  List<CustomExfil>_transits = [
+
+    private static List<CustomExfil> _transits =
+    [
         new CustomExfil
         {
             Identifier = "VGB_IC_GZ",
             IsTransit = true,
-            TransitPointId = 0,// gets auto generated
+            TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.GroundZero].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.GroundZero].First(),
             Description = "Transit to Ground Zero",

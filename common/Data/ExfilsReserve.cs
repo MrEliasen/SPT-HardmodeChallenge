@@ -9,18 +9,20 @@ public class ExfilsReserve : ICustomExtilData
     public string MapName => _mapName;
     public List<CustomExfil> Extracts => _extracts;
     public List<CustomExfil> Transits => _transits;
-    
+
     private static RaidLocation _raid = RaidLocation.Reserve;
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "RezervBase";
     private static List<CustomExfil> _extracts = [];
-    private static  List<CustomExfil>_transits = [
+
+    private static List<CustomExfil> _transits =
+    [
         new CustomExfil
         {
             Identifier = "VGB_RS_SL",
             IsTransit = true,
-            TransitPointId = 0,// gets auto generated
+            TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Shoreline].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Shoreline].First(),
             Description = "Mountain climb to Shoreline",

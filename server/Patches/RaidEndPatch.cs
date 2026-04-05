@@ -2,13 +2,11 @@ using System.Reflection;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
-using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
 using Vagabond.Common.Data;
 using Vagabond.Common.Enums;
-using Vagabond.Common.Models;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
@@ -58,48 +56,63 @@ public sealed class RaidEndPatch : AbstractPatch
         {
             return;
         }
-        
+
         var locationMapE = VagabondLocations.NormaliseMapName(locationName);
         var locationMapStr = locationMapE.ToString();
-        
+
         state.TransitState = null;
         state.CurrentMap = locationMapStr;
         state.LastExit = GetExtractIdentifier(request.Results?.ExitName, locationMapE, locationName);
-        
+        RaidRuntimeState.Left(sessionId);
+
         if (isDead)
         {
             state.ResetProfile = VagabondConfig.Config.PermaDeath;
             state.CurrentMap = "Streets";
             state.LastExit = "VGB_EXT_FENCE";
+
+            if (!string.IsNullOrEmpty(state.HideoutState?.Id))
+            {
+                state.CurrentMap = state.HideoutState.Map!;
+                state.LastExit = $"{HideoutService.HideoutIdPrefix}{state.HideoutState.Id}";
+            }
+
             VagabondState.SaveState(sessionId, state);
             return;
         }
-        
+
         if (isTransfer)
         {
             state.TransitState = new TransitState
             {
-                FromMap =  locationMapStr,
+                FromMap = locationMapStr,
                 ToMap = VagabondLocations.NormaliseMapName(request.LocationTransit?.Location).ToString(),
                 ExitName = state.LastExit
             };
-            
+
             state.CurrentMap = state.TransitState.ToMap;
         }
         else
         {
             HideoutService.UpdateTraderAccess(profile.CharacterData!.PmcData!, state);
         }
-        
+
         VagabondService.PersistProfileIfPossible(sessionId);
         VagabondState.SaveState(sessionId, state);
     }
-    
+
     public static string GetExtractIdentifier(string? exitName, RaidLocation raid, string mapName)
     {
         if (string.IsNullOrWhiteSpace(exitName))
         {
             return string.Empty;
+        }
+
+        // its a hideout, we need the ID
+        if (exitName.IndexOf(HideoutService.HideoutNamePrefix, StringComparison.OrdinalIgnoreCase) == 0)
+        {
+            return ExfilService.HideoutExfils[raid][mapName].FirstOrDefault(x =>
+                string.Equals(x.DisplayName, exitName, StringComparison.OrdinalIgnoreCase))?.Identifier ?? string.Empty;
         }
 
         var match = ExfilService.CustomExfils[raid][mapName].FirstOrDefault(x =>

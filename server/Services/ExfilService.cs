@@ -5,6 +5,7 @@ using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Interfaces;
 using Vagabond.Common.Enums;
+using Vagabond.Server.State;
 using Location = SPTarkov.Server.Core.Models.Eft.Common.Location;
 
 namespace Vagabond.Server.Services;
@@ -12,43 +13,92 @@ namespace Vagabond.Server.Services;
 internal static class ExfilService
 {
     public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils = new();
+    public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> HideoutExfils = new();
+    private static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>? _snapshotCache;
+    public static int SnapshotCacheVersion = 0;
+    private static HashSet<string> _loadedHideoutExfils = new();
+
+    public static void RemoveHideout(HideoutState? state)
+    {
+        if (string.IsNullOrEmpty(state?.Id))
+        {
+            return;
+        }
+
+        var exfileId = $"{HideoutService.HideoutIdPrefix}{state.Id}";
+
+        // remove hideout
+        foreach (var raids in HideoutExfils)
+        {
+            foreach (var exfils in raids.Value)
+            {
+                for (var i = exfils.Value.Count - 1; i >= 0; i--)
+                {
+                    if (exfils.Value[i].Identifier == exfileId)
+                    {
+                        exfils.Value.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        // remove Extract
+        foreach (var raids in CustomExfils)
+        {
+            foreach (var exfils in raids.Value)
+            {
+                for (var i = exfils.Value.Count - 1; i >= 0; i--)
+                {
+                    if (exfils.Value[i].Identifier == exfileId)
+                    {
+                        exfils.Value.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        _loadedHideoutExfils.Remove(state.Id);
+    }
 
     public static void Apply(DatabaseService databaseService)
     {
         foreach (var loc in Enum.GetValues(typeof(RaidLocation)).Cast<RaidLocation>())
         {
-            if (loc ==  RaidLocation.Nil)
+            if (loc == RaidLocation.Nil)
             {
                 continue;
             }
-            
+
             if (!VagabondLocations.InverseLookupTable.TryGetValue(loc, out var maps))
             {
                 continue;
             }
-            
-            var ent = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+
+            var entExfils = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+            var entHideout = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
             foreach (var map in maps)
             {
-                ent.Add(map, new List<CustomExfil>());
+                entExfils.Add(map, new List<CustomExfil>());
+                entHideout.Add(map, new List<CustomExfil>());
             }
-            
-            CustomExfils.Add(loc, ent);
+
+            CustomExfils.Add(loc, entExfils);
+            HideoutExfils.Add(loc, entHideout);
         }
-        
+
         var locations = databaseService.GetLocations();
-        AddExtractions(9000, locations.Bigmap, new ExfilsCustoms()); 
-        AddExtractions(9100, locations.Factory4Day, new ExfilsFactoryDay()); 
-        AddExtractions(9200,locations.Factory4Night, new ExfilsFactoryNight()); 
-        AddExtractions(9300,locations.SandboxHigh, new ExfilsGroundZero()); 
-        AddExtractions(9400,locations.Interchange, new ExfilsInterchange()); 
-        AddExtractions(9500,locations.Lighthouse, new ExfilsLighthouse()); 
-        AddExtractions(9600,locations.RezervBase, new ExfilsReserve()); 
-        AddExtractions(9700,locations.Shoreline, new ExfilsShoreline()); 
-        AddExtractions(9800,locations.TarkovStreets, new ExfilsStreets()); 
-        AddExtractions(9900,locations.Woods, new ExfilsWoods());
-        AddExtractions(10000,locations.Laboratory, new ExfilsLabs()); 
-        AddExtractions(1100,locations.Labyrinth, new ExfilsLabyrinth());
+        AddExtractions(9000, locations.Bigmap, new ExfilsCustoms());
+        AddExtractions(9100, locations.Factory4Day, new ExfilsFactoryDay());
+        AddExtractions(9200, locations.Factory4Night, new ExfilsFactoryNight());
+        AddExtractions(9300, locations.SandboxHigh, new ExfilsGroundZero());
+        AddExtractions(9400, locations.Interchange, new ExfilsInterchange());
+        AddExtractions(9500, locations.Lighthouse, new ExfilsLighthouse());
+        AddExtractions(9600, locations.RezervBase, new ExfilsReserve());
+        AddExtractions(9700, locations.Shoreline, new ExfilsShoreline());
+        AddExtractions(9800, locations.TarkovStreets, new ExfilsStreets());
+        AddExtractions(9900, locations.Woods, new ExfilsWoods());
+        AddExtractions(10000, locations.Laboratory, new ExfilsLabs());
+        AddExtractions(1100, locations.Labyrinth, new ExfilsLabyrinth());
     }
 
     private static void AddExtractions(int pointIdOffset, Location location, ICustomExtilData data)
@@ -88,7 +138,8 @@ internal static class ExfilService
     {
         var allExtracts = location.AllExtracts.ToList();
         allExtracts.RemoveAll(x => string.Equals(x.Name, definition.DisplayName, StringComparison.OrdinalIgnoreCase)
-                                   || string.Equals(x.SptName, definition.Identifier, StringComparison.OrdinalIgnoreCase));
+                                   || string.Equals(x.SptName, definition.Identifier,
+                                       StringComparison.OrdinalIgnoreCase));
         allExtracts.Add(CreateExit(definition));
         location.AllExtracts = allExtracts;
 
@@ -104,7 +155,7 @@ internal static class ExfilService
         transits.RemoveAll(x =>
             string.Equals(x.Name, definition.Identifier, StringComparison.OrdinalIgnoreCase)
             || (definition.TransitPointId.HasValue && x.Id == definition.TransitPointId.Value));
-        
+
         transits.Add(new Transit
         {
             Name = definition.Identifier,
@@ -112,7 +163,9 @@ internal static class ExfilService
             Conditions = string.Empty,
             Id = definition.TransitPointId,
             Location = definition.DestinationLocation,
-            Target = string.IsNullOrWhiteSpace(definition.TargetLocation) ? definition.DestinationLocation : definition.TargetLocation,
+            Target = string.IsNullOrWhiteSpace(definition.TargetLocation)
+                ? definition.DestinationLocation
+                : definition.TargetLocation,
             ActivateAfterSeconds = definition.ActivateAfterSeconds,
             Time = (long)Math.Round(definition.ExfiltrationTime),
             IsActive = definition.IsActive,
@@ -161,7 +214,7 @@ internal static class ExfilService
             .SelectMany(x => x!.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
-            
+
         return string.Join(",", entryPoints);
     }
 
@@ -181,8 +234,182 @@ internal static class ExfilService
             (RaidLocation.Woods) => new ExfilsWoods(),
             (RaidLocation.Labs) => new ExfilsLabs(),
             (RaidLocation.Labyrinth) => new ExfilsLabyrinth(),
-            RaidLocation.Nil => throw new ArgumentOutOfRangeException(nameof(raid), raid, "RaidLocation.Nil has no custom map data."),
+            RaidLocation.Nil => throw new ArgumentOutOfRangeException(nameof(raid), raid,
+                "RaidLocation.Nil has no custom map data."),
             _ => throw new ArgumentOutOfRangeException(nameof(raid), raid, "Unsupported raid location.")
         };
+    }
+
+    public static bool AddHideoutExfil(PmcData pmc, VagabondState state)
+    {
+        if (string.IsNullOrEmpty(state.HideoutState?.Id) || _loadedHideoutExfils.Contains(state.HideoutState.Id))
+        {
+            return false;
+        }
+
+        var hideoutExfil = GenerateHideoutExfil(pmc.Info?.Nickname!, state);
+        if (hideoutExfil == null)
+        {
+            return false;
+        }
+
+        var explicitMap = state.HideoutState.Map;
+        if (string.IsNullOrWhiteSpace(explicitMap) || !VagabondLocations.LookupTable.TryGetValue(explicitMap, out _))
+        {
+            return false;
+        }
+
+        var raid = VagabondLocations.NormaliseMapName(explicitMap);
+        if (raid == RaidLocation.Nil)
+        {
+            return false;
+        }
+
+        if (!VagabondLocations.Locations.TryGetValue(raid, out var mapIds))
+        {
+            return false;
+        }
+
+        // remove existing exfil
+        foreach (var raids in HideoutExfils)
+        {
+            foreach (var exfils in raids.Value)
+            {
+                for (var i = exfils.Value.Count - 1; i >= 0; i--)
+                {
+                    if (exfils.Value[i].Identifier == hideoutExfil.Identifier)
+                    {
+                        exfils.Value.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        List<RaidLocation> raidsToAdd = [raid];
+
+        switch (raid)
+        {
+            case RaidLocation.FactoryDay:
+            {
+                raidsToAdd.Add(RaidLocation.FactoryNight);
+                break;
+            }
+
+            case RaidLocation.FactoryNight:
+            {
+                raidsToAdd.Add(RaidLocation.FactoryDay);
+                break;
+            }
+        }
+
+        // patch in new one
+        foreach (var r in raidsToAdd)
+        {
+            if (!VagabondLocations.InverseLookupTable.TryGetValue(r, out var mapNames))
+            {
+                continue;
+            }
+
+            foreach (var m in mapNames)
+            {
+                HideoutExfils[r][m].Add(hideoutExfil);
+            }
+        }
+
+        _loadedHideoutExfils.Add(state.HideoutState.Id);
+        return true;
+    }
+
+    private static CustomExfil? GenerateHideoutExfil(string profileName, VagabondState state)
+    {
+        if (string.IsNullOrEmpty(state.HideoutState?.Id))
+        {
+            return null;
+        }
+
+        var template =
+            StaticTransitionSpawns.GetMapExtractTemplate(
+                VagabondLocations.NormaliseMapName(state.HideoutState?.Map ?? state.CurrentMap));
+
+        var hideoutExfil = new CustomExfil
+        {
+            Identifier = $"{HideoutService.HideoutIdPrefix}{state.HideoutState?.Id}",
+            DisplayName = $"{HideoutService.HideoutNamePrefix} ({profileName})",
+            TemplateExitName = template.TemplateExitName,
+            EntryPoints = template.EntryPoints,
+            IsTransit = false,
+            ExfiltrationTime = 20f,
+            X = state.HideoutState?.X ?? 0f,
+            Y = state.HideoutState?.Y ?? 0f,
+            Z = state.HideoutState?.Z ?? 0f,
+            RotationY = state.HideoutState?.R ?? 0f,
+            Side = "Pmc"
+        };
+
+        return hideoutExfil;
+    }
+
+    public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> BuildCustomExfilSnapshot(
+        bool forceRebuild = false)
+    {
+        if (_snapshotCache != null && !forceRebuild)
+        {
+            return _snapshotCache;
+        }
+
+        var snapshot = new Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>();
+        foreach (var raidEntry in CustomExfils)
+        {
+            VagabondLogger.Log($"Pupulating Exfil for {raidEntry.Key}");
+            if (!snapshot.TryGetValue(raidEntry.Key, out var snapshotByMap))
+            {
+                snapshotByMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+                snapshot[raidEntry.Key] = snapshotByMap;
+            }
+
+            foreach (var mapEntry in raidEntry.Value)
+            {
+                if (!snapshotByMap.TryGetValue(mapEntry.Key, out var snapshotList))
+                {
+                    snapshotList = new List<CustomExfil>();
+                    snapshotByMap[mapEntry.Key] = snapshotList;
+                }
+
+                foreach (var exfil in mapEntry.Value)
+                {
+                    VagabondLogger.Log($"Adding Exfil to {mapEntry.Key}");
+                    snapshotList.Add(exfil);
+                }
+            }
+        }
+
+        foreach (var raidEntry in HideoutExfils)
+        {
+            VagabondLogger.Log($"Pupulating Hideouts for {raidEntry.Key}");
+            if (!snapshot.TryGetValue(raidEntry.Key, out var snapshotByMap))
+            {
+                snapshotByMap = new Dictionary<string, List<CustomExfil>>(StringComparer.OrdinalIgnoreCase);
+                snapshot[raidEntry.Key] = snapshotByMap;
+            }
+
+            foreach (var mapEntry in raidEntry.Value)
+            {
+                if (!snapshotByMap.TryGetValue(mapEntry.Key, out var snapshotList))
+                {
+                    snapshotList = new List<CustomExfil>();
+                    snapshotByMap[mapEntry.Key] = snapshotList;
+                }
+
+                foreach (var exfil in mapEntry.Value)
+                {
+                    VagabondLogger.Log($"Adding hideout to {mapEntry.Key}");
+                    snapshotList.Add(exfil);
+                }
+            }
+        }
+
+        _snapshotCache = snapshot;
+        SnapshotCacheVersion++;
+        return snapshot;
     }
 }

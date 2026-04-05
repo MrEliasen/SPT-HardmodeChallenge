@@ -36,13 +36,14 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             {
                 return;
             }
-            
+
             if (state.ResetProfile)
             {
                 state.ResetProfile = false;
                 VagabondState.SaveState(sessionId, state);
                 VagabondService.ResetProfile(sessionId, pmc);
                 VagabondService.PersistProfileIfPossible(sessionId);
+                ExfilService.RemoveHideout(state.HideoutState);
                 return;
             }
 

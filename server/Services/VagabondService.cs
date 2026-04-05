@@ -15,7 +15,7 @@ namespace Vagabond.Server.Services;
 
 internal static class VagabondService
 {
-    public static Dictionary<string, List<string>> TraderLocations = new(); 
+    public static Dictionary<string, List<string>> TraderLocations = new();
 
     public static void ResetProfile(MongoId sessionId, PmcData pmc)
     {
@@ -35,13 +35,17 @@ internal static class VagabondService
 
         var state = VagabondState.GetState(sessionId);
         state.ResetProfile = false;
+
+        RaidRuntimeState.Left(sessionId);
+        VirtualStashService.ClearAllTraderStashes(sessionId);
+        WipeItems(sessionId, pmc, true, true, true);
+
         state.CurrentMap = "Streets";
         state.LastExit = "VGB_EXT_FENCE";
         state.TransitState = null;
         HideoutService.UpdateTraderAccess(pmc, state);
         VagabondState.SaveState(sessionId, state);
-
-        WipeItems(sessionId, pmc, true, true, true);
+        using var stashState = VirtualStashService.OpenStash(sessionId, pmc);
         AddMoney(sessionId, pmc);
     }
 
@@ -58,6 +62,14 @@ internal static class VagabondService
 
     public static void PersistProfileIfPossible(MongoId sessionId)
     {
+        // prevent saving if virtual stash is enabled, to avoid overwriting player profile with incorrect stash data.
+        // it could still happen elsewhere, like if spt saves somewhere internally right when we have a virtual stash loaded up..
+        // not sure what I can do then..
+        if (VirtualStashService.IsStashActive(sessionId))
+        {
+            return;
+        }
+
         try
         {
             var server = ReflectionUtil.GetService<SaveServer>();
@@ -73,8 +85,9 @@ internal static class VagabondService
             VagabondLogger.Error($"PersistProfileIfPossible failed: {ex}");
         }
     }
-    
-    public static void WipeItems(MongoId sessionId, PmcData pmc, bool wipeEquipment = false, bool wipeStash = false, bool removeAllMoney = false)
+
+    public static void WipeItems(MongoId sessionId, PmcData pmc, bool wipeEquipment = false, bool wipeStash = false,
+        bool removeAllMoney = false)
     {
         var inventory = pmc.Inventory;
         if (inventory?.Items == null)
@@ -237,7 +250,7 @@ internal static class VagabondService
         {
             return "";
         }
-        
+
         if (VagabondConfig.Config.EnablePickRaidLocation)
         {
             return "";
@@ -248,7 +261,7 @@ internal static class VagabondService
         {
             return "";
         }
-        
+
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
         RaidLocation transitMap = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
         if (transitMap != RaidLocation.Nil)
@@ -273,5 +286,27 @@ internal static class VagabondService
         }
 
         return allowedMapIds.First();
+    }
+
+    public static bool IsInRaid(MongoId profileId)
+    {
+        if (RaidRuntimeState.IsInRaid(profileId))
+        {
+            return true;
+        }
+
+        var canonicalId = FikaAdapter.GetCanonicalSessionId(profileId);
+        if (RaidRuntimeState.IsInRaid(canonicalId))
+        {
+            return true;
+        }
+
+        var ownerId = FikaAdapter.GetRaidOwnerSessionId(profileId);
+        if (RaidRuntimeState.IsInRaid(ownerId))
+        {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -10,10 +10,11 @@ public sealed class VagabondConfig
     public bool FixProfiles { get; set; }
     public bool DisableEvents { get; set; } = true;
     public int StartingRoubles { get; set; } = 175_000;
-    public int AdjustRaidTimeMins  { get; set; } = 60;
+    public int AdjustRaidTimeMins { get; set; } = 60;
     public bool EnableFenceChanges { get; set; } = true;
     public bool DisableFlea { get; set; } = true;
-    public bool StripMailAttachments { get; set; } = true;
+    public bool StripMailAttachments { get; set; }
+    public bool AllowHideoutRelocation { get; set; }
     public bool EnablePickRaidLocation { get; set; }
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
     public bool AlsoWipeCarriedMoneyOnFirstRaid { get; set; } = true;

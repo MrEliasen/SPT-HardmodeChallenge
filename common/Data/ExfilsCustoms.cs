@@ -9,18 +9,20 @@ public class ExfilsCustoms : ICustomExtilData
     public string MapName => _mapName;
     public List<CustomExfil> Extracts => _extracts;
     public List<CustomExfil> Transits => _transits;
-    
+
     private static RaidLocation _raid = RaidLocation.Customs;
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "bigmap";
-    private static List<CustomExfil> _extracts = [
+
+    private static List<CustomExfil> _extracts =
+    [
         new CustomExfil
         {
             Identifier = "VGB_EXT_SKIER",
             DisplayName = "Skier's Hangar",
             IsTransit = false,
-            TemplateExitName = "",// only fill if you want a specific template
+            TemplateExitName = "", // only fill if you want a specific template
             EntryPoints = "",
             ExfiltrationTime = 20f,
             X = 65.594f,
@@ -30,12 +32,14 @@ public class ExfilsCustoms : ICustomExtilData
             Side = "Pmc"
         },
     ];
-    private static  List<CustomExfil>_transits = [
+
+    private static List<CustomExfil> _transits =
+    [
         new CustomExfil
         {
             Identifier = "VGB_CT_WD",
             IsTransit = true,
-            TransitPointId = 0,// gets auto generated
+            TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Woods].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Woods].First(),
             Description = "Transit to Woods",

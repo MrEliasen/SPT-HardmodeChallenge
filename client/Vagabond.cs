@@ -1,19 +1,24 @@
 using System;
 using System.IO;
+using System.Net.WebSockets;
+using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
+using EFT.Communications;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Vagabond.Client.Patches;
 using Vagabond.Client.Services;
 using Vagabond.Client.State;
+using Vagabond.Common;
+using Vagabond.Common.Models;
 
 namespace Vagabond.Client;
 
-[BepInPlugin("dev.oogabooga.spt-vagabond", "Vagabond", BuildInfo.Version)]
+[BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
 public class Vagabond : BaseUnityPlugin
 {
     private static ManualLogSource _logger;
@@ -26,6 +31,12 @@ public class Vagabond : BaseUnityPlugin
     private string _locationDumpPath = null!;
     private string _customExtractDumpPath = null!;
     private string _customTransitDumpPath = null!;
+
+    // hideout placement
+    private ConfigEntry<KeyboardShortcut> _hideoutHotkey = null!;
+    private bool _hideoutPlacementArmed;
+    private float _hideoutPlacementArmExpiresAt;
+    private bool _hideoutPlacementLoading;
 
     public static void Log(string message)
     {
@@ -56,25 +67,32 @@ public class Vagabond : BaseUnityPlugin
         new SelectAvailableTraderPatch().Enable();
         new TransitInteractionPatch().Enable();
         new SkipInsuranceFlowPatch().Enable();
-        NotificationService.Create(transform);
+        UIMessageService.Create(transform);
+
+        _hideoutHotkey = Config.Bind(
+            "Vagabond",
+            "Place Hideout Entrance",
+            new KeyboardShortcut(KeyCode.P, KeyCode.LeftControl),
+            "Press in raid to place the entrance to your hideout at your current location."
+        );
 
         _dumpHotkey = Config.Bind(
-            "Location Capture (Dev)",
-            "Dump Location Hotkey",
+            "Development",
+            "Save Current Location",
             new KeyboardShortcut(KeyCode.F8),
             "Press in raid to dump current map, position and yaw to file."
         );
 
         _dumpCustomExtractHotkey = Config.Bind(
-            "Generate Extraction From Location (Dev)",
-            "Dump Custom Extract Snippet Hotkey",
+            "Development",
+            "Generate Extraction From Location",
             new KeyboardShortcut(KeyCode.F9),
             "Press in raid to dump a copy/paste ready custom extract snippet using the current player position"
         );
 
         _dumpCustomTransitHotkey = Config.Bind(
-            "Generate Transit From Location (Dev)",
-            "Dump Custom Transit Snippet Hotkey",
+            "Development",
+            "Generate Transit From Location",
             new KeyboardShortcut(KeyCode.F10),
             "Press in raid to dump a copy/paste ready custom transit snippet using the current player position"
         );
@@ -89,9 +107,21 @@ public class Vagabond : BaseUnityPlugin
 
     private void Update()
     {
+        RaidService.HandleExfilUpdatePolling();
+
         if (IsHeadless())
         {
             return;
+        }
+
+        if (_hideoutPlacementArmed && Time.realtimeSinceStartup > _hideoutPlacementArmExpiresAt)
+        {
+            _hideoutPlacementArmed = false;
+        }
+
+        if (_hideoutHotkey.Value.IsDown())
+        {
+            PromptCreateHideoutExtract();
         }
 
         if (_dumpHotkey.Value.IsDown())
@@ -107,6 +137,75 @@ public class Vagabond : BaseUnityPlugin
         if (_dumpCustomTransitHotkey.Value.IsDown())
         {
             DumpCustomTransitDefinition();
+        }
+    }
+
+    private void PromptCreateHideoutExtract()
+    {
+        if (_hideoutPlacementLoading)
+        {
+            NotificationManagerClass.DisplayWarningNotification("Hideout placement request already in progress.");
+            return;
+        }
+
+        if (!_hideoutPlacementArmed)
+        {
+            if (!TryGetCurrentSnapshot(out var snapshot))
+            {
+                NotificationManagerClass.DisplayWarningNotification("You must be in raid.");
+                return;
+            }
+
+            _hideoutPlacementArmed = true;
+            _hideoutPlacementArmExpiresAt = Time.realtimeSinceStartup + 10f;
+
+            NotificationManagerClass.DisplayWarningNotification(
+                "Press the hotkey again within 10 seconds to place your hideout at your current position."
+            );
+            return;
+        }
+
+        _hideoutPlacementArmed = false;
+        _ = TryCreateHideoutExtractAsync();
+    }
+
+    private async Task TryCreateHideoutExtractAsync()
+    {
+        try
+        {
+            if (!TryGetCurrentSnapshot(out var snapshot))
+            {
+                NotificationManagerClass.DisplayWarningNotification("You must be in raid.");
+                return;
+            }
+
+            _hideoutPlacementLoading = true;
+
+            var resp = await Networking.ApiClient.EstablishHideoutExtract(new PlaceHideoutRequest
+            {
+                X = snapshot.Position.x,
+                Y = snapshot.Position.y,
+                Z = snapshot.Position.z,
+                R = snapshot.Yaw,
+                LocationId = Singleton<GameWorld>.Instance?.LocationId,
+            });
+
+            if (!resp.Success)
+            {
+                NotificationManagerClass.DisplayWarningNotification(resp.Message);
+                return;
+            }
+
+            NotificationManagerClass.DisplayMessageNotification(resp.Message);
+        }
+        catch (Exception ex)
+        {
+            LogError($"Establish hideout request failed: {ex}");
+            NotificationManagerClass.DisplayWarningNotification("Establish hideout request failed.");
+        }
+        finally
+        {
+            _hideoutPlacementLoading = false;
         }
     }
 
@@ -169,7 +268,7 @@ public class Vagabond : BaseUnityPlugin
                 $"    Z = {snapshot.Position.z:0.###}f,",
                 $"    RotationY = {snapshot.Yaw:0.###}f,",
                 "    Side = \"Pmc\"",
-                "},;"
+                "},"
             }));
         }
         catch (Exception ex)

@@ -9,18 +9,20 @@ public class ExfilsWoods : ICustomExtilData
     public string MapName => _mapName;
     public List<CustomExfil> Extracts => _extracts;
     public List<CustomExfil> Transits => _transits;
-    
+
     private static RaidLocation _raid = RaidLocation.Woods;
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "Woods";
-    private static List<CustomExfil> _extracts = [
+
+    private static List<CustomExfil> _extracts =
+    [
         new CustomExfil
         {
             Identifier = "VGB_EXT_JAEGER",
             DisplayName = "Jaegers Hideout",
             IsTransit = false,
-            TemplateExitName = "",// only fill if you want a specific template
+            TemplateExitName = "", // only fill if you want a specific template
             EntryPoints = "",
             ExfiltrationTime = 20f,
             X = -155.956f,
@@ -58,12 +60,14 @@ public class ExfilsWoods : ICustomExtilData
         //     Side = "Pmc"
         // },
     ];
-    private static  List<CustomExfil>_transits = [
+
+    private static List<CustomExfil> _transits =
+    [
         new CustomExfil
         {
             Identifier = "VGB_WD_ST",
             IsTransit = true,
-            TransitPointId = 0,// gets auto generated
+            TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Streets].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Streets].First(),
             Description = "Transit To Streets (Under Bridge)",

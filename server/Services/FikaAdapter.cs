@@ -9,6 +9,9 @@ public static class FikaAdapter
     private static bool _available;
     private static object? _headlessService;
     private static PropertyInfo? _headlessClientsProp;
+    private static object? _matchService;
+    private static MethodInfo? _getMatchIdByProfileMethod;
+    private static MethodInfo? _getMatchMethod;
 
     public static bool Init(IServiceProvider services)
     {
@@ -28,25 +31,45 @@ public static class FikaAdapter
         }
 
         var headlessServiceType = fikaAsm.GetType("FikaServer.Services.Headless.HeadlessService");
-        if (headlessServiceType == null)
+        if (headlessServiceType != null)
         {
-            return false;
+            _headlessService = services.GetService(headlessServiceType);
+            _headlessClientsProp = headlessServiceType.GetProperty("HeadlessClients");
         }
 
-        _headlessService = services.GetService(headlessServiceType);
-        if (_headlessService == null)
+        var matchServiceType = fikaAsm.GetType("FikaServer.Services.MatchService");
+        if (matchServiceType != null)
         {
-            return false;
+            _matchService = services.GetService(matchServiceType);
+            _getMatchIdByProfileMethod = matchServiceType.GetMethod("GetMatchIdByProfile", [typeof(MongoId)]);
+            _getMatchMethod = matchServiceType.GetMethod("GetMatch", [typeof(MongoId?)]);
         }
 
-        _headlessClientsProp = headlessServiceType.GetProperty("HeadlessClients");
-        _available = _headlessClientsProp != null;
+        _available = _headlessClientsProp != null || (_matchService != null && _getMatchIdByProfileMethod != null);
         return _available;
     }
-    
+
+    public static MongoId GetCanonicalSessionId(MongoId sessionId)
+    {
+        var matchId = TryGetMatchIdByProfile(sessionId);
+        if (matchId.HasValue)
+        {
+            var match = TryGetMatch(matchId.Value);
+            var isHeadless = (bool?)match?.GetType().GetProperty("IsHeadless")?.GetValue(match) ?? false;
+            if (isHeadless)
+            {
+                return GetRaidOwnerSessionId(matchId.Value);
+            }
+
+            return matchId.Value;
+        }
+
+        return GetRaidOwnerSessionId(sessionId);
+    }
+
     public static MongoId GetRaidOwnerSessionId(MongoId sessionId)
     {
-        if (!_available || _headlessService == null || _headlessClientsProp == null)
+        if (_headlessService == null || _headlessClientsProp == null)
         {
             return sessionId;
         }
@@ -71,12 +94,7 @@ public static class FikaAdapter
         }
 
         var client = args[1];
-        if (client == null)
-        {
-            return sessionId;
-        }
-        
-        var requesterProp = client.GetType().GetProperty("RequesterSessionID");
+        var requesterProp = client?.GetType().GetProperty("RequesterSessionID");
         var requesterSessionId = requesterProp?.GetValue(client) as string;
 
         if (string.IsNullOrWhiteSpace(requesterSessionId))
@@ -86,5 +104,31 @@ public static class FikaAdapter
 
         VagabondLogger.Success($"Raid Owner SessionId: {requesterSessionId}");
         return new MongoId(requesterSessionId);
+    }
+
+    private static MongoId? TryGetMatchIdByProfile(MongoId sessionId)
+    {
+        if (_matchService == null || _getMatchIdByProfileMethod == null)
+        {
+            return null;
+        }
+
+        var result = _getMatchIdByProfileMethod.Invoke(_matchService, [sessionId]);
+        if (result == null)
+        {
+            return null;
+        }
+
+        return (MongoId)result;
+    }
+
+    private static object? TryGetMatch(MongoId matchId)
+    {
+        if (_matchService == null || _getMatchMethod == null)
+        {
+            return null;
+        }
+
+        return _getMatchMethod.Invoke(_matchService, [matchId]);
     }
 }

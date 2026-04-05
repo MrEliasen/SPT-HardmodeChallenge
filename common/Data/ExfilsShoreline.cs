@@ -9,18 +9,20 @@ public class ExfilsShoreline : ICustomExtilData
     public string MapName => _mapName;
     public List<CustomExfil> Extracts => _extracts;
     public List<CustomExfil> Transits => _transits;
-    
+
     private static RaidLocation _raid = RaidLocation.Shoreline;
     public RaidLocation Raid => _raid;
-    
+
     private static string _mapName = "Shoreline";
-    private static List<CustomExfil> _extracts = [
+
+    private static List<CustomExfil> _extracts =
+    [
         new CustomExfil
         {
             Identifier = "VGB_EXT_PEACEKEEPER",
             DisplayName = "Peacekeeper's Safe Zone",
             IsTransit = false,
-            TemplateExitName = "",// only fill if you want a specific template
+            TemplateExitName = "", // only fill if you want a specific template
             EntryPoints = "",
             ExfiltrationTime = 20f,
             X = -968.499f,
@@ -30,12 +32,14 @@ public class ExfilsShoreline : ICustomExtilData
             Side = "Pmc"
         },
     ];
-    private static  List<CustomExfil>_transits = [
+
+    private static List<CustomExfil> _transits =
+    [
         new CustomExfil
         {
             Identifier = "VGB_SL_CU",
             IsTransit = true,
-            TransitPointId = 0,// gets auto generated
+            TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Customs].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Customs].First(),
             Description = "Transit to Customs",
@@ -53,7 +57,7 @@ public class ExfilsShoreline : ICustomExtilData
         {
             Identifier = "VGB_SL_RS",
             IsTransit = true,
-            TransitPointId = 0,// gets auto generated
+            TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Reserve].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Reserve].First(),
             Description = "Mountain climb to Reserve",
@@ -89,7 +93,7 @@ public class ExfilsShoreline : ICustomExtilData
         {
             Identifier = "VGB_SL_LH",
             IsTransit = true,
-            TransitPointId = 0,// gets auto generated
+            TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Lighthouse].First(),
             TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Lighthouse].First(),
             Description = "Transit to Lighthouse",

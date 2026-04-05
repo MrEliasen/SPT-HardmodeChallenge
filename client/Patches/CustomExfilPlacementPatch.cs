@@ -5,7 +5,6 @@ using System.Reflection;
 using Comfort.Common;
 using EFT;
 using EFT.Interactive;
-using EFT.Interactive.SecretExfiltrations;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UnityEngine;
@@ -20,6 +19,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
     public static bool ExtractsAppliedThisRaid;
     public static bool TransitsAppliedThisRaid;
     public static readonly Dictionary<int, CustomExfil> CustomTransitDefinitions = new();
+    public static Dictionary<string, ExfiltrationPoint> _exfilPointTemplateCache = new();
 
     private static readonly FieldInfo TransitPointLookupField =
         AccessTools.Field(typeof(TransitControllerAbstractClass), "Dictionary_0");
@@ -74,24 +74,25 @@ internal class CustomExfilPlacementPatch : ModulePatch
         FilterExtractions(__instance);
     }
 
-    public static void ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid,
-        List<CustomExfil> definitions)
+    public static List<ExfiltrationPoint> ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid,
+        List<CustomExfil> definitions, bool force = false)
     {
-        if (ExtractsAppliedThisRaid)
+        var addedPoints = new List<ExfiltrationPoint>();
+
+        if (ExtractsAppliedThisRaid && !force)
         {
-            return;
+            return addedPoints;
         }
 
-        if (definitions.Count == 0)
+        if (definitions == null || definitions.Count == 0)
         {
-            return;
+            return addedPoints;
         }
 
         var pmcExfils = controller?.ExfiltrationPoints?.Where(x => x != null).ToList();
         if (pmcExfils == null || pmcExfils.Count == 0)
         {
-            Vagabond.Log("ApplyCustomExtracts: no PMC exfils available");
-            return;
+            return addedPoints;
         }
 
         foreach (var definition in definitions)
@@ -128,6 +129,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
             ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
             pmcExfils.Add(clone);
+            addedPoints.Add(clone);
 
             Vagabond.Log(
                 $"Added custom extract '{definition.DisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
@@ -135,6 +137,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         controller.ExfiltrationPoints = pmcExfils.ToArray();
         ExtractsAppliedThisRaid = true;
+        return addedPoints;
     }
 
     private static ExfiltrationPoint FindTemplateExfil(
@@ -142,6 +145,26 @@ internal class CustomExfilPlacementPatch : ModulePatch
         CustomExfil definition,
         List<CustomExfil> definitions)
     {
+        // Hit cache first
+        if (!string.IsNullOrWhiteSpace(definition.TemplateExitName))
+        {
+            if (_exfilPointTemplateCache.TryGetValue(definition.TemplateExitName, out ExfiltrationPoint cachedSpecific))
+            {
+                return cachedSpecific;
+            }
+        }
+
+        if (_exfilPointTemplateCache.TryGetValue("preferred", out ExfiltrationPoint cachedPreferred))
+        {
+            return cachedPreferred;
+        }
+
+        if (_exfilPointTemplateCache.TryGetValue("fallback", out ExfiltrationPoint cachedFallback))
+        {
+            return cachedFallback;
+        }
+        // cache miss
+
         var currentEntry = Singleton<GameWorld>.Instance?.MainPlayer?.Profile?.Info?.EntryPoint;
 
         bool MatchesExplicitTemplate(ExfiltrationPoint x) =>
@@ -231,6 +254,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             var explicitTemplate = pmcExfils.FirstOrDefault(MatchesExplicitTemplate);
             if (explicitTemplate != null)
             {
+                _exfilPointTemplateCache.Add(definition.TemplateExitName, explicitTemplate);
                 return explicitTemplate;
             }
         }
@@ -238,12 +262,14 @@ internal class CustomExfilPlacementPatch : ModulePatch
         var preferred = pmcExfils.FirstOrDefault(x => IsGoodTemplate(x, requireActiveStatus: true));
         if (preferred != null)
         {
+            _exfilPointTemplateCache.Add("preferred", preferred);
             return preferred;
         }
 
         var fallback = pmcExfils.FirstOrDefault(x => IsGoodTemplate(x, requireActiveStatus: false));
         if (fallback != null)
         {
+            _exfilPointTemplateCache.Add("fallback", fallback);
             return fallback;
         }
 
@@ -251,9 +277,9 @@ internal class CustomExfilPlacementPatch : ModulePatch
     }
 
     public static void ApplyCustomTransits(TransitControllerAbstractClass transitController, RaidLocation raid,
-        List<CustomExfil> definitions)
+        List<CustomExfil> definitions, bool force = false)
     {
-        if (TransitsAppliedThisRaid)
+        if (TransitsAppliedThisRaid && !force)
         {
             return;
         }
@@ -638,10 +664,19 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
     public static void FilterExtractions(ExfiltrationControllerClass __instance)
     {
-        var kept = new List<ExfiltrationPoint>();
+        if (__instance == null)
+        {
+            return;
+        }
 
+        var kept = new List<ExfiltrationPoint>();
         foreach (var exfil in __instance.ExfiltrationPoints)
         {
+            if (exfil == null)
+            {
+                continue;
+            }
+
             if (exfil?.Settings == null)
             {
                 HideExfil(exfil);
@@ -653,7 +688,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 kept.Add(exfil);
                 continue;
             }
-            
+
             // Keep shared exits alive for scavs
             if (exfil is SharedExfiltrationPoint shared)
             {
@@ -749,6 +784,7 @@ internal class CustomExfilCleanupPatch : ModulePatch
         CustomExfilPlacementPatch.TransitsAppliedThisRaid = false;
         CustomExfilPlacementPatch.ExtractsAppliedThisRaid = false;
         CustomExfilPlacementPatch.CustomTransitDefinitions.Clear();
+        CustomExfilPlacementPatch._exfilPointTemplateCache.Clear();
     }
 }
 
@@ -793,7 +829,7 @@ internal class CustomTransitRetryPatch : ModulePatch
         {
             return;
         }
-        
+
         CustomExfilPlacementPatch.ApplyCustomExtracts(__instance.ExfiltrationController, raid,
             definitions.Where(x => !x.IsTransit).ToList());
         CustomExfilPlacementPatch.ApplyCustomTransits(__instance.TransitController, raid,

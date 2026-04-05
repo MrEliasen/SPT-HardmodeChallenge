@@ -12,6 +12,7 @@ using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Spt.Config;
+using Vagabond.Common;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 
@@ -19,17 +20,17 @@ namespace Vagabond.Server;
 
 public record ModMetadata : AbstractModMetadata
 {
-    public override string ModGuid { get; init; } = "dev.oogabooga.spt-vagabond";
-    public override string Name { get; init; } = "Vagabond";
-    public override string Author { get; init; } = "Oogabooga.dev";
-    public override List<string>? Contributors { get; init; } = new() { "Oogabooga.dev" };
-    public override SemanticVersioning.Version Version { get; init; } = new("0.2.1");
-    public override SemanticVersioning.Range SptVersion { get; init; } = new("~4.0.13");
+    public override string ModGuid { get; init; } = ModInfo.Guid;
+    public override string Name { get; init; } = ModInfo.Name;
+    public override string Author { get; init; } = ModInfo.Author;
+    public override SemanticVersioning.Version Version { get; init; } = new(ModInfo.Version);
+    public override SemanticVersioning.Range SptVersion { get; init; } = new(ModInfo.SPTVersion);
+    public override string? Url { get; init; } = ModInfo.Url;
+    public override string License { get; init; } = ModInfo.License;
+    public override List<string>? Contributors { get; init; } = new() { ModInfo.Author };
     public override List<string>? Incompatibilities { get; init; }
     public override Dictionary<string, SemanticVersioning.Range>? ModDependencies { get; init; }
-    public override string? Url { get; init; } = "https://github.com/mreliasen/spt-vagabond";
     public override bool? IsBundleMod { get; init; }
-    public override string License { get; init; } = "MIT";
 }
 
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
@@ -55,7 +56,19 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.ChooseRaidLocationsPatch().Enable();
         new Patches.StartLocalRaidPatch().Enable();
         new Patches.GetCompleteProfilePatch().Enable();
-        
+
+        new Patches.ItemEventRouterHandleEventsPatch().Enable();
+        new Patches.TradeHelperBuyItemPatch().Enable();
+        new Patches.TradeHelperSellItemPatch().Enable();
+        new Patches.PaymentServicePayMoneyPatch().Enable();
+        new Patches.InventoryHelperAddItemsToStashPatch().Enable();
+        new Patches.InventoryHelperAddItemToStashPatch().Enable();
+        new Patches.InventoryHelperCanPlaceItemsInInventoryPatch().Enable();
+        new Patches.InventoryCallbacksTagItemPatch().Enable();
+        new Patches.InventoryCallbacksSortInventoryPatch().Enable();
+        new Patches.InventoryCallbacksPinOrLockPatch().Enable();
+        new Patches.InventoryCallbacksSetFavoriteItemPatch().Enable();
+
         // remove old trader from profiles
         // this will be removed in some later version
         if (VagabondConfig.Config.FixProfiles)
@@ -63,7 +76,7 @@ public sealed class VagabondLoader : IOnLoad
             var coreConfig = _configServer.GetConfig<CoreConfig>();
             coreConfig.Fixes.RemoveInvalidTradersFromProfile = true;
         }
-                
+
         return Task.CompletedTask;
     }
 }
@@ -115,10 +128,10 @@ public sealed class VagabondDbLoader : IOnLoad
         ReflectionUtil.Register(_locationController);
         ReflectionUtil.Register(_databaseService);
         ExfilService.Apply(_databaseService);
-        
+
         if (FikaAdapter.Init(_services))
         {
-           _logger.Success("[Vagabond] Fika detected.");
+            _logger.Success("[Vagabond] Fika detected.");
         }
 
         _logger.Success($"[Vagabond] modules loaded.");
@@ -134,12 +147,12 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
         var locationsdb = databaseService.GetLocations();
         locationsdb.Sandbox.Base.RequiredPlayerLevelMax = 0;
         locationsdb.SandboxHigh.Base.Enabled = true;
-        
+
         Globals globals = databaseService.GetGlobals();
         globals.Configuration.SavagePlayCooldown = 14400;
         globals.Configuration.Exp.MatchEnd.SurvivedExperienceRequirement = 0;
         globals.Configuration.Exp.MatchEnd.SurvivedSecondsRequirement = 0;
-            
+
         if (VagabondConfig.Config.DisableFlea)
         {
             globals.Configuration.RagFair.MinUserLevel = 99;
@@ -149,9 +162,8 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
         {
             globals.Configuration.EventSettings.EventActive = false;
         }
-        
-        
-            
+
+
         if (VagabondConfig.Config.AdjustRaidTimeMins != 0)
         {
             foreach (Location names in locationsdb.GetDictionary().Values)

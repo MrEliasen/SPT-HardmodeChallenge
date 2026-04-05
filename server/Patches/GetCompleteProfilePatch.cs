@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
@@ -35,5 +35,6 @@ public sealed class GetCompleteProfilePatch : AbstractPatch
         }
 
         HideoutService.UpdateTraderAccess(__result[0], state);
+        VirtualStashService.ApplyToClientProfile(sessionId, __result[0]);
     }
 }
