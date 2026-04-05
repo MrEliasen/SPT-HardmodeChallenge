@@ -25,7 +25,7 @@ internal static class ExfilService
             return;
         }
 
-        var exfileId = $"VGB_HO_{state.Id}";
+        var exfileId = $"{HideoutService.HideoutIdPrefix}{state.Id}";
 
         // remove hideout
         foreach (var raids in _hideoutExfils)
@@ -333,7 +333,7 @@ internal static class ExfilService
 
         var hideoutExfil = new CustomExfil
         {
-            Identifier = $"VGB_HO_{state.HideoutState?.Id}",
+            Identifier = $"{HideoutService.HideoutIdPrefix}{state.HideoutState?.Id}",
             DisplayName = $"Hideout Entrance ({profileName})",
             TemplateExitName = template.TemplateExitName,
             EntryPoints = template.EntryPoints,
@@ -382,7 +382,7 @@ internal static class ExfilService
                 }
             }
         }
-
+ 
         foreach (var raidEntry in _hideoutExfils)
         {
             VagabondLogger.Log($"Pupulating Hideouts for {raidEntry.Key}");

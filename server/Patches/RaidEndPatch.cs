@@ -74,7 +74,7 @@ public sealed class RaidEndPatch : AbstractPatch
             if (!string.IsNullOrEmpty(state.HideoutState?.Id))
             {
                 state.CurrentMap = state.HideoutState.Map!;
-                state.LastExit = $"VGB_HO_{state.HideoutState.Id}";
+                state.LastExit = $"{HideoutService.HideoutIdPrefix}{state.HideoutState.Id}";
             }
 
             VagabondState.SaveState(sessionId, state);

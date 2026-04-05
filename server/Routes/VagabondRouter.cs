@@ -141,23 +141,27 @@ public class VagabondRouter(
         {
             state.HideoutState = new HideoutState
             {
+                // if we do not keep the same ID, any virtual stashes tied to that hideout disappear
                 Id = String.Format("{0:X}", sessionId.GetHashCode()),
             };
         }
 
+        ExfilService.RemoveHideout(state.HideoutState);
+        
         state.HideoutState.Map = mapName;
         state.HideoutState.X = payload.X;
         state.HideoutState.Y = payload.Y;
         state.HideoutState.Z = payload.Z;
         state.HideoutState.R = payload.R;
 
+        ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state);
         ExfilService.BuildCustomExfilSnapshot(true);
 
         VagabondState.SaveState(stateSessionId, state);
         response.Success = true;
         response.CurrentRaid = mapName;
         response.MapName = mapName;
-        response.Message = "Hideout Established. Please wait..";
+        response.Message = "Hideout Established.";
         return response;
     }
 }

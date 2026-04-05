@@ -25,7 +25,7 @@ internal static class VirtualStashService
 
     public static bool IsVirtualStashEnabled(MongoId sessionId)
     {
-        return TryGetActiveTraderId(sessionId, out _);
+        return TryGetActiveStashId(sessionId, out _);
     }
 
     public static bool IsStashActive(MongoId sessionId)
@@ -39,7 +39,7 @@ internal static class VirtualStashService
 
     public static IDisposable OpenStash(MongoId sessionId, PmcData? pmcData = null)
     {
-        if (!TryGetActiveTraderId(sessionId, out var traderId))
+        if (!TryGetActiveStashId(sessionId, out var traderId))
         {
             return Noop.Instance;
         }
@@ -98,7 +98,7 @@ internal static class VirtualStashService
 
     public static void ApplyToClientProfile(MongoId sessionId, PmcData pmcData)
     {
-        if (!TryGetActiveTraderId(sessionId, out var traderId))
+        if (!TryGetActiveStashId(sessionId, out var traderId))
         {
             return;
         }
@@ -463,9 +463,9 @@ internal static class VirtualStashService
         return VagabondService.GetPmcProfile(sessionId)?.CharacterData?.PmcData;
     }
 
-    private static bool TryGetActiveTraderId(MongoId sessionId, out string traderId)
+    private static bool TryGetActiveStashId(MongoId sessionId, out string stashId)
     {
-        traderId = string.Empty;
+        stashId = string.Empty;
 
         // I want to make sure while in-raid, whatever you do does not involve any virtual stash
         if (VagabondService.IsInRaid(sessionId))
@@ -484,8 +484,23 @@ internal static class VirtualStashService
             return false;
         }
 
-        traderId = HideoutService.GetCurrentTraderId(state) ?? string.Empty;
-        return !string.IsNullOrWhiteSpace(traderId);
+        stashId = HideoutService.GetCurrentTraderId(state) ?? string.Empty;
+        if (!string.IsNullOrWhiteSpace(stashId))
+        {
+            return true;
+        }
+        
+        // If the player took eg. another players hideout exfil, we need a stash for that as well.
+        if (state.LastExit != state.HideoutState?.Id && !string.IsNullOrEmpty(state.HideoutState?.Id))
+        {
+            if (state.LastExit?.IndexOf(HideoutService.HideoutIdPrefix) == 0)
+            {
+                stashId = state.LastExit;
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     private sealed class ActiveStashSession : IDisposable
