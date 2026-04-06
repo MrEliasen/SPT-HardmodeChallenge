@@ -227,8 +227,7 @@ public static class RaidService
             stringBuilder,
             true,
             timerPanel.ProfileId,
-            point,
-            false);
+            point);
 
         timers.Add(point.Settings.Name, row);
     }
@@ -355,12 +354,12 @@ public static class RaidService
         field.SetValue(scenario, current.Concat(new[] { point }).ToArray());
     }
 
-    private static bool TryBindPointToFikaManagerComponent(AbstractGame game, ExfiltrationPoint point)
+    private static void TryBindPointToFikaManagerComponent(AbstractGame game, ExfiltrationPoint point)
     {
         var manager = FindFikaExfilManager(game);
         if (manager == null)
         {
-            return false;
+            return;
         }
 
         var method = manager.GetType().GetMethod(
@@ -372,19 +371,17 @@ public static class RaidService
 
         if (method == null)
         {
-            return false;
+            return;
         }
 
         try
         {
             method.Invoke(manager, new object[] { point, true });
-            return true;
         }
         catch (Exception ex)
         {
             Vagabond.LogError(
                 $"Failed to register live exfil '{point.Settings?.Name}' through FikaExfilManager.UpdateExfilPointFromServer: {ex}");
-            return false;
         }
     }
 
@@ -473,7 +470,7 @@ public static class RaidService
             return;
         }
 
-        point.Proceed(player, false);
+        point.Proceed(player);
     }
 
     private static int GetHandlerCount(Delegate handlers)

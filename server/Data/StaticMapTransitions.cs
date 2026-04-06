@@ -145,7 +145,7 @@ public static class StaticMapTransitions
             .FirstOrDefault(x => x.Identifier == exfil.ConnectedIdentifier);
         if (position == null)
         {
-            VagabondLogger.Error($"No connected spawn found for {state?.TransitState?.ExitName} on {to}");
+            VagabondLogger.Error($"No connected spawn found for {state.TransitState?.ExitName} on {to}");
             return false;
         }
 

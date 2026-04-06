@@ -19,7 +19,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
     public static bool ExtractsAppliedThisRaid;
     public static bool TransitsAppliedThisRaid;
     public static readonly Dictionary<int, CustomExfil> CustomTransitDefinitions = new();
-    public static Dictionary<string, ExfiltrationPoint> _exfilPointTemplateCache = new();
+    public static Dictionary<string, ExfiltrationPoint> ExfilPointTemplateCache = new();
 
     private static readonly FieldInfo TransitPointLookupField =
         AccessTools.Field(typeof(TransitControllerAbstractClass), "Dictionary_0");
@@ -119,25 +119,26 @@ internal class CustomExfilPlacementPatch : ModulePatch
             {
                 var cloneObject = LocationScene.Instantiate(template.gameObject);
                 cloneObject.name = definition.Identifier;
-                
+
                 var clone = cloneObject.GetComponent<ExfiltrationPoint>();
                 if (clone == null)
                 {
-                    Vagabond.LogError($"Cloned object for '{definition.Identifier}' does not contain ExfiltrationPoint.");
+                    Vagabond.LogError(
+                        $"Cloned object for '{definition.Identifier}' does not contain ExfiltrationPoint.");
                     UnityEngine.Object.Destroy(cloneObject);
                     continue;
                 }
-                
+
                 cloneObject.transform.SetParent(template.transform.parent, true);
                 cloneObject.transform.position = new Vector3(definition.X, definition.Y, definition.Z);
                 cloneObject.transform.rotation = Quaternion.Euler(0f, definition.RotationY, 0f);
                 cloneObject.SetActive(true);
                 ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
-                
+
                 pmcExfils.Add(clone);
                 addedPoints.Add(clone);
             }
-            
+
             Vagabond.Log(
                 $"Added custom extract '{definition.DisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
         }
@@ -155,18 +156,18 @@ internal class CustomExfilPlacementPatch : ModulePatch
         // Hit cache first
         if (!string.IsNullOrWhiteSpace(definition.TemplateExitName))
         {
-            if (_exfilPointTemplateCache.TryGetValue(definition.TemplateExitName, out ExfiltrationPoint cachedSpecific))
+            if (ExfilPointTemplateCache.TryGetValue(definition.TemplateExitName, out ExfiltrationPoint cachedSpecific))
             {
                 return cachedSpecific;
             }
         }
 
-        if (_exfilPointTemplateCache.TryGetValue("preferred", out ExfiltrationPoint cachedPreferred))
+        if (ExfilPointTemplateCache.TryGetValue("preferred", out ExfiltrationPoint cachedPreferred))
         {
             return cachedPreferred;
         }
 
-        if (_exfilPointTemplateCache.TryGetValue("fallback", out ExfiltrationPoint cachedFallback))
+        if (ExfilPointTemplateCache.TryGetValue("fallback", out ExfiltrationPoint cachedFallback))
         {
             return cachedFallback;
         }
@@ -261,7 +262,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             var explicitTemplate = pmcExfils.FirstOrDefault(MatchesExplicitTemplate);
             if (explicitTemplate != null)
             {
-                _exfilPointTemplateCache.Add(definition.TemplateExitName, explicitTemplate);
+                ExfilPointTemplateCache.Add(definition.TemplateExitName, explicitTemplate);
                 return explicitTemplate;
             }
         }
@@ -269,14 +270,14 @@ internal class CustomExfilPlacementPatch : ModulePatch
         var preferred = pmcExfils.FirstOrDefault(x => IsGoodTemplate(x, requireActiveStatus: true));
         if (preferred != null)
         {
-            _exfilPointTemplateCache.Add("preferred", preferred);
+            ExfilPointTemplateCache.Add("preferred", preferred);
             return preferred;
         }
 
         var fallback = pmcExfils.FirstOrDefault(x => IsGoodTemplate(x, requireActiveStatus: false));
         if (fallback != null)
         {
-            _exfilPointTemplateCache.Add("fallback", fallback);
+            ExfilPointTemplateCache.Add("fallback", fallback);
             return fallback;
         }
 
@@ -309,7 +310,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             return;
         }
 
-        var existingTransitPoints = LocationScene.GetAllObjects<TransitPoint>(false).Where(x => x != null).ToList();
+        var existingTransitPoints = LocationScene.GetAllObjects<TransitPoint>().Where(x => x != null).ToList();
         if (existingTransitPoints.Count == 0)
         {
             Vagabond.LogError($"No TransitPoint template exists in the {raid} scene.");
@@ -416,7 +417,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
     {
         template.Settings.Name = definition.DisplayName;
         template.Settings.Chance = 100f;
-        
+
         Vagabond.Log($"Configured Hijacked exfil '{definition.Identifier}'");
     }
 
@@ -812,7 +813,7 @@ internal class CustomExfilCleanupPatch : ModulePatch
         CustomExfilPlacementPatch.TransitsAppliedThisRaid = false;
         CustomExfilPlacementPatch.ExtractsAppliedThisRaid = false;
         CustomExfilPlacementPatch.CustomTransitDefinitions.Clear();
-        CustomExfilPlacementPatch._exfilPointTemplateCache.Clear();
+        CustomExfilPlacementPatch.ExfilPointTemplateCache.Clear();
     }
 }
 

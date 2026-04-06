@@ -1,7 +1,4 @@
-﻿using Vagabond.Common.Definitions;
-using Vagabond.Common.Enums;
-
-namespace Vagabond.Common.Models;
+﻿namespace Vagabond.Common.Models;
 
 public class PlaceHideoutResponse
 {

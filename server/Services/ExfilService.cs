@@ -15,7 +15,7 @@ internal static class ExfilService
     public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils = new();
     public static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> HideoutExfils = new();
     private static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>? _snapshotCache;
-    public static int SnapshotCacheVersion = 0;
+    public static int SnapshotCacheVersion = 1;
     private static HashSet<string> _loadedHideoutExfils = new();
 
     public static void RemoveHideout(HideoutState? state)
@@ -265,7 +265,7 @@ internal static class ExfilService
             return false;
         }
 
-        if (!VagabondLocations.Locations.TryGetValue(raid, out var mapIds))
+        if (!VagabondLocations.Locations.TryGetValue(raid, out _))
         {
             return false;
         }

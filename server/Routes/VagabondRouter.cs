@@ -89,7 +89,7 @@ public class VagabondRouter(
         return response;
     }
 
-    private static SyncExfilResponse HandleSyncExfilRoute(MongoId sessionId, GetExfilDataServerRequest payload)
+    private static SyncExfilResponse HandleSyncExfilRoute(MongoId _, GetExfilDataServerRequest payload)
     {
         var response = new SyncExfilResponse
         {

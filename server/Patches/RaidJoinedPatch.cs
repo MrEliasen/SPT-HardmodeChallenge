@@ -68,8 +68,7 @@ public sealed class RaidJoinPatch : AbstractPatch
                 sessionId,
                 pmc.CharacterData.PmcData,
                 false,
-                true,
-                false
+                true
             );
             VirtualStashService.ClearAllTraderStashes(sessionId);
             state.IsNewCharacter = false;

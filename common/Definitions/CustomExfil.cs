@@ -68,6 +68,9 @@ public sealed class CustomExfil
     public float Z { get; set; }
     public float RotationY { get; set; }
     public string? ConnectedIdentifier { get; set; }
-    public bool HijackExfil { get; set; } // the exfil of the given template name can only be hijacked by one custom exfil.
+
+    public bool
+        HijackExfil { get; set; } // the exfil of the given template name can only be hijacked by one custom exfil.
+
     public List<CustomExtractRequirementDefinition> Requirements { get; set; } = new();
 }

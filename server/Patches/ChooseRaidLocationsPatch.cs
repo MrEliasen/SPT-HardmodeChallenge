@@ -4,7 +4,6 @@ using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Callbacks;
 using SPTarkov.Server.Core.Models.Common;
 using Vagabond.Common.Data;
-using Vagabond.Common.Models;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;

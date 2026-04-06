@@ -4,7 +4,6 @@ using System.Linq;
 using Comfort.Common;
 using EFT;
 using EFT.UI;
-using Vagabond.Client.Patches;
 using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 
@@ -59,7 +58,7 @@ public static class HideoutService
             }
 
             timerPanel.ForceUpdateExfiltrationPointsVisitedStatus();
-            timerPanel.ShowTimer(true, false);
+            timerPanel.ShowTimer(true);
         }
         catch (Exception ex)
         {

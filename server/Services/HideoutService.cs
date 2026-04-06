@@ -11,9 +11,12 @@ namespace Vagabond.Server.Services;
 internal static class HideoutService
 {
     public const string HideoutIdPrefix = "VGB_HO_";
+
     public const string HideoutNamePrefix = "Hideout Entrance";
+
     // access is not changed by extraction.
-    private static List<string> IgnoredTraders = [
+    private static readonly List<string> IgnoredTraders =
+    [
         "656f0f98d80a697f855d34b1", // BTR Driver
         "638f541a29ffd1183d187f57", // Lightkeeper
         "688246518448b05efd61d461", // Mr. Kerman
@@ -21,6 +24,7 @@ internal static class HideoutService
         "68fe15910f29ba3fdbba9d54", // Taran
         "688246958448b05efd61d462", // Voevoda
     ];
+
     private static readonly List<TraderLocation> TraderLocations = new()
     {
         new TraderLocation
@@ -113,14 +117,14 @@ internal static class HideoutService
             {
                 continue;
             }
-            
+
             if (entry.Key == traderId || (isCustomTraderLoc && !traderIdList.Contains(entry.Key)))
             {
                 entry.Value.Disabled = false;
                 entry.Value.Unlocked = true;
                 continue;
             }
-            
+
             entry.Value.Disabled = true;
             entry.Value.Unlocked = false;
         }

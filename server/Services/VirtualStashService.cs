@@ -493,13 +493,13 @@ internal static class VirtualStashService
         // If the player took eg. another players hideout exfil, we need a stash for that as well.
         if (!string.IsNullOrEmpty(state.HideoutState?.Id) && state.LastExit != $"VGB_HO_{state.HideoutState?.Id}")
         {
-            if (state.LastExit?.IndexOf(HideoutService.HideoutIdPrefix) == 0)
+            if (state.LastExit.IndexOf(HideoutService.HideoutIdPrefix, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 stashId = state.LastExit;
                 return true;
             }
         }
-        
+
         // if its the custom trader market
         if (state.LastExit == "VGB_EXT_MARKET")
         {

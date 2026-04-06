@@ -3,7 +3,6 @@ using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
-using Vagabond.Common.Data;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 

@@ -1,13 +1,11 @@
 using System;
 using System.IO;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
-using EFT.Communications;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Vagabond.Client.Patches;
@@ -151,7 +149,7 @@ public class Vagabond : BaseUnityPlugin
 
         if (!_hideoutPlacementArmed)
         {
-            if (!TryGetCurrentSnapshot(out var snapshot))
+            if (!TryGetCurrentSnapshot(out _))
             {
                 NotificationManagerClass.DisplayWarningNotification("You must be in raid.");
                 return;
