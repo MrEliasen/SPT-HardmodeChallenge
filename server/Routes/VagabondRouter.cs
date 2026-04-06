@@ -60,7 +60,6 @@ public class VagabondRouter(
 
         if (!VagabondService.ShouldApplyVagabondRules(stateSessionId))
         {
-            VagabondLogger.Error($"Not able to apply vagabond rules {stateSessionId}");
             response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
             return response;
         }

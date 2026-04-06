@@ -14,7 +14,17 @@ public class ExfilsReserve : ICustomExtilData
     public RaidLocation Raid => _raid;
 
     private static string _mapName = "RezervBase";
-    private static List<CustomExfil> _extracts = [];
+
+    private static List<CustomExfil> _extracts =
+    [
+        new CustomExfil
+        {
+            Identifier = "VGB_EXT_MARKET",
+            DisplayName = "Underground Market via Hermetic Door (Custom Traders)",
+            TemplateExitName = "EXFIL_Bunker",
+            HijackExfil = true, // it will take most information from the hijacked exfil
+        },
+    ];
 
     private static List<CustomExfil> _transits =
     [
