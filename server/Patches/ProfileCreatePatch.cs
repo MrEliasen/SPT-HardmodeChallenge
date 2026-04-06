@@ -47,6 +47,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
         state.CurrentMap = "Streets";
         state.LastExit = "VGB_EXT_FENCE";
         state.VagabondModeEnabled = true;
+        state.IsNewCharacter = true;
         VagabondState.SaveState(sessionId, state);
 
         var changed = InitializeNewCharacter(sessionId, pmc);

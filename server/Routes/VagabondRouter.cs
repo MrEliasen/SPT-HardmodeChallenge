@@ -80,11 +80,10 @@ public class VagabondRouter(
             ExfilService.BuildCustomExfilSnapshot(true);
         }
 
-        VagabondLogger.Error($"Building exfils{stateSessionId}");
+        //VagabondLogger.Error($"Building exfils{stateSessionId}");
         response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
         response.PermaDeath = VagabondConfig.Config.PermaDeath;
         response.WipeFirstRaid = VagabondConfig.Config.WipeStashOnFirstRaidEntry;
-        response.WipeFirstMoney = VagabondConfig.Config.AlsoWipeCarriedMoneyOnFirstRaid;
         response.CurrentMap = VagabondService.GetCurrentRaidId(state);
         response.NewCharacter = string.IsNullOrEmpty(state.CurrentMap);
 
@@ -161,7 +160,7 @@ public class VagabondRouter(
         response.Success = true;
         response.CurrentRaid = mapName;
         response.MapName = mapName;
-        response.Message = "Hideout Established, please wait...";
+        response.Message = "Establishing hideout, please wait...";
         return response;
     }
 }

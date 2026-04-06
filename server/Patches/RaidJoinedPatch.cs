@@ -61,20 +61,21 @@ public sealed class RaidJoinPatch : AbstractPatch
         }
 
         RaidRuntimeState.Entered(sessionId);
-        VagabondState.SaveState(sessionId, state);
 
-        if (VagabondConfig.Config.WipeStashOnFirstRaidEntry && string.IsNullOrEmpty(state.CurrentMap))
+        if (VagabondConfig.Config.WipeStashOnFirstRaidEntry && state.IsNewCharacter)
         {
             VagabondService.WipeItems(
                 sessionId,
                 pmc.CharacterData.PmcData,
                 false,
                 true,
-                VagabondConfig.Config.AlsoWipeCarriedMoneyOnFirstRaid
+                false
             );
             VirtualStashService.ClearAllTraderStashes(sessionId);
+            state.IsNewCharacter = false;
         }
 
+        VagabondState.SaveState(sessionId, state);
         VagabondService.PersistProfileIfPossible(sessionId);
     }
 }
