@@ -92,7 +92,7 @@ public static class StaticMapTransitions
         {
             return false;
         }
-        
+
         var exfil = ExfilService.HideoutExfils[raid]
             .SelectMany(x => x.Value)
             .FirstOrDefault(y =>
@@ -103,7 +103,8 @@ public static class StaticMapTransitions
             return false;
         }
 
-        customHideoutExitSpawn = new ManualSpawnPoint { X = exfil.X, Y = exfil.Y, Z = exfil.Z, Rotation = exfil.RotationY };
+        customHideoutExitSpawn = new ManualSpawnPoint
+            { X = exfil.X, Y = exfil.Y, Z = exfil.Z, Rotation = exfil.RotationY };
         //VagabondLogger.Error($"forcing spawn at {customHideoutExitSpawn.X},{customHideoutExitSpawn.Y},{customHideoutExitSpawn.Z},R={customHideoutExitSpawn.Rotation}");
         return true;
     }

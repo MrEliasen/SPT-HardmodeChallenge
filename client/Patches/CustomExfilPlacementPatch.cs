@@ -448,7 +448,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             collider.enabled = true;
             collider.isTrigger = true;
         }
-        
+
         var templateCollider = template.GetComponent<Collider>();
         if (collider is BoxCollider box && templateCollider is BoxCollider templateBox)
         {

@@ -12,11 +12,13 @@ internal class MatchMakerSideSelectionScreenPatch : ModulePatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(MatchMakerSideSelectionScreen).GetMethod(nameof(MatchMakerSideSelectionScreen.Update), BindingFlags.Public | BindingFlags.Instance);
+        return typeof(MatchMakerSideSelectionScreen).GetMethod(nameof(MatchMakerSideSelectionScreen.Update),
+            BindingFlags.Public | BindingFlags.Instance);
     }
 
     [PatchPostfix]
-    protected static void PatchPostfix(UIAnimatedToggleSpawner ____savagesButton, TMP_Text ____savageBlockMessage, CanvasGroup ____savageBlocker, PlayerModelView ____savageModelView)
+    protected static void PatchPostfix(UIAnimatedToggleSpawner ____savagesButton, TMP_Text ____savageBlockMessage,
+        CanvasGroup ____savageBlocker, PlayerModelView ____savageModelView)
     {
         ____savagesButton.GameObject.SetActive(false);
         ____savageModelView.GameObject.SetActive(false);

@@ -69,12 +69,12 @@ public sealed class RaidEndPatch : AbstractPatch
         {
             var deathGoTo = VagabondConfig.Config.OnDeathGoTo.Trim().ToLower();
             state.ResetProfile = VagabondConfig.Config.PermaDeath;
-            
+
             if (deathGoTo != "stay")
             {
                 state.CurrentMap = "Streets";
                 state.LastExit = "VGB_EXT_FENCE";
-                
+
                 if (!string.IsNullOrEmpty(state.HideoutState?.Id) && deathGoTo == "hideout")
                 {
                     state.CurrentMap = state.HideoutState.Map!;
