@@ -38,13 +38,13 @@ public class HideUnavailableTraderCardsPatch : ModulePatch
         }
 
         var filtered = tradersList.Where(x => x != null && x.Info != null && x.Info.Available).ToArray();
+        tradersList = filtered;
+        
         if (filtered.Length == 0)
         {
             return;
         }
-
-        tradersList = filtered;
-
+        
         if (trader == null || trader.Info == null || !trader.Info.Available || !filtered.Contains(trader))
         {
             trader = filtered[0];
