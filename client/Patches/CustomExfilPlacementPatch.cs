@@ -110,27 +110,34 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 continue;
             }
 
-            template.Settings.Chance = 100;
-
-            var cloneObject = LocationScene.Instantiate(template.gameObject);
-            cloneObject.name = definition.Identifier;
-            cloneObject.SetActive(true);
-            cloneObject.transform.SetParent(template.transform.parent, true);
-            cloneObject.transform.position = new Vector3(definition.X, definition.Y, definition.Z);
-            cloneObject.transform.rotation = Quaternion.Euler(0f, definition.RotationY, 0f);
-
-            var clone = cloneObject.GetComponent<ExfiltrationPoint>();
-            if (clone == null)
+            if (definition.HijackExfil)
             {
-                Vagabond.LogError($"Cloned object for '{definition.Identifier}' does not contain ExfiltrationPoint.");
-                UnityEngine.Object.Destroy(cloneObject);
-                continue;
+                template.gameObject.name = definition.Identifier;
+                ConfigureHijackedClone(template, definition);
             }
-
-            ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
-            pmcExfils.Add(clone);
-            addedPoints.Add(clone);
-
+            else
+            {
+                var cloneObject = LocationScene.Instantiate(template.gameObject);
+                cloneObject.name = definition.Identifier;
+                
+                var clone = cloneObject.GetComponent<ExfiltrationPoint>();
+                if (clone == null)
+                {
+                    Vagabond.LogError($"Cloned object for '{definition.Identifier}' does not contain ExfiltrationPoint.");
+                    UnityEngine.Object.Destroy(cloneObject);
+                    continue;
+                }
+                
+                cloneObject.transform.SetParent(template.transform.parent, true);
+                cloneObject.transform.position = new Vector3(definition.X, definition.Y, definition.Z);
+                cloneObject.transform.rotation = Quaternion.Euler(0f, definition.RotationY, 0f);
+                cloneObject.SetActive(true);
+                ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
+                
+                pmcExfils.Add(clone);
+                addedPoints.Add(clone);
+            }
+            
             Vagabond.Log(
                 $"Added custom extract '{definition.DisplayName}' (identifier '{definition.Identifier}') using template '{template.Settings?.Name}'.");
         }
@@ -403,6 +410,14 @@ internal class CustomExfilPlacementPatch : ModulePatch
             // Going for 5x5m, and 2m high
             box.size = new Vector3(5f, templateBox.size.y, 5f);
         }
+    }
+
+    private static void ConfigureHijackedClone(ExfiltrationPoint template, CustomExfil definition)
+    {
+        template.Settings.Name = definition.DisplayName;
+        template.Settings.Chance = 100f;
+        
+        Vagabond.Log($"Configured Hijacked exfil '{definition.Identifier}'");
     }
 
     private static void ConfigureExtractClone(ExfiltrationPoint clone, ExfiltrationPoint template,
