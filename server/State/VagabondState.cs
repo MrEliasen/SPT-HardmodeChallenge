@@ -14,6 +14,7 @@ public sealed class VagabondState
     public string LastExit { get; set; } = "";
     public TransitState? TransitState { get; set; }
     public HideoutState? HideoutState { get; set; }
+    public List<string> QuestExfils { get; set; } = [];
     public bool ResetProfile { get; set; }
 
     public static VagabondState GetState(MongoId sessionId)

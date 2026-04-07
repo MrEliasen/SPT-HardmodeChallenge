@@ -56,6 +56,8 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.ChooseRaidLocationsPatch().Enable();
         new Patches.StartLocalRaidPatch().Enable();
         new Patches.GetCompleteProfilePatch().Enable();
+        new Patches.QuestCallbacksAcceptQuestPatch().Enable();
+        new Patches.QuestCallbacksCompleteQuestPatch().Enable();
 
         new Patches.ItemEventRouterHandleEventsPatch().Enable();
         new Patches.TradeHelperBuyItemPatch().Enable();

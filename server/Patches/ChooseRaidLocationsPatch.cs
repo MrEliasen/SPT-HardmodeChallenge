@@ -87,14 +87,11 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
                 }
             }
         }
-        else
+        else if (VagabondLocations.Locations.TryGetValue(currentMap, out var mapIds))
         {
-            if (VagabondLocations.Locations.TryGetValue(currentMap, out var mapIds))
+            foreach (var mapId in mapIds)
             {
-                foreach (var mapId in mapIds)
-                {
-                    allowedMapIds.Add(mapId);
-                }
+                allowedMapIds.Add(mapId);
             }
         }
 
@@ -115,6 +112,8 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
             }
         }
 
+        var questExfils = QuestService.BuildExfilList(state);
+        
         foreach (string locationKey in locations.Select(x => x.Key).ToList())
         {
             JsonObject? location = locations[locationKey]?.AsObject();
@@ -126,6 +125,9 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
             {
                 continue;
             }
+            
+            VagabondLocations.IdToName.TryGetValue(locationKey, out var mapName);
+            questExfils.TryGetValue(mapName!, out var mapQuestExfils);
 
             if (exits != null)
             {
@@ -139,7 +141,7 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
                         continue;
                     }
 
-                    if (!IsCustomExtract(exfil, locationKey))
+                    if (!ShouldKeepExtract(exfil, locationKey, mapQuestExfils ?? []))
                     {
                         exits.RemoveAt(i);
                     }
@@ -148,7 +150,14 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
 
             if (secretExits != null)
             {
-                secretExits.Clear();
+                for (int i = secretExits.Count - 1; i >= 0; i--)
+                {
+                    JsonObject? exfil = secretExits[i]?.AsObject();
+                    if (exfil == null || !ShouldKeepExtract(exfil, locationKey, mapQuestExfils ?? []))
+                    {
+                        secretExits.RemoveAt(i);
+                    }
+                }
             }
         }
 
@@ -156,6 +165,22 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
         {
             WriteIndented = false
         });
+    }
+
+    private static bool ShouldKeepExtract(JsonObject exfil, string locationKey, List<string> mapQuestExfils)
+    {
+        return IsCustomExtract(exfil, locationKey) || IsQuestExtract(exfil, mapQuestExfils);
+    }
+
+    private static bool IsQuestExtract(JsonObject exfil, List<string> mapQuestExfils)
+    {
+        var templ = exfil["Name"]?.GetValue<string>();
+        if (templ == null)
+        {
+            return false;
+        }
+
+        return mapQuestExfils.Contains(templ);
     }
 
     private static bool IsCustomExtract(JsonObject exfil, MongoId locationKey)
