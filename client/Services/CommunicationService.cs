@@ -14,7 +14,7 @@ public static class CommunicationService
             {
                 Version = Vagabond.State.CustomExfilsCacheVersion,
             });
-            
+
             ApplyExfilState(resp);
         }
         catch (Exception ex)
@@ -22,7 +22,7 @@ public static class CommunicationService
             Vagabond.LogError($"Failed to synchronously sync Vagabond state: {ex}");
         }
     }
-    
+
     public static async Task RefreshExfilState()
     {
         try
@@ -31,7 +31,7 @@ public static class CommunicationService
             {
                 Version = Vagabond.State.CustomExfilsCacheVersion,
             });
-            
+
             ApplyExfilState(resp);
         }
         catch (Exception ex)
@@ -43,14 +43,14 @@ public static class CommunicationService
             Vagabond.State.IsRefreshing = false;
         }
     }
-    
+
     private static void ApplyExfilState(SyncExfilResponse resp)
     {
         if (resp == null)
         {
             return;
         }
-        
+
         Vagabond.Log($"RefreshExfilState: version={resp.Version}");
         Vagabond.State.CustomExfilsCacheVersion = resp.Version;
 
@@ -78,7 +78,7 @@ public static class CommunicationService
             Vagabond.State.IsRefreshing = false;
         }
     }
-    
+
     public static void RefreshVagabondStateBlocking()
     {
         try
@@ -91,14 +91,14 @@ public static class CommunicationService
             Vagabond.LogError($"Failed to synchronously sync Vagabond state: {ex}");
         }
     }
-    
+
     private static void ApplyVagabondState(SyncStateResponse resp)
     {
         if (resp == null)
         {
             return;
         }
-        
+
         foreach (var raid in Vagabond.State.CustomExfils)
         {
             Vagabond.Log($" === {raid.Key} ===");
@@ -114,7 +114,7 @@ public static class CommunicationService
                 }
             }
         }
-        
+
         Vagabond.State.CustomExfils = resp.CustomExfils;
         Vagabond.State.QuestExfils = resp.QuestExfils;
 

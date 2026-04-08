@@ -18,13 +18,13 @@ public sealed class QuestCallbacksAcceptQuestPatch : AbstractPatch
     }
 
     [PatchPostfix]
-    public static void Postfix(MongoId sessionID,  AcceptQuestRequestData info, ItemEventRouterResponse __result)
+    public static void Postfix(MongoId sessionID, AcceptQuestRequestData info, ItemEventRouterResponse __result)
     {
         if (__result.Warnings != null && __result.Warnings.Count > 0)
         {
             return;
         }
-        
+
         var state = VagabondState.GetState(sessionID);
         if (ExfilQuests.List.ContainsKey(info.QuestId) && !state.QuestExfils.Contains(info.QuestId))
         {
@@ -48,7 +48,7 @@ public sealed class QuestCallbacksCompleteQuestPatch : AbstractPatch
         {
             return;
         }
-        
+
         var state = VagabondState.GetState(sessionID);
         if (state.QuestExfils.Contains(info.QuestId))
         {

@@ -113,7 +113,7 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
         }
 
         var questExfils = QuestService.BuildExfilList(state);
-        
+
         foreach (string locationKey in locations.Select(x => x.Key).ToList())
         {
             JsonObject? location = locations[locationKey]?.AsObject();
@@ -125,7 +125,7 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
             {
                 continue;
             }
-            
+
             VagabondLocations.IdToName.TryGetValue(locationKey, out var mapName);
             questExfils.TryGetValue(mapName!, out var mapQuestExfils);
 

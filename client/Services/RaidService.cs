@@ -108,7 +108,8 @@ public static class RaidService
         var timerPanel = game?.GameUi?.TimerPanel;
         var locationId = gameWorld?.LocationId;
 
-        if (gameWorld == null || controller == null || gameWorld.MainPlayer == null || string.IsNullOrWhiteSpace(locationId))
+        if (gameWorld == null || controller == null || gameWorld.MainPlayer == null ||
+            string.IsNullOrWhiteSpace(locationId))
         {
             return;
         }

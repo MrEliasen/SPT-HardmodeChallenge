@@ -19,7 +19,7 @@ namespace Vagabond.Client.Networking
                 await RequestHandler.PostJsonAsync("/vagabond/sync/exfils", JsonConvert.SerializeObject(body));
             return JsonConvert.DeserializeObject<SyncExfilResponse>(payload);
         }
-        
+
         public static SyncStateResponse SyncVagabondStateBlocking()
         {
             return JsonConvert.DeserializeObject<SyncStateResponse>(RequestHandler.GetJson("/vagabond/sync/state"));
@@ -27,7 +27,8 @@ namespace Vagabond.Client.Networking
 
         public static SyncExfilResponse SyncExfilDataBlocking(GetExfilDataRequest body)
         {
-            return JsonConvert.DeserializeObject<SyncExfilResponse>( RequestHandler.PostJson("/vagabond/sync/exfils", JsonConvert.SerializeObject(body)));
+            return JsonConvert.DeserializeObject<SyncExfilResponse>(RequestHandler.PostJson("/vagabond/sync/exfils",
+                JsonConvert.SerializeObject(body)));
         }
 
         public static async Task<PlaceHideoutResponse> EstablishHideoutExtract(PlaceHideoutRequest body)

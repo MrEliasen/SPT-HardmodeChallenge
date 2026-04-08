@@ -9,7 +9,7 @@ namespace Vagabond.Server.Services;
 public static class MigrationService
 {
     private static readonly string CurrentVersion = "0.3.1";
-    
+
     public static void MigrateProfile(MongoId sessionId, PmcData pmc, VagabondState state)
     {
         if (state.Version == CurrentVersion)
@@ -29,10 +29,10 @@ public static class MigrationService
                 }
             }
         }
-        
+
         VagabondState.SaveState(sessionId, state);
     }
-    
+
     private static void from030To031(PmcData pmc, VagabondState state)
     {
         foreach (var quest in pmc.Quests)
@@ -41,13 +41,13 @@ public static class MigrationService
             {
                 continue;
             }
-            
+
             if (ExfilQuests.List.ContainsKey(quest.QId) && !state.QuestExfils.Contains(quest.QId))
             {
                 state.QuestExfils.Add(quest.QId);
             }
         }
-        
+
         state.Version = "0.3.1";
     }
 }

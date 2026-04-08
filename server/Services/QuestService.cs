@@ -29,7 +29,7 @@ public static class QuestService
                     exfils = new List<string>();
                     exfilList.Add(quest.Key, exfils);
                 }
-                
+
                 foreach (var exfil in quest.Value)
                 {
                     if (!exfils.Contains(exfil))
@@ -39,7 +39,7 @@ public static class QuestService
                 }
             }
         }
-        
+
         return exfilList;
     }
 }

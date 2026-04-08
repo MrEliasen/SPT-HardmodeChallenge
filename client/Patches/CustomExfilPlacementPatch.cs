@@ -61,7 +61,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             Vagabond.Log($"Unknown Raid => {locationId}");
             return;
         }
-        
+
         Vagabond.Log($"RefreshVagabondStateBlocking");
         CommunicationService.RefreshVagabondStateBlocking();
         Vagabond.Log($"RefreshExfilStateBlocking");
@@ -72,7 +72,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         {
             return;
         }
-        
+
         exfils.TryGetValue(locationId, out var definitions);
         ApplyCustomExtracts(__instance, raid, definitions?.Where(x => !x.IsTransit).ToList());
         ApplyCustomTransits(gameWorld.TransitController, raid, definitions?.Where(x => x.IsTransit).ToList());
@@ -891,14 +891,14 @@ internal class CustomTransitRetryPatch : ModulePatch
         }
 
         Vagabond.State.CustomExfils.TryGetValue(raid, out var exfils);
-        
+
         if (exfils == null)
         {
             return;
         }
-        
+
         exfils.TryGetValue(locationId, out var definitions);
-        
+
         CustomExfilPlacementPatch.ApplyCustomExtracts(__instance.ExfiltrationController, raid,
             definitions?.Where(x => !x.IsTransit).ToList());
         CustomExfilPlacementPatch.ApplyCustomTransits(__instance.TransitController, raid,
