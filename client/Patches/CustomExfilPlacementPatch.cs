@@ -6,6 +6,7 @@ using Comfort.Common;
 using EFT;
 using EFT.Interactive;
 using EFT.Interactive.SecretExfiltrations;
+using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UnityEngine;
@@ -702,7 +703,6 @@ internal class CustomExfilPlacementPatch : ModulePatch
             return;
         }
 
-        var kept = new List<ExfiltrationPoint>();
         foreach (var exfil in __instance.ExfiltrationPoints)
         {
             if (exfil == null)
@@ -710,32 +710,14 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 continue;
             }
 
-            if (exfil?.Settings == null)
+            if (exfil.Settings != null && (IsCustomExfil(exfil.Settings) || IsQuestNativeExfil(exfil.Settings)))
             {
-                HideExfil(exfil);
-                continue;
-            }
-
-            if (IsCustomExfil(exfil.Settings) || IsQuestNativeExfil(exfil.Settings))
-            {
-                kept.Add(exfil);
-                continue;
-            }
-
-            // Keep shared exits alive for scavs
-            if (exfil is SharedExfiltrationPoint shared)
-            {
-                shared.EligibleEntryPoints = Array.Empty<string>();
-                shared.Settings.EntryPoints = string.Empty;
                 continue;
             }
 
             HideExfil(exfil);
         }
 
-        __instance.ExfiltrationPoints = kept.ToArray();
-
-        var keptSecrets = new List<SecretExfiltrationPoint>();
         foreach (var secret in __instance.SecretExfiltrationPoints)
         {
             if (secret == null)
@@ -745,30 +727,56 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
             if (secret.Settings != null && IsQuestNativeExfil(secret.Settings))
             {
-                keptSecrets.Add(secret);
                 continue;
             }
 
             HideExfil(secret);
         }
-
-        __instance.SecretExfiltrationPoints = keptSecrets.ToArray();
     }
 
     private static void HideExfil(ExfiltrationPoint exfil)
     {
-        exfil.Reusable = false;
-        exfil.Status = EExfiltrationStatus.NotPresent;
-        exfil.Settings.Chance = 0;
-        exfil.Disable();
-        exfil.DisableInteraction();
+        if (exfil?.Settings == null)
+        {
+            return;
+        }
 
+        if (exfil is SharedExfiltrationPoint shared)
+        {
+            shared.EligibleEntryPoints = Array.Empty<string>();
+            shared.Settings.EntryPoints = string.Empty;
+            return;
+        }
+
+        exfil.Settings.Chance = 0f;
+        exfil.Settings.EntryPoints = string.Empty;
+        exfil.EligibleEntryPoints = Array.Empty<string>();
+        DisableColliders(exfil);
+
+        if (MonoBehaviourSingleton<GameUI>.Instance?.TimerPanel != null)
+        {
+            exfil.DisableInteraction();
+        }
+    }
+
+    private static void HideSecretExfil(SecretExfiltrationPoint exfil)
+    {
+        exfil.EligibleForPmc = false;
+        exfil.EligibleForScav = false;
+        DisableColliders(exfil);
+
+        if (MonoBehaviourSingleton<GameUI>.Instance?.TimerPanel != null)
+        {
+            exfil.DisableInteraction();
+        }
+    }
+
+    private static void DisableColliders(ExfiltrationPoint exfil)
+    {
         foreach (var collider in exfil.GetComponentsInChildren<Collider>(true))
         {
             collider.enabled = false;
         }
-
-        exfil.gameObject.SetActive(false);
     }
 
     private static bool IsCustomExfil(ExitTriggerSettings settings)

@@ -28,8 +28,7 @@ public static class RaidService
     public static bool IsInRaid()
     {
         var gameWorld = Singleton<GameWorld>.Instance;
-        var game = Singleton<AbstractGame>.Instance;
-        return gameWorld?.ExfiltrationController != null && game?.GameUi?.TimerPanel != null;
+        return gameWorld?.ExfiltrationController != null && !string.IsNullOrWhiteSpace(gameWorld.LocationId);
     }
 
     public static void HandleExfilUpdatePolling()
@@ -109,8 +108,7 @@ public static class RaidService
         var timerPanel = game?.GameUi?.TimerPanel;
         var locationId = gameWorld?.LocationId;
 
-        if (gameWorld == null || game == null || controller == null || timerPanel == null ||
-            gameWorld.MainPlayer == null || string.IsNullOrWhiteSpace(locationId))
+        if (gameWorld == null || controller == null || gameWorld.MainPlayer == null || string.IsNullOrWhiteSpace(locationId))
         {
             return;
         }
@@ -137,7 +135,15 @@ public static class RaidService
             definitions.Where(x => !x.IsTransit).ToList(),
             true);
 
-        if (livePoints == null || livePoints.Count == 0)
+        CustomExfilPlacementPatch.ApplyCustomTransits(
+            gameWorld.TransitController,
+            raid,
+            definitions.Where(x => x.IsTransit).ToList(),
+            true);
+
+        CustomExfilPlacementPatch.FilterExtractions(controller);
+
+        if (game == null || timerPanel == null || livePoints == null || livePoints.Count == 0)
         {
             return;
         }
