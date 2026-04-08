@@ -1,12 +1,8 @@
 ﻿using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
-using SPTarkov.Server.Core.Models.Eft.Ws;
-using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Utils;
-using Vagabond.Common.Data;
 using Vagabond.Common.Models;
 using Vagabond.Server.Config;
 using Vagabond.Server.Models;
@@ -79,8 +75,8 @@ public class VagabondRouter(
             ExfilService.BuildCustomExfilSnapshot(true);
         }
 
-        //VagabondLogger.Error($"Building exfils{stateSessionId}");
         response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
+        response.QuestExfils = QuestService.BuildExfilList(state);
         response.PermaDeath = VagabondConfig.Config.PermaDeath;
         response.WipeFirstRaid = VagabondConfig.Config.WipeStashOnFirstRaidEntry;
         response.CurrentMap = VagabondService.GetCurrentRaidId(state);

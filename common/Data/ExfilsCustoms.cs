@@ -20,7 +20,7 @@ public class ExfilsCustoms : ICustomExtilData
         new CustomExfil
         {
             Identifier = "VGB_EXT_SKIER",
-            DisplayName = "Skier's Hangar",
+            DisplayName = "Skier's Depot",
             IsTransit = false,
             TemplateExitName = "", // only fill if you want a specific template
             EntryPoints = "",

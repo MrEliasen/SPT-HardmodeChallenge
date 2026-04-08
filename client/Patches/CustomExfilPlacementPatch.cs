@@ -10,6 +10,7 @@ using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UnityEngine;
+using Vagabond.Client.Services;
 using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
@@ -60,19 +61,21 @@ internal class CustomExfilPlacementPatch : ModulePatch
             Vagabond.Log($"Unknown Raid => {locationId}");
             return;
         }
+        
+        Vagabond.Log($"RefreshVagabondStateBlocking");
+        CommunicationService.RefreshVagabondStateBlocking();
+        Vagabond.Log($"RefreshExfilStateBlocking");
+        CommunicationService.RefreshExfilStateBlocking();
 
-        if (!Vagabond.State.CustomExfils.TryGetValue(raid, out var exfils) || exfils == null || exfils.Count == 0)
+        Vagabond.State.CustomExfils.TryGetValue(raid, out var exfils);
+        if (exfils == null)
         {
             return;
         }
-
-        if (!exfils.TryGetValue(locationId, out var definitions) || definitions == null || definitions.Count == 0)
-        {
-            return;
-        }
-
-        ApplyCustomExtracts(__instance, raid, definitions.Where(x => !x.IsTransit).ToList());
-        ApplyCustomTransits(gameWorld.TransitController, raid, definitions.Where(x => x.IsTransit).ToList());
+        
+        exfils.TryGetValue(locationId, out var definitions);
+        ApplyCustomExtracts(__instance, raid, definitions?.Where(x => !x.IsTransit).ToList());
+        ApplyCustomTransits(gameWorld.TransitController, raid, definitions?.Where(x => x.IsTransit).ToList());
         FilterExtractions(__instance);
     }
 
@@ -707,13 +710,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 continue;
             }
 
-            if (exfil.Settings == null)
-            {
-                HideExfil(exfil);
-                continue;
-            }
-
-            if (IsCustomExfil(exfil.Settings))
+            if (exfil.Settings != null && (IsCustomExfil(exfil.Settings) || IsQuestNativeExfil(exfil.Settings)))
             {
                 continue;
             }
@@ -728,7 +725,12 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 continue;
             }
 
-            HideSecretExfil(secret);
+            if (secret.Settings != null && IsQuestNativeExfil(secret.Settings))
+            {
+                continue;
+            }
+
+            HideExfil(secret);
         }
     }
 
@@ -811,6 +813,27 @@ internal class CustomExfilPlacementPatch : ModulePatch
             string.Equals(def.DisplayName, settings.Name, StringComparison.OrdinalIgnoreCase));
     }
 
+    private static bool IsQuestNativeExfil(ExitTriggerSettings settings)
+    {
+        if (string.IsNullOrWhiteSpace(settings?.Name))
+        {
+            return false;
+        }
+
+        var locationId = Singleton<GameWorld>.Instance?.LocationId;
+        if (string.IsNullOrWhiteSpace(locationId))
+        {
+            return false;
+        }
+
+        if (!Vagabond.State.QuestExfils.TryGetValue(locationId, out var kept) || kept == null)
+        {
+            return false;
+        }
+
+        return kept.Any(x => string.Equals(x, settings.Name, StringComparison.OrdinalIgnoreCase));
+    }
+
     private static bool IsVehicleTemplate(ExfiltrationPoint point)
     {
         return string.Equals(point.Settings?.Id, Currencies.Ruble, StringComparison.OrdinalIgnoreCase);
@@ -831,6 +854,7 @@ internal class CustomExfilCleanupPatch : ModulePatch
         CustomExfilPlacementPatch.ExtractsAppliedThisRaid = false;
         CustomExfilPlacementPatch.CustomTransitDefinitions.Clear();
         CustomExfilPlacementPatch.ExfilPointTemplateCache.Clear();
+        Vagabond.State.LastRaidStateSyncLocationId = string.Empty;
     }
 }
 
@@ -866,20 +890,19 @@ internal class CustomTransitRetryPatch : ModulePatch
             return;
         }
 
-        if (!Vagabond.State.CustomExfils.TryGetValue(raid, out var exfils) || exfils == null || exfils.Count == 0)
+        Vagabond.State.CustomExfils.TryGetValue(raid, out var exfils);
+        
+        if (exfils == null)
         {
             return;
         }
-
-        if (!exfils.TryGetValue(locationId, out var definitions) || definitions == null || definitions.Count == 0)
-        {
-            return;
-        }
-
+        
+        exfils.TryGetValue(locationId, out var definitions);
+        
         CustomExfilPlacementPatch.ApplyCustomExtracts(__instance.ExfiltrationController, raid,
-            definitions.Where(x => !x.IsTransit).ToList());
+            definitions?.Where(x => !x.IsTransit).ToList());
         CustomExfilPlacementPatch.ApplyCustomTransits(__instance.TransitController, raid,
-            definitions.Where(x => x.IsTransit).ToList());
+            definitions?.Where(x => x.IsTransit).ToList());
         CustomExfilPlacementPatch.FilterExtractions(__instance.ExfiltrationController);
     }
 }
