@@ -35,6 +35,8 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             {
                 return;
             }
+            
+            MigrationService.MigrateProfile(sessionId, pmc, state);
 
             if (state.ResetProfile)
             {

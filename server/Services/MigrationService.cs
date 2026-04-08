@@ -1,0 +1,53 @@
+﻿using SPTarkov.Server.Core.Models.Common;
+using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Enums;
+using Vagabond.Common.Data;
+using Vagabond.Server.State;
+
+namespace Vagabond.Server.Services;
+
+public static class MigrationService
+{
+    private static readonly string CurrentVersion = "0.3.1";
+    
+    public static void MigrateProfile(MongoId sessionId, PmcData pmc, VagabondState state)
+    {
+        if (state.Version == CurrentVersion)
+        {
+            return;
+        }
+
+        var i = 25;
+        while (state.Version != CurrentVersion && i-- > 0)
+        {
+            switch (state.Version)
+            {
+                case "0.3.0":
+                {
+                    from030To031(pmc, state);
+                    break;
+                }
+            }
+        }
+        
+        VagabondState.SaveState(sessionId, state);
+    }
+    
+    private static void from030To031(PmcData pmc, VagabondState state)
+    {
+        foreach (var quest in pmc.Quests)
+        {
+            if (quest.Status != QuestStatusEnum.Started)
+            {
+                continue;
+            }
+            
+            if (ExfilQuests.List.ContainsKey(quest.QId) && !state.QuestExfils.Contains(quest.QId))
+            {
+                state.QuestExfils.Add(quest.QId);
+            }
+        }
+        
+        state.Version = "0.3.1";
+    }
+}
