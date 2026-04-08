@@ -61,6 +61,8 @@ public class Vagabond : BaseUnityPlugin
             return;
         }
 
+        new HealthTreatmentScreenShowPatch().Enable();
+        new HealthTreatmentScreenAddTreatmentPatch().Enable();
         new MatchMakerSideSelectionScreenPatch().Enable();
         new HideUnavailableTraderCardsPatch().Enable();
         new SelectAvailableTraderPatch().Enable();
