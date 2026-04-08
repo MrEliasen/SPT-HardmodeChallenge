@@ -18,14 +18,14 @@ internal static class HideoutService
     private static readonly List<string> IgnoredTraders =
     [
         "656f0f98d80a697f855d34b1", // BTR Driver
-        "638f541a29ffd1183d187f57", // Lightkeeper
         "688246518448b05efd61d461", // Mr. Kerman
+        "638f541a29ffd1183d187f57", // Lightkeeper
         "68fe15990f29ba3fdbba9d55", // Radio station
         "68fe15910f29ba3fdbba9d54", // Taran
         "688246958448b05efd61d462", // Voevoda
     ];
 
-    private static readonly List<TraderLocation> TraderLocations = new()
+    public static readonly List<TraderLocation> TraderLocations = new()
     {
         new TraderLocation
         {
@@ -80,7 +80,7 @@ internal static class HideoutService
             Id = "579dc571d53a0658a154fbec", // Fence
             Raid = RaidLocation.Streets,
             ExitName = "VGB_EXT_FENCE",
-        },
+        }
     };
 
     public static IReadOnlyCollection<string> GetAllTraderIds()

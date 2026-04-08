@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using EFT.UI;
 using SPT.Reflection.Patching;
- 
+
 namespace Vagabond.Client.Patches;
 
 internal class HealthTreatmentScreenAddTreatmentPatch : ModulePatch
