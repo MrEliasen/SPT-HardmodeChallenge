@@ -51,12 +51,12 @@ public static class CommunicationService
             return;
         }
 
-        Vagabond.Log($"RefreshExfilState: version={resp.Version}");
+        //Vagabond.Log($"RefreshExfilState: version={resp.Version}");
         Vagabond.State.CustomExfilsCacheVersion = resp.Version;
 
         if (resp.CustomExfils != null)
         {
-            Vagabond.Log($"RefreshExfilState: updating exfils");
+            //Vagabond.Log($"RefreshExfilState: updating exfils");
             Vagabond.State.CustomExfils = resp.CustomExfils;
             RaidService.UpdateCurrentRaidExfils();
         }
@@ -99,21 +99,21 @@ public static class CommunicationService
             return;
         }
 
-        foreach (var raid in Vagabond.State.CustomExfils)
-        {
-            Vagabond.Log($" === {raid.Key} ===");
-            foreach (var map in raid.Value)
-            {
-                foreach (var exfil in map.Value)
-                {
-                    var kind = exfil.IsTransit ? "Transit" : "Extract";
-                    var desc = exfil.IsTransit
-                        ? $"{map.Key} To {exfil.DestinationLocation}"
-                        : $" {exfil.DisplayName}";
-                    Vagabond.Log($" => [{kind}] {exfil.Identifier} :: {desc}");
-                }
-            }
-        }
+        // foreach (var raid in Vagabond.State.CustomExfils)
+        // {
+        //     Vagabond.Log($" === {raid.Key} ===");
+        //     foreach (var map in raid.Value)
+        //     {
+        //         foreach (var exfil in map.Value)
+        //         {
+        //             var kind = exfil.IsTransit ? "Transit" : "Extract";
+        //             var desc = exfil.IsTransit
+        //                 ? $"{map.Key} To {exfil.DestinationLocation}"
+        //                 : $" {exfil.DisplayName}";
+        //             Vagabond.Log($" => [{kind}] {exfil.Identifier} :: {desc}");
+        //         }
+        //     }
+        // }
 
         Vagabond.State.CustomExfils = resp.CustomExfils;
         Vagabond.State.QuestExfils = resp.QuestExfils;

@@ -99,6 +99,23 @@ public sealed class RaidEndPatch : AbstractPatch
         }
         else
         {
+            if (ExfilQuests.IsExfilQuest(state.LastExit, state.QuestExfils, out var traderId))
+            {
+                var traderLoc = HideoutService.TraderLocations.FirstOrDefault(x => x.Id == traderId);
+                if (traderLoc != null)
+                {
+                    state.CurrentMap = traderLoc.Raid.ToString();
+                    state.LastExit = traderLoc.ExitName;
+                }
+
+                // Light keeper
+                if (traderId == "638f541a29ffd1183d187f57")
+                {
+                    state.CurrentMap = nameof(RaidLocation.Lighthouse);
+                    state.LastExit = "";
+                }
+            }
+
             HideoutService.UpdateTraderAccess(profile.CharacterData!.PmcData!, state);
         }
 
