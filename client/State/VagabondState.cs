@@ -11,9 +11,11 @@ public sealed class VagabondState
     public DateTime LastRefreshUtc { get; set; }
     public bool HasShownWarningMessage { get; set; }
     public bool PermaDeath { get; set; }
-    public string CurrentMap { get; set; }
+    public string CurrentMap { get; set; } = string.Empty;
     public bool WipeFirstRaid { get; set; }
     public bool NewCharacter { get; set; }
+    public string LastRaidStateSyncLocationId { get; set; } = string.Empty;
     public int CustomExfilsCacheVersion = 0;
+    public Dictionary<string, List<string>> QuestExfils { get; set; } = new();
     public Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils { get; set; } = new();
 }
