@@ -53,6 +53,8 @@ public class Vagabond : BaseUnityPlugin
         new CustomExfilPlacementPatch().Enable();
         new CustomExfilCleanupPatch().Enable();
         new CustomTransitRetryPatch().Enable();
+        new SpawnSystemSelectSpawnPointPatch().Enable();
+        new LocalGameStopPatch().Enable();
         new MenuShowPatch().Enable();
 
         if (IsHeadless())

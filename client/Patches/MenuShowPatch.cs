@@ -29,6 +29,8 @@ internal class MenuShowPatch : ModulePatch
     [PatchPostfix]
     private static void Postfix()
     {
+        ForcedSpawnService.Clear();
+
         if (Vagabond.IsHeadless())
         {
             if (!_headlessUpdated)
