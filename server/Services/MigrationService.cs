@@ -1,6 +1,7 @@
 ﻿using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Enums;
+using Vagabond.Common;
 using Vagabond.Common.Data;
 using Vagabond.Server.State;
 
@@ -8,7 +9,7 @@ namespace Vagabond.Server.Services;
 
 public static class MigrationService
 {
-    private static readonly string CurrentVersion = "0.3.1";
+    private static readonly string CurrentVersion = ModInfo.Version;
 
     public static void MigrateProfile(MongoId sessionId, PmcData pmc, VagabondState state)
     {
@@ -29,7 +30,8 @@ public static class MigrationService
                 }
             }
         }
-
+        
+        state.Version = ModInfo.Version;
         VagabondState.SaveState(sessionId, state);
     }
 
