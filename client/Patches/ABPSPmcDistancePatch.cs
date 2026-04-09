@@ -1,0 +1,85 @@
+using System.Collections.Generic;
+using System.Reflection;
+using Comfort.Common;
+using EFT;
+using EFT.Game.Spawning;
+using HarmonyLib;
+using SPT.Reflection.Patching;
+using UnityEngine;
+using Vagabond.Client.Services;
+
+namespace Vagabond.Client.Patches;
+
+internal class ABPSPmcDistancePatch : ModulePatch
+{
+    protected override MethodBase GetTargetMethod()
+    {
+        return AccessTools.Method(
+            AccessTools.TypeByName("acidphantasm_botplacementsystem.Patches.PMCDistancePatch"),
+            "IsValid",
+            new[] { typeof(ISpawnPoint), typeof(IReadOnlyCollection<IPlayer>), typeof(float), typeof(bool) });
+    }
+
+    [PatchPrefix]
+    private static bool Prefix(ISpawnPoint spawnPoint, IReadOnlyCollection<IPlayer> players, float distance,
+        bool checkAgainstMainPlayer, ref bool __result)
+    {
+        if (!ForcedSpawnService.TryGetAbpsPosition(out var playerPosition))
+        {
+            return true;
+        }
+
+        if (spawnPoint == null || spawnPoint.Collider == null)
+        {
+            __result = false;
+            return false;
+        }
+
+        if (ForcedSpawnService.IsBlockedByPlayerPosition(spawnPoint))
+        {
+            __result = false;
+            return false;
+        }
+
+        var player = Singleton<GameWorld>.Instance?.MainPlayer;
+        if (checkAgainstMainPlayer && player != null && player.Side == EPlayerSide.Savage)
+        {
+            if (Vector3.Distance(spawnPoint.Position, playerPosition) < distance)
+            {
+                __result = false;
+                return false;
+            }
+        }
+
+        if (players != null && players.Count != 0)
+        {
+            foreach (var player0 in players)
+            {
+                if (player0 == null || player0.Profile.GetCorrectedNickname().StartsWith("headless_"))
+                {
+                    continue;
+                }
+
+                if (!ForcedSpawnService.TryGetPlayerPosition(player0, out var playerPosition0))
+                {
+                    continue;
+                }
+
+                if (spawnPoint.Collider.Contains(playerPosition0))
+                {
+                    __result = false;
+                    return false;
+                }
+
+                if (Vector3.Distance(spawnPoint.Position, playerPosition0) < distance)
+                {
+                    __result = false;
+                    return false;
+                }
+            }
+        }
+
+        __result = true;
+        return false;
+    }
+}
