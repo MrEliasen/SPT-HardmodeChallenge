@@ -43,7 +43,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
             var forcedSpawn = StaticMapTransitions.GetSpawnLocation(state, location);
             if (forcedSpawn != null)
             {
-                ApplyForcedSpawn(__result, forcedSpawn);
+                ApplyForcedSpawn(__result, request.Location, forcedSpawn);
             }
 
             VagabondState.SaveState(serverOwnerSessionId, state);
@@ -74,7 +74,8 @@ public sealed class StartLocalRaidPatch : AbstractPatch
             .FirstOrDefault();
     }
 
-    private static void ApplyForcedSpawn(StartLocalRaidResponseData response, ManualSpawnPoint point)
+    private static void ApplyForcedSpawn(StartLocalRaidResponseData response, string locationName,
+        ManualSpawnPoint point)
     {
         var all = response.LocationLoot?.SpawnPointParams?.ToList();
         if (all == null || all.Count == 0)
@@ -83,21 +84,17 @@ public sealed class StartLocalRaidPatch : AbstractPatch
             return;
         }
 
-        bool IsPmcPlayerSpawn(SpawnPointParam sp) =>
-            (sp.Categories?.Any(c => string.Equals(c, "Player", StringComparison.OrdinalIgnoreCase)) ?? false) &&
-            (sp.Sides?.Any(s =>
-                string.Equals(s, "All", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(s, "Pmc", StringComparison.OrdinalIgnoreCase)) ?? false);
-
         var template = GetSpawnPointTemplate(all, point);
-        if (template == null)
+        if (template?.Id == null)
         {
             VagabondLogger.Error("Could not find PMC player spawn template");
             return;
         }
 
+        var forcedSpawnId = ForcedSpawnPointIds.Build(locationName, template.Id);
         var forced = template with
         {
+            Id = forcedSpawnId,
             Position = new XYZ
             {
                 X = point.X,
@@ -108,7 +105,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
         };
 
         var kept = all
-            .Where(sp => !IsPmcPlayerSpawn(sp))
+            .Where(sp => !ForcedSpawnPointIds.IsForcedSpawnId(sp.Id))
             .ToList();
 
         kept.Add(forced);

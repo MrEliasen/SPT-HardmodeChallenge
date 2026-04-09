@@ -2,10 +2,12 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Vagabond.Client.Patches;
@@ -17,6 +19,7 @@ using Vagabond.Common.Models;
 namespace Vagabond.Client;
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
+[BepInDependency("com.acidphantasm.botplacementsystem", BepInDependency.DependencyFlags.SoftDependency)]
 public class Vagabond : BaseUnityPlugin
 {
     private static ManualLogSource _logger;
@@ -53,6 +56,15 @@ public class Vagabond : BaseUnityPlugin
         new CustomExfilPlacementPatch().Enable();
         new CustomExfilCleanupPatch().Enable();
         new CustomTransitRetryPatch().Enable();
+        new SpawnSystemSelectSpawnPointPatch().Enable();
+
+        if (Chainloader.PluginInfos.ContainsKey("com.acidphantasm.botplacementsystem"))
+        {
+            new ABPSPmcDistancePatch().Enable();
+            new ABPSScavDistancePatch().Enable();
+        }
+
+        new LocalGameStopPatch().Enable();
         new MenuShowPatch().Enable();
 
         if (IsHeadless())
