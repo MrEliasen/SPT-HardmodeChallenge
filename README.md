@@ -26,16 +26,33 @@ Configuration is limited for now, and might always be, create and issue and make
 
 ```json
 {
-  "PermaDeath": false, // if you die for whatever reason (according to the game), your profile gets wiped.
-  "StartingRoubles": 175000, // The amount of money a player starts with
-  "EnableFenceChanges": true, // makes fence less random and useful as a starter vendor
+  // if you die for whatever reason (according to the game), your profile gets wiped.
+  "PermaDeath": false,
+  // The amount of money a player starts with
+  "StartingRoubles": 175000,
+  // makes fence less random and useful as a starter vendor - recommend removing other traders
+  "EnableFenceChanges": true,
   "DisableFlea": true,
-  "DisableEvents": true, // disables events such as halloween etc. They can break things
-  "FixProfiles": false, // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful if you used older versions of this mod.
-  "StripMailAttachments": true, // still allows mail, but removed all attachments from messages.
-  "EnablePickRaidLocation": false, // if enabled, you can choose what map you want to go to.
-  "WipeStashOnFirstRaidEntry": true, // first time you enter a raid, whatever is left over in your stash is wiped.
-  "AlsoWipeCarriedMoneyOnFirstRaid": true, // this only works if "WipeStashOnFirstRaidEntry" is enabled
-  "AdjustRaidTimeMins": 60 // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
+  // disables events such as halloween etc.
+  "DisableEvents": true,
+  // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful if you used older versions of this mod.
+  // will be removed in a future version.
+  "FixProfiles": false,
+  // if enabled, will removed all attachments from messages, including rewards
+  "StripMailAttachments": false,
+  // if enabled, you can choose what map you want to go to and won't be locked to your current location.
+  "EnablePickRaidLocation": false,
+  // first time you enter a raid, whatever is left over in the stash is wiped.
+  "WipeStashOnFirstRaidEntry": true,
+  // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
+  "AdjustRaidTimeMins": 60,
+  // if enabled, you can continue to place the hideout without being told you already have.
+  // allowing relocation via an in-game feature will come in a later update.
+  "AllowHideoutRelocation": false,
+  // Where you will be placed when you die, options are: 
+  // "hideout" - will send you to your hideout if you have one, otherwise fence.
+  // "fence" - will send you to fence.
+  // "stay" - you stay at your last known map/transit
+  "OnDeathGoTo": "hideout"
 }
 ```
