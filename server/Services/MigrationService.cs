@@ -35,6 +35,12 @@ public static class MigrationService
 
     private static void from030To031(PmcData pmc, VagabondState state)
     {
+        if (pmc.Quests == null)
+        {
+            state.Version = "0.3.1";
+            return;
+        }
+
         foreach (var quest in pmc.Quests)
         {
             if (quest.Status != QuestStatusEnum.Started)
