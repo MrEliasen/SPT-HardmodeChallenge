@@ -20,6 +20,7 @@ namespace Vagabond.Client;
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
 [BepInDependency("com.acidphantasm.botplacementsystem", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
 public class Vagabond : BaseUnityPlugin
 {
     private static ManualLogSource _logger;
