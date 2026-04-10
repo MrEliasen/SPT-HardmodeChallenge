@@ -7,7 +7,6 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
-using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Vagabond.Client.Patches;
@@ -57,6 +56,8 @@ public class Vagabond : BaseUnityPlugin
         new CustomExfilPlacementPatch().Enable();
         new CustomExfilCleanupPatch().Enable();
         new CustomTransitRetryPatch().Enable();
+        new ExfiltrationPointOnTriggerEnterPatch().Enable();
+        new ExfiltrationPointOnTriggerExitPatch().Enable();
         new SpawnSystemSelectSpawnPointPatch().Enable();
 
         if (Chainloader.PluginInfos.ContainsKey("com.acidphantasm.botplacementsystem"))

@@ -42,7 +42,7 @@ public sealed class InventoryCallbacksSortInventoryPatch : AbstractPatch
             return true;
         }
 
-        var response = output ?? VirtualStashService.CreateBlockedActionResponse(sessionID);
+        var response = output;
         VirtualStashService.AppendBlockedActionWarning(response);
         __result = response;
         return false;

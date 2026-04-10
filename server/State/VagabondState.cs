@@ -15,6 +15,7 @@ public sealed class VagabondState
     public TransitState? TransitState { get; set; }
     public HideoutState? HideoutState { get; set; }
     public List<string> QuestExfils { get; set; } = [];
+    public List<string>? RaidFirItems { get; set; }
     public string Version { get; set; } = "0.3.0";
     public bool ResetProfile { get; set; }
 

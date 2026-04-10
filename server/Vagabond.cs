@@ -11,6 +11,7 @@ using SPTarkov.Server.Core.Controllers;
 using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using Vagabond.Common;
 using Vagabond.Server.Config;
@@ -24,7 +25,7 @@ public record ModMetadata : AbstractModMetadata
     public override string Name { get; init; } = ModInfo.Name;
     public override string Author { get; init; } = ModInfo.Author;
     public override SemanticVersioning.Version Version { get; init; } = new(ModInfo.Version);
-    public override SemanticVersioning.Range SptVersion { get; init; } = new(ModInfo.SPTVersion);
+    public override SemanticVersioning.Range SptVersion { get; init; } = new(ModInfo.SptVersion);
     public override string? Url { get; init; } = ModInfo.Url;
     public override string License { get; init; } = ModInfo.License;
     public override List<string>? Contributors { get; init; } = new() { ModInfo.Author };
@@ -165,6 +166,50 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
             globals.Configuration.EventSettings.EventActive = false;
         }
 
+        // Credit: https://github.com/GhostFenixx/svm-csharp
+        // ty ty <3
+        var items = databaseService.GetItems();
+        foreach (TemplateItem basetemplate in items.Values)
+        {
+            //Remove Backpack Restrictions
+            if (basetemplate.Parent == "5448e53e4bdc2d60728b4567")
+            {
+                if (basetemplate.Properties?.Grids == null)
+                {
+                    continue;
+                }
+
+                List<Grid> gridsfilters = basetemplate.Properties.Grids.ToList();
+                gridsfilters.ForEach(grid =>
+                {
+                    try
+                    {
+                        if (grid.Properties?.Filters is not null)
+                        {
+                            var filters = grid.Properties.Filters.ToList();
+                            if (filters.Count > 0)
+                            {
+                                filters[0].Filter?.Clear();
+                                filters[0].Filter?.Add(new MongoId("54009119af1c881c07000029"));
+                                filters[0].ExcludedFilter = [];
+                                grid.Properties.Filters = filters;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                });
+
+                basetemplate.Properties.Grids = gridsfilters;
+            }
+
+            //Remove in-raid restrictions
+            if (basetemplate.Type == "Item" && basetemplate.Properties?.DiscardLimit is not null)
+            {
+                basetemplate.Properties.DiscardLimit = -1;
+            }
+        }
 
         if (VagabondConfig.Config.AdjustRaidTimeMins != 0)
         {

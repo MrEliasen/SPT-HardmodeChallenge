@@ -1,6 +1,7 @@
 ﻿.DS_Store
 .idea
 build
+assemblies
 bin
 obj
 *.DotSettings.user

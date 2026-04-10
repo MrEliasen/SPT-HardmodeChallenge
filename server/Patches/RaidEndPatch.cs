@@ -7,6 +7,7 @@ using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
 using Vagabond.Common.Data;
 using Vagabond.Common.Enums;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
@@ -37,10 +38,80 @@ public sealed class RaidEndPatch : AbstractPatch
 
     [PatchPrefix]
     public static void Prefix(MongoId sessionId, SptProfile fullServerProfile, bool isDead, bool isTransfer,
-        EndLocalRaidRequestData request, string locationName)
+        EndLocalRaidRequestData request, string locationName, out HashSet<string>? __state)
     {
-        var serverOwnerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionId);
-        HandleRaidEnd(serverOwnerSessionId, fullServerProfile, isDead, isTransfer, request, locationName);
+        __state = null;
+        if (!isDead && VagabondService.ShouldApplyVagabondRules(sessionId))
+        {
+            var state = VagabondState.GetState(sessionId);
+            if (state.VagabondModeEnabled && state.RaidFirItems?.Count > 0)
+            {
+                __state = new HashSet<string>(state.RaidFirItems);
+            }
+        }
+
+        HandleRaidEnd(sessionId, fullServerProfile, isDead, isTransfer, request, locationName);
+    }
+
+    [PatchPostfix]
+    public static void Postfix(MongoId sessionId, SptProfile fullServerProfile, bool isDead, bool isTransfer,
+        HashSet<string>? __state)
+    {
+        try
+        {
+            if (!VagabondService.ShouldApplyVagabondRules(sessionId))
+            {
+                return;
+            }
+
+            var state = VagabondState.GetState(sessionId);
+            if (!state.VagabondModeEnabled)
+            {
+                return;
+            }
+
+            var items = fullServerProfile.CharacterData?.PmcData?.Inventory?.Items;
+            if (items == null)
+            {
+                return;
+            }
+
+            if (__state?.Count > 0 && !isDead)
+            {
+                foreach (var item in items)
+                {
+                    if (__state.Contains(item.Id))
+                    {
+                        item.Upd ??= new Upd();
+                        item.Upd.SpawnedInSession = true;
+                    }
+                }
+            }
+
+            if (isTransfer && !isDead)
+            {
+                var firIds = new List<string>();
+                foreach (var item in items)
+                {
+                    if (item.Upd?.SpawnedInSession == true)
+                    {
+                        firIds.Add(item.Id);
+                    }
+                }
+
+                state.RaidFirItems = firIds.Count > 0 ? firIds : null;
+            }
+            else
+            {
+                state.RaidFirItems = null;
+            }
+
+            VagabondState.SaveState(sessionId, state);
+        }
+        catch (Exception ex)
+        {
+            VagabondLogger.Error($"RaidEndPatch failed to handle fir items: {ex}");
+        }
     }
 
     public static void HandleRaidEnd(MongoId sessionId, SptProfile profile, bool isDead, bool isTransfer,

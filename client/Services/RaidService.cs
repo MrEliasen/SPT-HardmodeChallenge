@@ -503,8 +503,9 @@ public static class RaidService
         {
             owner.InteractionsChangedHandler();
         }
-        catch
+        catch (Exception ex)
         {
+            Vagabond.LogError(ex.Message);
         }
     }
 }
