@@ -178,7 +178,7 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
                 {
                     continue;
                 }
-                
+
                 List<Grid> gridsfilters = basetemplate.Properties.Grids.ToList();
                 gridsfilters.ForEach(grid =>
                 {
@@ -200,7 +200,7 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
                     {
                     }
                 });
-                
+
                 basetemplate.Properties.Grids = gridsfilters;
             }
 
