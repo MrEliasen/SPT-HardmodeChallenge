@@ -220,7 +220,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 return false;
             }
 
-            if (IsVehicleTemplate(x))
+            if (ExfilService.IsVehicleTemplate(x))
             {
                 return false;
             }
@@ -458,27 +458,11 @@ internal class CustomExfilPlacementPatch : ModulePatch
         clone.Settings.MinTime = 0f;
         clone.Settings.MaxTime = 0f;
         clone.Settings.EventAvailable = false;
-
         clone.EligibleEntryPoints = eligibleEntryPoints;
         clone.Reusable = true;
         clone.Switch = null;
 
-        var collider = clone.GetComponent<Collider>();
-        if (collider != null)
-        {
-            collider.enabled = true;
-            collider.isTrigger = true;
-        }
-
-        var templateCollider = template.GetComponent<Collider>();
-        if (collider is BoxCollider box && templateCollider is BoxCollider templateBox)
-        {
-            box.center = templateBox.center;
-            //box.size = templateBox.size;
-            // I hope this is not too small now. 
-            // Going for 5x5m, and 2m high
-            box.size = new Vector3(5f, templateBox.size.y, 5f);
-        }
+        ExfilService.NormalizeExtractColliders(clone, template);
 
         clone.Enable();
         clone.EnableInteraction();
@@ -710,7 +694,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 continue;
             }
 
-            if (exfil.Settings != null && (IsCustomExfil(exfil.Settings) || IsQuestNativeExfil(exfil.Settings)))
+            if (exfil.Settings != null && (ExfilService.IsCustomExfil(exfil.Settings) || ExfilService.IsQuestNativeExfil(exfil.Settings)))
             {
                 continue;
             }
@@ -725,7 +709,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 continue;
             }
 
-            if (secret.Settings != null && IsQuestNativeExfil(secret.Settings))
+            if (secret.Settings != null && ExfilService.IsQuestNativeExfil(secret.Settings))
             {
                 continue;
             }
@@ -759,84 +743,12 @@ internal class CustomExfilPlacementPatch : ModulePatch
         }
     }
 
-    private static void HideSecretExfil(SecretExfiltrationPoint exfil)
-    {
-        exfil.EligibleForPmc = false;
-        exfil.EligibleForScav = false;
-        DisableColliders(exfil);
-
-        if (MonoBehaviourSingleton<GameUI>.Instance?.TimerPanel != null)
-        {
-            exfil.DisableInteraction();
-        }
-    }
-
     private static void DisableColliders(ExfiltrationPoint exfil)
     {
         foreach (var collider in exfil.GetComponentsInChildren<Collider>(true))
         {
             collider.enabled = false;
         }
-    }
-
-    private static bool IsCustomExfil(ExitTriggerSettings settings)
-    {
-        if (string.IsNullOrWhiteSpace(settings?.Name))
-        {
-            return false;
-        }
-
-        var locationId = Singleton<GameWorld>.Instance?.LocationId;
-        if (string.IsNullOrWhiteSpace(locationId))
-        {
-            return false;
-        }
-
-        var raid = VagabondLocations.NormaliseMapName(locationId);
-        if (raid == RaidLocation.Nil)
-        {
-            return false;
-        }
-
-        if (!Vagabond.State.CustomExfils.TryGetValue(raid, out var mapExfils))
-        {
-            return false;
-        }
-
-        if (!mapExfils.TryGetValue(locationId, out var definitions) || definitions == null)
-        {
-            return false;
-        }
-
-        return definitions.Any(def =>
-            !def.IsTransit &&
-            string.Equals(def.DisplayName, settings.Name, StringComparison.OrdinalIgnoreCase));
-    }
-
-    private static bool IsQuestNativeExfil(ExitTriggerSettings settings)
-    {
-        if (string.IsNullOrWhiteSpace(settings?.Name))
-        {
-            return false;
-        }
-
-        var locationId = Singleton<GameWorld>.Instance?.LocationId;
-        if (string.IsNullOrWhiteSpace(locationId))
-        {
-            return false;
-        }
-
-        if (!Vagabond.State.QuestExfils.TryGetValue(locationId, out var kept) || kept == null)
-        {
-            return false;
-        }
-
-        return kept.Any(x => string.Equals(x, settings.Name, StringComparison.OrdinalIgnoreCase));
-    }
-
-    private static bool IsVehicleTemplate(ExfiltrationPoint point)
-    {
-        return string.Equals(point.Settings?.Id, Currencies.Ruble, StringComparison.OrdinalIgnoreCase);
     }
 }
 
@@ -854,6 +766,7 @@ internal class CustomExfilCleanupPatch : ModulePatch
         CustomExfilPlacementPatch.ExtractsAppliedThisRaid = false;
         CustomExfilPlacementPatch.CustomTransitDefinitions.Clear();
         CustomExfilPlacementPatch.ExfilPointTemplateCache.Clear();
+        ExfilService.SuppressedCustomExtractPointIds.Clear();
         Vagabond.State.LastRaidStateSyncLocationId = string.Empty;
     }
 }
