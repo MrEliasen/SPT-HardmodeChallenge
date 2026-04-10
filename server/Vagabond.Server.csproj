@@ -10,6 +10,11 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <PackageId>Vagabond</PackageId>
     </PropertyGroup>
+    
+    <PropertyGroup>
+        <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT\</TarkovDir>
+        <TarkovPluginsSPTDir>$(TarkovDir)SPT\user\mods\</TarkovPluginsSPTDir>
+    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="SPTarkov.Common" Version="4.0.13"/>
@@ -22,4 +27,21 @@
     <ItemGroup>
         <None Include="Config\\vagabond.json" CopyToOutputDirectory="Always"/>
     </ItemGroup>
+
+
+    <Target Name="PostBuild" AfterTargets="Build">
+        <ItemGroup>
+            <OutputDLL Include="$(ProjectDir)$(OutDir)$(TargetName).dll"/>
+        </ItemGroup>
+
+        <ItemGroup>
+            <PluginFiles Include="$(ProjectDir)$(OutDir)$(TargetName).dll"/>
+            <PluginFiles Include="$(ProjectDir)$(OutDir)Vagabond.Common.dll"/>
+        </ItemGroup>
+
+        <!-- Copy to Tarkov plugin directory -->
+        <Copy SourceFiles="@(PluginFiles)"
+              DestinationFolder="$(TarkovPluginsSPTDir)Vagabond\"
+              SkipUnchangedFiles="true"/>
+    </Target>
 </Project>
