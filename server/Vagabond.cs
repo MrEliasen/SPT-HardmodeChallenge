@@ -174,29 +174,38 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
             //Remove Backpack Restrictions
             if (basetemplate.Parent == "5448e53e4bdc2d60728b4567")
             {
+                if (basetemplate.Properties?.Grids == null)
+                {
+                    continue;
+                }
+                
                 List<Grid> gridsfilters = basetemplate.Properties.Grids.ToList();
-                gridsfilters.ForEach(Grid =>
+                gridsfilters.ForEach(grid =>
                 {
                     try
                     {
-                        if (Grid.Properties.Filters is not null)
+                        if (grid.Properties?.Filters is not null)
                         {
-                            var filters = Grid.Properties.Filters.ToList();
-                            filters[0].Filter.Clear();
-                            filters[0].Filter.Add(new MongoId("54009119af1c881c07000029"));
-                            filters[0].ExcludedFilter = [];
-                            Grid.Properties.Filters = filters;
+                            var filters = grid.Properties.Filters.ToList();
+                            if (filters.Count > 0)
+                            {
+                                filters[0].Filter?.Clear();
+                                filters[0].Filter?.Add(new MongoId("54009119af1c881c07000029"));
+                                filters[0].ExcludedFilter = [];
+                                grid.Properties.Filters = filters;
+                            }
                         }
                     }
                     catch
                     {
                     }
                 });
+                
                 basetemplate.Properties.Grids = gridsfilters;
             }
 
             //Remove in-raid restrictions
-            if (basetemplate.Type == "Item" && basetemplate.Properties.DiscardLimit is not null)
+            if (basetemplate.Type == "Item" && basetemplate.Properties?.DiscardLimit is not null)
             {
                 basetemplate.Properties.DiscardLimit = -1;
             }
