@@ -13,12 +13,17 @@ public class VagabondLogger
 
     public static void Log(string message)
     {
-        _logger?.Success($"[Vagabond] {message}");
+        _logger?.Info($"[Vagabond] {message}");
     }
 
     public static void Error(string message)
     {
         _logger?.Error($"[Vagabond] {message}");
+    }
+
+    public static void Warning(string message)
+    {
+        _logger?.Warning($"[Vagabond] {message}");
     }
 
     public static void Success(string message)

@@ -10,7 +10,7 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <PackageId>Vagabond</PackageId>
     </PropertyGroup>
-    
+
     <PropertyGroup>
         <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT\</TarkovDir>
         <TarkovPluginsSPTDir>$(TarkovDir)SPT\user\mods\</TarkovPluginsSPTDir>
