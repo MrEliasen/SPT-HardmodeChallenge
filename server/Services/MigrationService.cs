@@ -30,7 +30,7 @@ public static class MigrationService
                 }
             }
         }
-        
+
         state.Version = ModInfo.Version;
         VagabondState.SaveState(sessionId, state);
     }

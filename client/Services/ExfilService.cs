@@ -108,7 +108,7 @@ public static class ExfilService
         player.SetExfiltrationPoint(point, false);
         point.SetInitialStatus();
     }
-    
+
     public static bool IsCustomExfil(ExitTriggerSettings settings)
     {
         if (string.IsNullOrWhiteSpace(settings?.Name))
@@ -168,7 +168,7 @@ public static class ExfilService
     {
         return string.Equals(point.Settings?.Id, Currencies.Ruble, StringComparison.OrdinalIgnoreCase);
     }
-    
+
     public static void NormalizeExtractColliders(ExfiltrationPoint clone, ExfiltrationPoint template)
     {
         var rootCollider = clone.GetComponent<Collider>();
@@ -178,9 +178,10 @@ public static class ExfilService
         var extendedCollider = clone.ExtendedCollider;
         if (extendedCollider != null && extendedCollider != rootCollider)
         {
-            var templateExtendedCollider = template.ExtendedCollider != null && template.ExtendedCollider != templateRootCollider
-                ? template.ExtendedCollider
-                : templateRootCollider;
+            var templateExtendedCollider =
+                template.ExtendedCollider != null && template.ExtendedCollider != templateRootCollider
+                    ? template.ExtendedCollider
+                    : templateRootCollider;
 
             if (!TryConfigureTriggerCollider(extendedCollider, templateExtendedCollider))
             {

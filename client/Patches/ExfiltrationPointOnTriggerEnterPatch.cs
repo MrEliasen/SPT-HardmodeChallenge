@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Vagabond.Client.Patches;
 
-internal class ExfiltrationPointOnTriggerEnterPatch: ModulePatch
+internal class ExfiltrationPointOnTriggerEnterPatch : ModulePatch
 {
     protected override MethodBase GetTargetMethod()
     {
