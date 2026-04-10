@@ -7,7 +7,6 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
-using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Vagabond.Client.Patches;

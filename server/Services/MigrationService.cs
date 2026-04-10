@@ -25,7 +25,7 @@ public static class MigrationService
             {
                 case "0.3.0":
                 {
-                    from030To031(pmc, state);
+                    From030To031(pmc, state);
                     break;
                 }
             }
@@ -35,7 +35,7 @@ public static class MigrationService
         VagabondState.SaveState(sessionId, state);
     }
 
-    private static void from030To031(PmcData pmc, VagabondState state)
+    private static void From030To031(PmcData pmc, VagabondState state)
     {
         if (pmc.Quests == null)
         {

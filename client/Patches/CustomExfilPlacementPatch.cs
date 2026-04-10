@@ -5,7 +5,6 @@ using System.Reflection;
 using Comfort.Common;
 using EFT;
 using EFT.Interactive;
-using EFT.Interactive.SecretExfiltrations;
 using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;

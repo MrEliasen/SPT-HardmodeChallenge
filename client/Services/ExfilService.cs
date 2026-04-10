@@ -91,24 +91,6 @@ public static class ExfilService
         return false;
     }
 
-    private static void ClearSuppressedPlayerState(ExfiltrationPoint point, Player player)
-    {
-        if (point == null || player == null)
-        {
-            return;
-        }
-
-        if (point.Entered.Contains(player))
-        {
-            point.Entered.Remove(player);
-        }
-
-        point.OnCancelExtraction?.Invoke(point, player);
-        player.ExitTriggerStatusChanged(false);
-        player.SetExfiltrationPoint(point, false);
-        point.SetInitialStatus();
-    }
-
     public static bool IsCustomExfil(ExitTriggerSettings settings)
     {
         if (string.IsNullOrWhiteSpace(settings?.Name))

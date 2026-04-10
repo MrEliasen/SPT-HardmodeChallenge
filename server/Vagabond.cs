@@ -24,7 +24,7 @@ public record ModMetadata : AbstractModMetadata
     public override string Name { get; init; } = ModInfo.Name;
     public override string Author { get; init; } = ModInfo.Author;
     public override SemanticVersioning.Version Version { get; init; } = new(ModInfo.Version);
-    public override SemanticVersioning.Range SptVersion { get; init; } = new(ModInfo.SPTVersion);
+    public override SemanticVersioning.Range SptVersion { get; init; } = new(ModInfo.SptVersion);
     public override string? Url { get; init; } = ModInfo.Url;
     public override string License { get; init; } = ModInfo.License;
     public override List<string>? Contributors { get; init; } = new() { ModInfo.Author };

@@ -71,7 +71,6 @@ public sealed class UIMessageService : MonoBehaviour
     private Image _secondaryButtonImage = null!;
     private Text _primaryButtonText = null!;
     private Text _secondaryButtonText = null!;
-    private RectTransform _buttonsRoot = null!;
 
     private Action _primaryAction;
     private Action _secondaryAction;
@@ -377,7 +376,6 @@ public sealed class UIMessageService : MonoBehaviour
             typeof(LayoutElement));
 
         buttonsGo.transform.SetParent(_panel, false);
-        _buttonsRoot = (RectTransform)buttonsGo.transform;
 
         var rowLayout = buttonsGo.GetComponent<LayoutElement>();
         rowLayout.preferredHeight = _ui.ButtonsRowHeight;
