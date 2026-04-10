@@ -703,7 +703,8 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 continue;
             }
 
-            if (exfil.Settings != null && (ExfilService.IsCustomExfil(exfil.Settings) || ExfilService.IsQuestNativeExfil(exfil.Settings)))
+            if (exfil.Settings != null && (ExfilService.IsCustomExfil(exfil.Settings) ||
+                                           ExfilService.IsQuestNativeExfil(exfil.Settings)))
             {
                 continue;
             }
