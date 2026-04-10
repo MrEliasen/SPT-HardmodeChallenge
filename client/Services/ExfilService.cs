@@ -56,7 +56,7 @@ public static class ExfilService
         SuppressedCustomExtractPointIds.Remove(point.GetInstanceID());
     }
 
-    private static bool IsPlayerInsidePointTrigger(Player player, ExfiltrationPoint point)
+    public static bool IsPlayerInsidePointTrigger(Player player, ExfiltrationPoint point)
     {
         if (player == null || point == null)
         {

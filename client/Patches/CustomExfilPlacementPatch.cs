@@ -140,6 +140,15 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 cloneObject.SetActive(true);
                 ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
 
+                if (!force)
+                {
+                    var mainPlayer = Singleton<GameWorld>.Instance?.MainPlayer;
+                    if (mainPlayer != null && ExfilService.IsPlayerInsidePointTrigger(mainPlayer, clone))
+                    {
+                        ExfilService.SuppressedCustomExtractPointIds.Add(clone.GetInstanceID());
+                    }
+                }
+
                 pmcExfils.Add(clone);
                 addedPoints.Add(clone);
             }
