@@ -42,6 +42,13 @@ internal static class VagabondService
 
         state.CurrentMap = "Streets";
         state.LastExit = "VGB_EXT_FENCE";
+
+        if (string.Equals(VagabondConfig.Config.StarterFence, "lighthouse", StringComparison.OrdinalIgnoreCase))
+        {
+            state.CurrentMap = "Lighthouse";
+            state.LastExit = "VGB_EXT_FENCE_DL";
+        }
+
         state.TransitState = null;
         HideoutService.UpdateTraderAccess(pmc, state);
         VagabondState.SaveState(sessionId, state);

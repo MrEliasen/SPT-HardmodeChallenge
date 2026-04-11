@@ -17,6 +17,7 @@ public sealed class VagabondConfig
     public bool AllowHideoutRelocation { get; set; }
     public bool EnablePickRaidLocation { get; set; }
     public string OnDeathGoTo { get; set; } = "hideout";
+    public string StarterFence { get; set; } = "streets";
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
 
     // internal
