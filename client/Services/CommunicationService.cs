@@ -125,6 +125,7 @@ public static class CommunicationService
             Vagabond.State.CurrentMap = resp.CurrentMap;
             Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
             Vagabond.State.NewCharacter = resp.NewCharacter;
+            Vagabond.State.AllowPostRaidHealing = resp.AllowPostRaidHealing;
         }
     }
 }

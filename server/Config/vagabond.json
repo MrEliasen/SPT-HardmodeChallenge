@@ -19,6 +19,8 @@
   "WipeStashOnFirstRaidEntry": true,
   // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
   "AdjustRaidTimeMins": 60,
+  // Whether the post-raid healing screen should allow healing
+  "AllowPostRaidHealing": false,
   // if enabled, you can continue to place the hideout without being told you already have.
   // allowing relocation via an in-game feature will come in a later update.
   "AllowHideoutRelocation": false,

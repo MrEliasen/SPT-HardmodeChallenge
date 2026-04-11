@@ -15,6 +15,7 @@ public sealed class VagabondConfig
     public bool DisableFlea { get; set; } = true;
     public bool StripMailAttachments { get; set; }
     public bool AllowHideoutRelocation { get; set; }
+    public bool AllowPostRaidHealing { get; set; }
     public bool EnablePickRaidLocation { get; set; }
     public string OnDeathGoTo { get; set; } = "hideout";
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
