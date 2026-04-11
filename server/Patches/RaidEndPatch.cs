@@ -146,6 +146,12 @@ public sealed class RaidEndPatch : AbstractPatch
                 state.CurrentMap = "Streets";
                 state.LastExit = "VGB_EXT_FENCE";
 
+                if (string.Equals(VagabondConfig.Config.StarterFence, "lighthouse", StringComparison.OrdinalIgnoreCase))
+                {
+                    state.CurrentMap = "Lighthouse";
+                    state.LastExit = "VGB_EXT_FENCE_DL";
+                }
+
                 if (!string.IsNullOrEmpty(state.HideoutState?.Id) && deathGoTo == "hideout")
                 {
                     state.CurrentMap = state.HideoutState.Map!;

@@ -26,5 +26,9 @@
   // "hideout" - will send you to your hideout if you have one, otherwise fence.
   // "fence" - will send you to fence.
   // "stay" - you stay at your last known map/transit
-  "OnDeathGoTo": "hideout"
+  "OnDeathGoTo": "hideout",
+  // Which Fence/location to use as your start location (and on death location)
+  // "streets" - Streets of Tarkov location
+  // "lighthouse" - Lighthouse location
+  "StarterFence": "streets"
 }
