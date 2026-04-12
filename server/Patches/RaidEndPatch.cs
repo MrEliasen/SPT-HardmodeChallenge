@@ -135,7 +135,7 @@ public sealed class RaidEndPatch : AbstractPatch
         if (isDead)
         {
             var deathGoTo = VagabondConfig.Config.OnDeathGoTo.Trim().ToLower();
-            state.ResetProfile = VagabondConfig.Config.PermaDeath;
+            state.ResetProfile = VagabondConfig.Config.ResetOnDeath;
 
             if (deathGoTo != "stay")
             {

@@ -1,6 +1,6 @@
 {
-  // if you die for whatever reason (according to the game), your profile gets wiped.
-  "PermaDeath": false,
+  // if you die for whatever reason (according to the game), all stashes and equipment gets wiped.
+  "ResetOnDeath": false,
   // The amount of money a player starts with
   "StartingRoubles": 175000,
   // makes fence less random and useful as a starter vendor - recommend removing other traders

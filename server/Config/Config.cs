@@ -6,7 +6,7 @@ namespace Vagabond.Server.Config;
 
 public sealed class VagabondConfig
 {
-    public bool PermaDeath { get; set; }
+    public bool ResetOnDeath { get; set; }
     public bool FixProfiles { get; set; }
     public bool DisableEvents { get; set; } = true;
     public int StartingRoubles { get; set; } = 175_000;
