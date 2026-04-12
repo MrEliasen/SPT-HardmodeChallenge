@@ -19,6 +19,7 @@ internal class LocalGameStopPatch : ModulePatch
     [PatchPrefix]
     private static void Prefix()
     {
+        ActiveHealthControllerPatch.EnableFallDamage = false;
         ForcedSpawnService.Clear();
     }
 }

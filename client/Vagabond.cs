@@ -59,6 +59,7 @@ public class Vagabond : BaseUnityPlugin
         new ExfiltrationPointOnTriggerEnterPatch().Enable();
         new ExfiltrationPointOnTriggerExitPatch().Enable();
         new SpawnSystemSelectSpawnPointPatch().Enable();
+        new ActiveHealthControllerPatch().Enable();
 
         if (Chainloader.PluginInfos.ContainsKey("com.acidphantasm.botplacementsystem"))
         {
