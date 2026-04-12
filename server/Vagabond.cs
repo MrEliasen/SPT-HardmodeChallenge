@@ -171,7 +171,7 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
         var items = databaseService.GetItems();
         foreach (TemplateItem basetemplate in items.Values)
         {
-            //Remove Backpack Restrictions
+            //Remove container Restrictions
             if (basetemplate.Parent == "5448e53e4bdc2d60728b4567")
             {
                 if (basetemplate.Properties?.Grids == null)
@@ -208,6 +208,15 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
             if (basetemplate.Type == "Item" && basetemplate.Properties?.DiscardLimit is not null)
             {
                 basetemplate.Properties.DiscardLimit = -1;
+            }
+            
+            //Remove max number of item you can take in raid
+            var restrictionsInRaid = globals.Configuration.RestrictionsInRaid;
+        
+            foreach (var restriction in restrictionsInRaid)
+            {
+                restriction.MaxInRaid = Int32.MaxValue;
+                restriction.MaxInLobby = Int32.MaxValue;
             }
         }
 
