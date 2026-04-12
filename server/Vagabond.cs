@@ -211,6 +211,8 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
             }
             
             //Remove max number of item you can take in raid
+            // Credit: https://github.com/acidphantasm/itemlimitsbegone-csharp/
+            // ty ty <3
             var restrictionsInRaid = globals.Configuration.RestrictionsInRaid;
         
             foreach (var restriction in restrictionsInRaid)
