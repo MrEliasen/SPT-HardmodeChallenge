@@ -9,7 +9,7 @@ namespace Vagabond.Client.Patches;
 public class ActiveHealthControllerPatch : ModulePatch
 {
     public static bool EnableFallDamage = false;
-    
+
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(typeof(ActiveHealthController), nameof(ActiveHealthController.HandleFall));

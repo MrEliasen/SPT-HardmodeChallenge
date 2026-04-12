@@ -209,12 +209,12 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
             {
                 basetemplate.Properties.DiscardLimit = -1;
             }
-            
+
             //Remove max number of item you can take in raid
             // Credit: https://github.com/acidphantasm/itemlimitsbegone-csharp/
             // ty ty <3
             var restrictionsInRaid = globals.Configuration.RestrictionsInRaid;
-        
+
             foreach (var restriction in restrictionsInRaid)
             {
                 restriction.MaxInRaid = Int32.MaxValue;
