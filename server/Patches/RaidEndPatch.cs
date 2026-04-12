@@ -130,10 +130,6 @@ public sealed class RaidEndPatch : AbstractPatch
 
         var locationMapE = VagabondLocations.NormaliseMapName(locationName);
         var locationMapStr = locationMapE.ToString();
-
-        state.TransitState = null;
-        state.CurrentMap = locationMapStr;
-        state.LastExit = GetExtractIdentifier(request.Results?.ExitName, locationMapE, locationName);
         RaidRuntimeState.Left(sessionId);
 
         if (isDead)
@@ -162,6 +158,10 @@ public sealed class RaidEndPatch : AbstractPatch
             VagabondState.SaveState(sessionId, state);
             return;
         }
+
+        state.TransitState = null;
+        state.CurrentMap = locationMapStr;
+        state.LastExit = GetExtractIdentifier(request.Results?.ExitName, locationMapE, locationName);
 
         if (isTransfer)
         {
