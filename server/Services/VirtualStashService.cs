@@ -26,11 +26,6 @@ internal static class VirtualStashService
 
     public static bool IsVirtualStashEnabled(MongoId sessionId)
     {
-        if (!VagabondConfig.Config.EnableVirtualStashes)
-        {
-            return false;
-        }
-        
         return TryGetActiveStashId(sessionId, out _);
     }
 
@@ -472,6 +467,11 @@ internal static class VirtualStashService
     private static bool TryGetActiveStashId(MongoId sessionId, out string stashId)
     {
         stashId = string.Empty;
+
+        if (!VagabondConfig.Config.EnableVirtualStashes)
+        {
+            return false;
+        }
 
         // I want to make sure while in-raid, whatever you do does not involve any virtual stash
         if (VagabondService.IsInRaid(sessionId))
