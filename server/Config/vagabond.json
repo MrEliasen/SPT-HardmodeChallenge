@@ -36,10 +36,10 @@
   // if you disable this, your own permanent stash is used like normal.
   "EnableVirtualStashes": true,
   // if enabled, will wipe all virtual stashes when you enter a raid, making virtural
-  // stashes entirely temporary.
+  // stashes entirely temporary. This will prevent "AllowPostRaidHealing" from working.
   "WipeVirtualStashesOnRaidEntry": false,
   // if enabled, all status effects (broken limbs, bleeds etc) will be healed when you die.
   "HealStatusEffectsOnDeath": true,
-  // allow post-raid healing at Therapist
+  // allow post-raid healing at Therapist (still requires money left at the Therapist)
   "AllowPostRaidHealing": true
 }
