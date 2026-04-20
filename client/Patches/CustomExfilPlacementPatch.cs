@@ -705,35 +705,41 @@ internal class CustomExfilPlacementPatch : ModulePatch
             return;
         }
 
-        foreach (var exfil in __instance.ExfiltrationPoints)
+        if (__instance.ExfiltrationPoints != null)
         {
-            if (exfil == null)
+            foreach (var exfil in __instance.ExfiltrationPoints)
             {
-                continue;
-            }
+                if (exfil == null)
+                {
+                    continue;
+                }
 
-            if (exfil.Settings != null && (ExfilService.IsCustomExfil(exfil.Settings) ||
-                                           ExfilService.IsQuestNativeExfil(exfil.Settings)))
-            {
-                continue;
-            }
+                if (exfil.Settings != null && (ExfilService.IsCustomExfil(exfil.Settings) ||
+                                               ExfilService.IsQuestNativeExfil(exfil.Settings)))
+                {
+                    continue;
+                }
 
-            HideExfil(exfil);
+                HideExfil(exfil);
+            }
         }
 
-        foreach (var secret in __instance.SecretExfiltrationPoints)
+        if (__instance.SecretExfiltrationPoints != null)
         {
-            if (secret == null)
+            foreach (var secret in __instance.SecretExfiltrationPoints)
             {
-                continue;
-            }
+                if (secret == null)
+                {
+                    continue;
+                }
 
-            if (secret.Settings != null && ExfilService.IsQuestNativeExfil(secret.Settings))
-            {
-                continue;
-            }
+                if (secret.Settings != null && ExfilService.IsQuestNativeExfil(secret.Settings))
+                {
+                    continue;
+                }
 
-            HideExfil(secret);
+                HideExfil(secret);
+            }
         }
     }
 

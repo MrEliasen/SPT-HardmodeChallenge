@@ -123,7 +123,8 @@ public class VagabondRouter(
         if (state.HideoutState != null && !VagabondConfig.Config.AllowHideoutRelocation)
         {
             response.Success = false;
-            response.Message = $"You have already established your hideout in {VagabondLocations.ToHumanName(VagabondLocations.NormaliseMapName(state.HideoutState.Map))}.";
+            response.Message =
+                $"You have already established your hideout in {VagabondLocations.ToHumanName(VagabondLocations.NormaliseMapName(state.HideoutState.Map))}.";
             return response;
         }
 
