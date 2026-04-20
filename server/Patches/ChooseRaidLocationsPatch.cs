@@ -65,6 +65,12 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
             return jsonString;
         }
 
+        // a bit dirty, as I should then limit what time they can pick then.. but.. so be it for now
+        if (currentMap == RaidLocation.FactoryNight)
+        {
+            currentMap = RaidLocation.FactoryDay;
+        }
+
         JsonObject? data = root["data"]?.AsObject();
         JsonObject? locations = data?["locations"]?.AsObject();
 
