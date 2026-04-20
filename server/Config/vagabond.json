@@ -36,5 +36,7 @@
   "EnableVirtualStashes": true,
   // if enabled, will wipe all virtual stashes when you enter a raid, making virtural
   // stashes entirely temporary.
-  "WipeVirtualStashesOnRaidEntry": false
+  "WipeVirtualStashesOnRaidEntry": false,
+  // if enabled, all status effects (broken limbs, bleeds etc) will be healed when you die.
+  "HealStatusEffectsOnDeath": false
 }
