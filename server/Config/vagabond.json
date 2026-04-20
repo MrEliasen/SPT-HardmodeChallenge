@@ -41,5 +41,7 @@
   // if enabled, all status effects (broken limbs, bleeds etc) will be healed when you die.
   "HealStatusEffectsOnDeath": true,
   // allow post-raid healing at Therapist (still requires money left at the Therapist)
-  "AllowPostRaidHealing": true
+  "AllowPostRaidHealing": true,
+  // add Fence as an always available trader in hideout
+  "AddFenceToHideout": false
 }
