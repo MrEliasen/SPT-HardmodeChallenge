@@ -3,6 +3,7 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using Vagabond.Common.Data;
 using Vagabond.Common.Enums;
+using Vagabond.Server.Config;
 using Vagabond.Server.Definitions;
 using Vagabond.Server.State;
 
@@ -122,6 +123,16 @@ internal static class HideoutService
             if (IgnoredTraders.Contains(entry.Key))
             {
                 continue;
+            }
+
+            if (VagabondConfig.Config.AddFenceToHideout && entry.Key == "579dc571d53a0658a154fbec")
+            {
+                if (state.LastExit.IndexOf(HideoutIdPrefix, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    entry.Value.Disabled = false;
+                    entry.Value.Unlocked = true;
+                    continue;
+                }
             }
 
             if (entry.Key == traderId || (isCustomTraderLoc && !traderIdList.Contains(entry.Key)))
