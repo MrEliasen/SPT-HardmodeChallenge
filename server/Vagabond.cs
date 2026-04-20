@@ -209,7 +209,7 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
             {
                 basetemplate.Properties.DiscardLimit = -1;
             }
-            
+
             // remove trial heals
             globals.Configuration.Health.HealPrice.TrialRaids = 0;
             globals.Configuration.Health.HealPrice.TrialLevels = 0;

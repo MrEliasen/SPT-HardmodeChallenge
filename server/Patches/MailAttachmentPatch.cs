@@ -53,12 +53,12 @@ public sealed class MailAttachmentsPatch : AbstractPatch
         {
             return false;
         }
-        
+
         if (senderState.CurrentMap != recipientState.CurrentMap)
         {
             return false;
         }
-        
+
         if (VagabondConfig.Config.MailAttachmentLimit == "same-map")
         {
             return true;

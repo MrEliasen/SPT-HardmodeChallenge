@@ -19,7 +19,9 @@ internal static class VirtualStashService
     private const string ProfileDataKeyPrefix = ModInfo.Guid + ".virtual_stash";
     private const string StashRootIdPlaceholder = "vgb_stash_root";
     private const string SortingTableRootIdPlaceholder = "vgb_sorting_root";
-    private const string BlockedActionMessage = "This action is not possible in this stash, as it is not your hideout stash.";
+
+    private const string BlockedActionMessage =
+        "This action is not possible in this stash, as it is not your hideout stash.";
 
     private static readonly ConcurrentDictionary<MongoId, Lock> ActiveScopeLocks = new();
     private static readonly Dictionary<MongoId, ActiveVirtualStashState> ActiveStashes = new();

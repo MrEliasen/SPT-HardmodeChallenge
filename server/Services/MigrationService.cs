@@ -28,7 +28,7 @@ public static class MigrationService
                     From030To031(pmc, state);
                     break;
                 }
-                
+
                 case "0.3.1":
                 case "0.3.2":
                 case "0.3.3":
