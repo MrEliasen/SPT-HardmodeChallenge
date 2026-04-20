@@ -33,5 +33,8 @@
   "StarterFence": "streets",
   // will allow per-trader/per-extract (eg other players hideouts) virtual stashes.
   // if you disable this, your own permanent stash is used like normal.
-  "EnableVirtualStashes": true
+  "EnableVirtualStashes": true,
+  // if enabled, will wipe all virtual stashes when you enter a raid, making virtural
+  // stashes entirely temporary.
+  "WipeVirtualStashesOnRaidEntry": false
 }

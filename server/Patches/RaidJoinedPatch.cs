@@ -73,6 +73,10 @@ public sealed class RaidJoinPatch : AbstractPatch
             VirtualStashService.ClearAllTraderStashes(sessionId);
             state.IsNewCharacter = false;
         }
+        else if (VagabondConfig.Config.WipeVirtualStashesOnRaidEntry)
+        {
+            VirtualStashService.ClearAllTraderStashes(sessionId);
+        }
 
         VagabondState.SaveState(sessionId, state);
         VagabondService.PersistProfileIfPossible(sessionId);
