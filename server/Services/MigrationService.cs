@@ -28,6 +28,15 @@ public static class MigrationService
                     From030To031(pmc, state);
                     break;
                 }
+                
+                case "0.3.1":
+                case "0.3.2":
+                case "0.3.3":
+                case "0.3.4":
+                {
+                    From031To040(pmc, state);
+                    break;
+                }
             }
         }
 
@@ -57,5 +66,11 @@ public static class MigrationService
         }
 
         state.Version = "0.3.1";
+    }
+
+    private static void From031To040(PmcData pmc, VagabondState state)
+    {
+        state.CurrentMap = VagabondLocations.NormaliseMapName(state.CurrentMap).ToString();
+        state.Version = "0.4.0";
     }
 }
