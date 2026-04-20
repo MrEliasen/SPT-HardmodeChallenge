@@ -70,6 +70,18 @@ public sealed class RaidEndPatch : AbstractPatch
                 return;
             }
 
+            if (isDead && VagabondConfig.Config.HealStatusEffectsOnDeath)
+            {
+                var bodyParts = fullServerProfile.CharacterData?.PmcData?.Health?.BodyParts;
+                if (bodyParts != null)
+                {
+                    foreach (var part in bodyParts.Values)
+                    {
+                        part?.Effects?.Clear();
+                    }
+                }
+            }
+
             var items = fullServerProfile.CharacterData?.PmcData?.Inventory?.Items;
             if (items == null)
             {

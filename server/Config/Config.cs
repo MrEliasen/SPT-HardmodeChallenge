@@ -18,6 +18,7 @@ public sealed class VagabondConfig
     public bool EnablePickRaidLocation { get; set; }
     public bool EnableVirtualStashes { get; set; }
     public bool WipeVirtualStashesOnRaidEntry { get; set; }
+    public bool HealStatusEffectsOnDeath { get; set; }
     public string OnDeathGoTo { get; set; } = "hideout";
     public string StarterFence { get; set; } = "streets";
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
