@@ -14,7 +14,7 @@ internal class ABPSPmcDistancePatch : ModulePatch
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(
-            AccessTools.TypeByName("acidphantasm_botplacementsystem.Patches.PMCDistancePatch"),
+            AccessTools.TypeByName("acidphantasm_botplacementsystem.Patches.PmcDistancePatch"),
             "IsValid",
             new[] { typeof(ISpawnPoint), typeof(IReadOnlyCollection<IPlayer>), typeof(float) });
     }
