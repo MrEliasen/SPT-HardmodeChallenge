@@ -10,6 +10,7 @@ using SPTarkov.Server.Core.Utils.Cloners;
 using Vagabond.Server.Models;
 using Vagabond.Server.State;
 using Vagabond.Common;
+using Vagabond.Server.Config;
 
 namespace Vagabond.Server.Services;
 
@@ -25,6 +26,11 @@ internal static class VirtualStashService
 
     public static bool IsVirtualStashEnabled(MongoId sessionId)
     {
+        if (!VagabondConfig.Config.EnableVirtualStashes)
+        {
+            return false;
+        }
+        
         return TryGetActiveStashId(sessionId, out _);
     }
 

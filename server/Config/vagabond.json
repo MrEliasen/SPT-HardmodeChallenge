@@ -30,5 +30,8 @@
   // Which Fence/location to use as your start location (and on death location)
   // "streets" - Streets of Tarkov location
   // "lighthouse" - Lighthouse location
-  "StarterFence": "streets"
+  "StarterFence": "streets",
+  // will allow per-trader/per-extract (eg other players hideouts) virtual stashes.
+  // if you disable this, your own permanent stash is used like normal.
+  "EnableVirtualStashes": true
 }
