@@ -3,6 +3,7 @@ using EFT.Interactive;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UnityEngine;
+using Vagabond.Client.Services;
 
 namespace Vagabond.Client.Patches;
 

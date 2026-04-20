@@ -8,6 +8,8 @@ using UnityEngine;
 using Vagabond.Common.Data;
 using Vagabond.Common.Enums;
 
+namespace Vagabond.Client.Services;
+
 public static class ExfilService
 {
     internal static readonly HashSet<int> SuppressedCustomExtractPointIds = new();
@@ -110,7 +112,7 @@ public static class ExfilService
             return false;
         }
 
-        if (!Vagabond.Client.Vagabond.State.CustomExfils.TryGetValue(raid, out var mapExfils))
+        if (!Vagabond.State.CustomExfils.TryGetValue(raid, out var mapExfils))
         {
             return false;
         }
@@ -138,7 +140,7 @@ public static class ExfilService
             return false;
         }
 
-        if (!Vagabond.Client.Vagabond.State.QuestExfils.TryGetValue(locationId, out var kept) || kept == null)
+        if (!Vagabond.State.QuestExfils.TryGetValue(locationId, out var kept) || kept == null)
         {
             return false;
         }
