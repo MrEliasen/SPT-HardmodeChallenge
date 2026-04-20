@@ -13,7 +13,7 @@ public sealed class VagabondConfig
     public int AdjustRaidTimeMins { get; set; } = 60;
     public bool EnableFenceChanges { get; set; } = true;
     public bool DisableFlea { get; set; } = true;
-    public bool StripMailAttachments { get; set; }
+    public string MailAttachmentLimit { get; set; } = "same-exit";
     public bool AllowHideoutRelocation { get; set; }
     public bool EnablePickRaidLocation { get; set; }
     public bool AddFenceToHideout { get; set; }
