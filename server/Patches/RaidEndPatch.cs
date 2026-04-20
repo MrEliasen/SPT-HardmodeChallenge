@@ -77,7 +77,7 @@ public sealed class RaidEndPatch : AbstractPatch
                 {
                     foreach (var part in bodyParts.Values)
                     {
-                        part?.Effects?.Clear();
+                        part.Effects?.Clear();
                     }
                 }
             }

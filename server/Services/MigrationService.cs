@@ -34,7 +34,7 @@ public static class MigrationService
                 case "0.3.3":
                 case "0.3.4":
                 {
-                    From031To040(pmc, state);
+                    From031To040(state);
                     break;
                 }
             }
@@ -68,7 +68,7 @@ public static class MigrationService
         state.Version = "0.3.1";
     }
 
-    private static void From031To040(PmcData pmc, VagabondState state)
+    private static void From031To040(VagabondState state)
     {
         state.CurrentMap = VagabondLocations.NormaliseMapName(state.CurrentMap).ToString();
         state.Version = "0.4.0";

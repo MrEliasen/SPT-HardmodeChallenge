@@ -635,7 +635,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
     private static ExfiltrationRequirement[] BuildRequirements(CustomExfil definition, ExfiltrationPoint point)
     {
-        if (definition.Requirements == null || definition.Requirements.Count == 0)
+        if (definition.Requirements.Count == 0)
         {
             return Array.Empty<ExfiltrationRequirement>();
         }

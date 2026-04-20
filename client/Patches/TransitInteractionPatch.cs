@@ -40,7 +40,7 @@ internal class TransitInteractionPatch : ModulePatch
     {
         failReason = string.Empty;
 
-        if (definition.Requirements == null || definition.Requirements.Count == 0)
+        if (definition.Requirements.Count == 0)
         {
             return true;
         }

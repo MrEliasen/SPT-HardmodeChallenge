@@ -43,32 +43,31 @@ public class VagabondRouter(
 {
     private static SyncStateResponse HandleSyncStateRoute(MongoId sessionId)
     {
-        var stateSessionId = FikaAdapter.GetCanonicalSessionId(sessionId);
         var response = new SyncStateResponse
         {
             CurrentMap = ""
         };
 
-        if (!VagabondService.IsInRaid(stateSessionId))
+        if (!VagabondService.IsInRaid(sessionId))
         {
-            RaidRuntimeState.Left(stateSessionId);
+            RaidRuntimeState.Left(sessionId);
         }
 
-        if (!VagabondService.ShouldApplyVagabondRules(stateSessionId))
+        if (!VagabondService.ShouldApplyVagabondRules(sessionId))
         {
             response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
             return response;
         }
 
-        var pmc = VagabondService.GetPmcProfile(stateSessionId);
+        var pmc = VagabondService.GetPmcProfile(sessionId);
         if (pmc == null || pmc.CharacterData?.PmcData == null)
         {
-            VagabondLogger.Error($"PMC data is null {stateSessionId}");
+            VagabondLogger.Error($"PMC data is null {sessionId}");
             response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
             return response;
         }
 
-        var state = VagabondState.GetState(stateSessionId);
+        var state = VagabondState.GetState(sessionId);
         // load their hideout first time
         if (ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state))
         {
@@ -106,20 +105,19 @@ public class VagabondRouter(
         PlaceHideoutServerRequest payload)
     {
         var response = new PlaceHideoutResponse();
-        var stateSessionId = FikaAdapter.GetCanonicalSessionId(sessionId);
 
-        if (!VagabondService.ShouldApplyVagabondRules(stateSessionId))
+        if (!VagabondService.ShouldApplyVagabondRules(sessionId))
         {
             return response;
         }
 
-        var pmc = VagabondService.GetPmcProfile(stateSessionId);
+        var pmc = VagabondService.GetPmcProfile(sessionId);
         if (pmc?.CharacterData?.PmcData == null)
         {
             return response;
         }
 
-        var state = VagabondState.GetState(stateSessionId);
+        var state = VagabondState.GetState(sessionId);
 
         if (state.HideoutState != null && !VagabondConfig.Config.AllowHideoutRelocation)
         {
@@ -152,7 +150,7 @@ public class VagabondRouter(
         ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state);
         ExfilService.BuildCustomExfilSnapshot(true);
 
-        VagabondState.SaveState(stateSessionId, state);
+        VagabondState.SaveState(sessionId, state);
         response.Success = true;
         response.CurrentRaid = mapName;
         response.MapName = mapName;
