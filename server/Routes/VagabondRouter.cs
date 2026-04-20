@@ -3,6 +3,7 @@ using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Utils;
+using Vagabond.Common.Data;
 using Vagabond.Common.Models;
 using Vagabond.Server.Config;
 using Vagabond.Server.Models;
@@ -122,7 +123,7 @@ public class VagabondRouter(
         if (state.HideoutState != null && !VagabondConfig.Config.AllowHideoutRelocation)
         {
             response.Success = false;
-            response.Message = $"You have already established your hideout in {state.HideoutState.Map}.";
+            response.Message = $"You have already established your hideout in {VagabondLocations.ToHumanName(VagabondLocations.NormaliseMapName(state.HideoutState.Map))}.";
             return response;
         }
 

@@ -4,6 +4,22 @@ namespace Vagabond.Common.Data;
 
 public static class VagabondLocations
 {
+    private static Dictionary<RaidLocation, string> HumanNames = new()
+    {
+        [RaidLocation.FactoryDay] = "Factory",
+        [RaidLocation.FactoryNight] = "Factory",
+        [RaidLocation.GroundZero] = "Ground Zero",
+        [RaidLocation.Streets] = "Streets",
+        [RaidLocation.Woods] = "Woods",
+        [RaidLocation.Customs] = "Customs",
+        [RaidLocation.Interchange] = "Interchange",
+        [RaidLocation.Lighthouse] = "Lighthouse",
+        [RaidLocation.Reserve] = "Reserve",
+        [RaidLocation.Shoreline] = "Shoreline",
+        [RaidLocation.Labs] = "Labs",
+        [RaidLocation.Labyrinth] = "Labyrinth",
+    };
+
     public static Dictionary<RaidLocation, List<string>> Locations = new()
     {
         [RaidLocation.FactoryDay] = ["55f2d3fd4bdc2d5f408b4567"],
@@ -112,6 +128,16 @@ public static class VagabondLocations
         ["Factory4Night"] = RaidLocation.FactoryNight,
         ["SandboxHigh"] = RaidLocation.GroundZero,
     };
+
+    public static string ToHumanName(RaidLocation location)
+    {
+        if (location == RaidLocation.Nil)
+        {
+            return "Unknown";
+        }
+
+        return HumanNames[location];
+    }
 
     public static RaidLocation NormaliseMapName(string? mapName)
     {
