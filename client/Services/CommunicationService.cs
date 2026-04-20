@@ -120,7 +120,7 @@ public static class CommunicationService
 
         if (!Vagabond.IsHeadless())
         {
-            Vagabond.State.PermaDeath = resp.PermaDeath;
+            Vagabond.State.ResetOnDeath = resp.ResetOnDeath;
             Vagabond.State.WipeFirstRaid = resp.WipeFirstRaid;
             Vagabond.State.CurrentMap = resp.CurrentMap;
             Vagabond.State.LastRefreshUtc = DateTime.UtcNow;

@@ -6,7 +6,7 @@ namespace Vagabond.Server.Config;
 
 public sealed class VagabondConfig
 {
-    public bool PermaDeath { get; set; }
+    public bool ResetOnDeath { get; set; }
     public bool FixProfiles { get; set; }
     public bool DisableEvents { get; set; } = true;
     public int StartingRoubles { get; set; } = 175_000;
@@ -17,7 +17,11 @@ public sealed class VagabondConfig
     public bool AllowHideoutRelocation { get; set; }
     public bool AllowPostRaidHealing { get; set; }
     public bool EnablePickRaidLocation { get; set; }
+    public bool EnableVirtualStashes { get; set; }
+    public bool WipeVirtualStashesOnRaidEntry { get; set; }
+    public bool HealStatusEffectsOnDeath { get; set; }
     public string OnDeathGoTo { get; set; } = "hideout";
+    public string StarterFence { get; set; } = "streets";
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
 
     // internal

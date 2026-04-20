@@ -431,7 +431,17 @@ internal class CustomExfilPlacementPatch : ModulePatch
         template.Settings.Name = definition.DisplayName;
         template.Settings.Chance = 100f;
 
-        Vagabond.Log($"Configured Hijacked exfil '{definition.Identifier}'");
+        if (template.Switch != null)
+        {
+            var sw = template.Switch;
+            while (sw != null)
+            {
+                sw.Operatable = true;
+                sw = sw.PreviousSwitch;
+            }
+        }
+
+        //Vagabond.Log($"Configured Hijacked exfil '{definition.Identifier}'");
     }
 
     private static void ConfigureExtractClone(ExfiltrationPoint clone, ExfiltrationPoint template,

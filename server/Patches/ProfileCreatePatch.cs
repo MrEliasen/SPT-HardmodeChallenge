@@ -4,6 +4,7 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Services;
 using Vagabond.Common.Data;
+using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -46,6 +47,13 @@ public sealed class ProfileCreatePatch : AbstractPatch
         var state = VagabondState.GetState(sessionId);
         state.CurrentMap = "Streets";
         state.LastExit = "VGB_EXT_FENCE";
+
+        if (string.Equals(VagabondConfig.Config.StarterFence, "lighthouse", StringComparison.OrdinalIgnoreCase))
+        {
+            state.CurrentMap = "Lighthouse";
+            state.LastExit = "VGB_EXT_FENCE_DL";
+        }
+
         state.VagabondModeEnabled = true;
         state.IsNewCharacter = true;
         VagabondState.SaveState(sessionId, state);

@@ -23,6 +23,11 @@ public class ExfilsReserve : ICustomExtilData
             DisplayName = "Underground Market via Hermetic Door (Custom Traders)",
             TemplateExitName = "EXFIL_Bunker",
             HijackExfil = true, // it will take most information from the hijacked exfil
+            // still needed to force spawning back into the map
+            X = 62.5f,
+            Y = -6.936f,
+            Z = -193.896f,
+            RotationY = 17.317f,
         },
     ];
 

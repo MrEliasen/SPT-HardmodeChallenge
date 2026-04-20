@@ -44,7 +44,7 @@ internal class MenuShowPatch : ModulePatch
 
         if (!Vagabond.State.HasShownWarningMessage && Vagabond.State.NewCharacter)
         {
-            var message = Messages.FirstWarning(Vagabond.State.WipeFirstRaid, Vagabond.State.PermaDeath);
+            var message = Messages.FirstWarning(Vagabond.State.WipeFirstRaid, Vagabond.State.ResetOnDeath);
             if (message != "")
             {
                 UIMessageService.Instance.ShowMessage(message);

@@ -70,6 +70,18 @@ public sealed class RaidEndPatch : AbstractPatch
                 return;
             }
 
+            if (isDead && VagabondConfig.Config.HealStatusEffectsOnDeath)
+            {
+                var bodyParts = fullServerProfile.CharacterData?.PmcData?.Health?.BodyParts;
+                if (bodyParts != null)
+                {
+                    foreach (var part in bodyParts.Values)
+                    {
+                        part?.Effects?.Clear();
+                    }
+                }
+            }
+
             var items = fullServerProfile.CharacterData?.PmcData?.Inventory?.Items;
             if (items == null)
             {
@@ -130,21 +142,23 @@ public sealed class RaidEndPatch : AbstractPatch
 
         var locationMapE = VagabondLocations.NormaliseMapName(locationName);
         var locationMapStr = locationMapE.ToString();
-
-        state.TransitState = null;
-        state.CurrentMap = locationMapStr;
-        state.LastExit = GetExtractIdentifier(request.Results?.ExitName, locationMapE, locationName);
         RaidRuntimeState.Left(sessionId);
 
         if (isDead)
         {
             var deathGoTo = VagabondConfig.Config.OnDeathGoTo.Trim().ToLower();
-            state.ResetProfile = VagabondConfig.Config.PermaDeath;
+            state.ResetProfile = VagabondConfig.Config.ResetOnDeath;
 
             if (deathGoTo != "stay")
             {
                 state.CurrentMap = "Streets";
                 state.LastExit = "VGB_EXT_FENCE";
+
+                if (string.Equals(VagabondConfig.Config.StarterFence, "lighthouse", StringComparison.OrdinalIgnoreCase))
+                {
+                    state.CurrentMap = "Lighthouse";
+                    state.LastExit = "VGB_EXT_FENCE_DL";
+                }
 
                 if (!string.IsNullOrEmpty(state.HideoutState?.Id) && deathGoTo == "hideout")
                 {
@@ -156,6 +170,10 @@ public sealed class RaidEndPatch : AbstractPatch
             VagabondState.SaveState(sessionId, state);
             return;
         }
+
+        state.TransitState = null;
+        state.CurrentMap = locationMapStr;
+        state.LastExit = GetExtractIdentifier(request.Results?.ExitName, locationMapE, locationName);
 
         if (isTransfer)
         {

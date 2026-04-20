@@ -1,6 +1,6 @@
 {
-  // if you die for whatever reason (according to the game), your profile gets wiped.
-  "PermaDeath": false,
+  // if you die for whatever reason (according to the game), all stashes and equipment gets wiped.
+  "ResetOnDeath": false,
   // The amount of money a player starts with
   "StartingRoubles": 175000,
   // makes fence less random and useful as a starter vendor - recommend removing other traders
@@ -28,5 +28,17 @@
   // "hideout" - will send you to your hideout if you have one, otherwise fence.
   // "fence" - will send you to fence.
   // "stay" - you stay at your last known map/transit
-  "OnDeathGoTo": "hideout"
+  "OnDeathGoTo": "hideout",
+  // Which Fence/location to use as your start location (and on death location)
+  // "streets" - Streets of Tarkov location
+  // "lighthouse" - Lighthouse location
+  "StarterFence": "streets",
+  // will allow per-trader/per-extract (eg other players hideouts) virtual stashes.
+  // if you disable this, your own permanent stash is used like normal.
+  "EnableVirtualStashes": true,
+  // if enabled, will wipe all virtual stashes when you enter a raid, making virtural
+  // stashes entirely temporary.
+  "WipeVirtualStashesOnRaidEntry": false,
+  // if enabled, all status effects (broken limbs, bleeds etc) will be healed when you die.
+  "HealStatusEffectsOnDeath": false
 }

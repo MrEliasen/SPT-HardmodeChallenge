@@ -10,6 +10,7 @@ using SPTarkov.Server.Core.Utils.Cloners;
 using Vagabond.Server.Models;
 using Vagabond.Server.State;
 using Vagabond.Common;
+using Vagabond.Server.Config;
 
 namespace Vagabond.Server.Services;
 
@@ -18,7 +19,7 @@ internal static class VirtualStashService
     private const string ProfileDataKeyPrefix = ModInfo.Guid + ".virtual_stash";
     private const string StashRootIdPlaceholder = "vgb_stash_root";
     private const string SortingTableRootIdPlaceholder = "vgb_sorting_root";
-    private const string BlockedActionMessage = "Action not available here.";
+    private const string BlockedActionMessage = "This action is not possible in this stash, as it is not your hideout stash.";
 
     private static readonly ConcurrentDictionary<MongoId, Lock> ActiveScopeLocks = new();
     private static readonly Dictionary<MongoId, ActiveVirtualStashState> ActiveStashes = new();
@@ -466,6 +467,11 @@ internal static class VirtualStashService
     private static bool TryGetActiveStashId(MongoId sessionId, out string stashId)
     {
         stashId = string.Empty;
+
+        if (!VagabondConfig.Config.EnableVirtualStashes)
+        {
+            return false;
+        }
 
         // I want to make sure while in-raid, whatever you do does not involve any virtual stash
         if (VagabondService.IsInRaid(sessionId))

@@ -5,7 +5,7 @@ namespace Vagabond.Common.Models;
 
 public class SyncStateResponse
 {
-    public bool PermaDeath { get; set; }
+    public bool ResetOnDeath { get; set; }
     public bool WipeFirstRaid { get; set; }
     public string CurrentMap { get; set; } = "";
     public bool NewCharacter { get; set; }
