@@ -5,6 +5,7 @@ using System.Reflection;
 using Comfort.Common;
 using EFT;
 using EFT.Interactive;
+using EFT.Interactive.SecretExfiltrations;
 using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
@@ -726,6 +727,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
         if (__instance.SecretExfiltrationPoints != null)
         {
+            var kept = new List<SecretExfiltrationPoint>();
             foreach (var secret in __instance.SecretExfiltrationPoints)
             {
                 if (secret == null)
@@ -735,11 +737,14 @@ internal class CustomExfilPlacementPatch : ModulePatch
 
                 if (secret.Settings != null && ExfilService.IsQuestNativeExfil(secret.Settings))
                 {
+                    kept.Add(secret);
                     continue;
                 }
 
                 HideExfil(secret);
             }
+
+            __instance.SecretExfiltrationPoints = kept.ToArray();
         }
     }
 
@@ -754,6 +759,15 @@ internal class CustomExfilPlacementPatch : ModulePatch
         {
             shared.EligibleEntryPoints = Array.Empty<string>();
             shared.Settings.EntryPoints = string.Empty;
+            return;
+        }
+
+        if (exfil is SecretExfiltrationPoint secret)
+        {
+            secret.EligibleForPmc = false;
+            secret.EligibleForScav = false;
+            secret.SetStatusLogged(EExfiltrationStatus.Hidden, "Vagabond.HideExfil");
+            DisableColliders(secret);
             return;
         }
 
