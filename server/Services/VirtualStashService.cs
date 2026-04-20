@@ -10,6 +10,7 @@ using SPTarkov.Server.Core.Utils.Cloners;
 using Vagabond.Server.Models;
 using Vagabond.Server.State;
 using Vagabond.Common;
+using Vagabond.Server.Config;
 
 namespace Vagabond.Server.Services;
 
@@ -466,6 +467,11 @@ internal static class VirtualStashService
     private static bool TryGetActiveStashId(MongoId sessionId, out string stashId)
     {
         stashId = string.Empty;
+
+        if (!VagabondConfig.Config.EnableVirtualStashes)
+        {
+            return false;
+        }
 
         // I want to make sure while in-raid, whatever you do does not involve any virtual stash
         if (VagabondService.IsInRaid(sessionId))
