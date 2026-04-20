@@ -17,6 +17,11 @@ internal class HealthTreatmentScreenShowPatch : ModulePatch
     protected static void PatchPostfix(DefaultUIButton ____applyButton, UpdatableToggle ____selectAllToggle,
         TextMeshProUGUI ____quickHealNote, TextMeshProUGUI ____costTotalField, TextMeshProUGUI ____cashInStashField)
     {
+        if (Vagabond.State.AllowPostRaidHealing)
+        {
+            return;
+        }
+
         ____applyButton.GameObject.SetActive(false);
         ____selectAllToggle.gameObject.SetActive(false);
 

@@ -162,8 +162,13 @@ public sealed class RaidEndPatch : AbstractPatch
 
                 if (!string.IsNullOrEmpty(state.HideoutState?.Id) && deathGoTo == "hideout")
                 {
-                    state.CurrentMap = state.HideoutState.Map!;
+                    state.CurrentMap = VagabondLocations.NormaliseMapName(state.HideoutState.Map).ToString();
                     state.LastExit = $"{HideoutService.HideoutIdPrefix}{state.HideoutState.Id}";
+                }
+                else if (deathGoTo == "therapist")
+                {
+                    state.CurrentMap = "GroundZero";
+                    state.LastExit = "VGB_EXT_THERAPIST";
                 }
             }
 

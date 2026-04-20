@@ -26,6 +26,7 @@
   // "hideout" - will send you to your hideout if you have one, otherwise fence.
   // "fence" - will send you to fence.
   // "stay" - you stay at your last known map/transit
+  // "therapist" - sends you to therapist's clinic, allowing you to heal post-raid.
   "OnDeathGoTo": "hideout",
   // Which Fence/location to use as your start location (and on death location)
   // "streets" - Streets of Tarkov location
@@ -35,8 +36,10 @@
   // if you disable this, your own permanent stash is used like normal.
   "EnableVirtualStashes": true,
   // if enabled, will wipe all virtual stashes when you enter a raid, making virtural
-  // stashes entirely temporary.
+  // stashes entirely temporary. This will prevent "AllowPostRaidHealing" from working.
   "WipeVirtualStashesOnRaidEntry": false,
   // if enabled, all status effects (broken limbs, bleeds etc) will be healed when you die.
-  "HealStatusEffectsOnDeath": false
+  "HealStatusEffectsOnDeath": true,
+  // allow post-raid healing at Therapist (still requires money left at the Therapist)
+  "AllowPostRaidHealing": true
 }

@@ -42,9 +42,9 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             {
                 state.ResetProfile = false;
                 VagabondState.SaveState(sessionId, state);
+                VirtualStashService.ClearAllTraderStashes(sessionId);
                 VagabondService.ResetProfile(sessionId, pmc);
                 VagabondService.PersistProfileIfPossible(sessionId);
-                VirtualStashService.ClearAllTraderStashes(sessionId);
                 ExfilService.RemoveHideout(state.HideoutState);
                 return;
             }

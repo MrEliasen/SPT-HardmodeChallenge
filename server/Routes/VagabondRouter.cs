@@ -77,6 +77,7 @@ public class VagabondRouter(
 
         response.CustomExfils = ExfilService.BuildCustomExfilSnapshot();
         response.QuestExfils = QuestService.BuildExfilList(state);
+        response.AllowPostRaidHealing = VagabondConfig.Config.AllowPostRaidHealing;
         response.ResetOnDeath = VagabondConfig.Config.ResetOnDeath;
         response.WipeFirstRaid = VagabondConfig.Config.WipeStashOnFirstRaidEntry;
         response.CurrentMap = VagabondService.GetCurrentRaidId(state);
