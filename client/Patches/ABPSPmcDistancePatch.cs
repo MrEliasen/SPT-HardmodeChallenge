@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Reflection;
-using Comfort.Common;
 using EFT;
 using EFT.Game.Spawning;
 using HarmonyLib;
@@ -17,14 +16,14 @@ internal class ABPSPmcDistancePatch : ModulePatch
         return AccessTools.Method(
             AccessTools.TypeByName("acidphantasm_botplacementsystem.Patches.PMCDistancePatch"),
             "IsValid",
-            new[] { typeof(ISpawnPoint), typeof(IReadOnlyCollection<IPlayer>), typeof(float), typeof(bool) });
+            new[] { typeof(ISpawnPoint), typeof(IReadOnlyCollection<IPlayer>), typeof(float) });
     }
 
     [PatchPrefix]
     private static bool Prefix(ISpawnPoint spawnPoint, IReadOnlyCollection<IPlayer> players, float distance,
-        bool checkAgainstMainPlayer, ref bool __result)
+        ref bool __result)
     {
-        if (!ForcedSpawnService.TryGetAbpsPosition(out var playerPosition))
+        if (!ForcedSpawnService.TryGetAbpsPosition(out _))
         {
             return true;
         }
@@ -39,16 +38,6 @@ internal class ABPSPmcDistancePatch : ModulePatch
         {
             __result = false;
             return false;
-        }
-
-        var player = Singleton<GameWorld>.Instance?.MainPlayer;
-        if (checkAgainstMainPlayer && player != null && player.Side == EPlayerSide.Savage)
-        {
-            if (Vector3.Distance(spawnPoint.Position, playerPosition) < distance)
-            {
-                __result = false;
-                return false;
-            }
         }
 
         if (players != null && players.Count != 0)

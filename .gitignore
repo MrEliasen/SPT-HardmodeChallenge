@@ -2,6 +2,7 @@
 .idea
 build
 assemblies
+soft-dependency-sources
 bin
 obj
 *.DotSettings.user
