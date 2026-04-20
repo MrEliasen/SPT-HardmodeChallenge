@@ -7,8 +7,6 @@ You start with limited money to buy a simple loadout from Fence, with some meds 
 
 **Heavily inspired by Path To Tarkov, hopefully this mod can help scratch that itch.**
 
-If you want to see the trader locations, [click here](https://github.com/MrEliasen/SPT-Vagabond/tree/master/screenshots/traders).
-
 [![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/MrEliasen/SPT-Vagabond/bug?style=for-the-badge&label=open%20Issues&color=red)
 ](https://github.com/MrEliasen/SPT-Vagabond/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug)
 
