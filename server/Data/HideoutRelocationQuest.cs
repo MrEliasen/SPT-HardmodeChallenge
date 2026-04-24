@@ -91,9 +91,9 @@ public static class HideoutRelocationQuest
                 "Here’s the deal. Your hideout? Not as hidden as you think. Places get found, raided, burned out. Happens all the time. But I know people who can move it. Quiet, fast, no traces.\n\nOf course, that kind of work ain’t cheap. You bring me the roubles, I make the call, and you get to set up somewhere new. Safer.\n\nUp to you; pay now, or wait until someone else finds it first.\n\n ** Completing this quests allows you to relocate your hideout (Repeatable) **",
             [$"{id} note"] = "",
             [$"{id} startedMessageText"] =
-                "Good. Smart choice. Get the money together and don’t drag your feet, these people don’t wait around for anyone. Bring it in, and we’ll get things moving",
+                "Smart choice. Get the money together and don’t drag your feet, these people don’t wait around for anyone. Bring it in, and we’ll get things moving",
             [$"{id} successMessageText"] =
-                "Good, that’s what I wanted to see. Money’s in, arrangements are made. My people are ready and waiting on your word. Go find yourself a better spot and try not to pick somewhere obvious, yeah?",
+                "That’s what I like to see. Money’s in, arrangements made. My people are ready and waiting on your word. Go find yourself a better spot and try not to pick somewhere obvious, yeah?",
             [$"{id} failMessageText"] = "Your loss.",
             [$"{id} acceptPlayerMessage"] = "Alright. I'll get your money.",
             [$"{id} declinePlayerMessage"] = "Not worth it.",
