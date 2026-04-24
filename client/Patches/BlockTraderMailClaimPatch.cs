@@ -1,7 +1,5 @@
 using System.Reflection;
 using ChatShared;
-using EFT;
-using EFT.UI;
 using EFT.UI.Chat;
 using HarmonyLib;
 using SPT.Reflection.Patching;

@@ -499,7 +499,8 @@ internal static class VirtualStashService
         }
 
         // If the player took eg. another players hideout exfil, we need a stash for that as well.
-        if (!string.IsNullOrEmpty(state.HideoutState?.Id) && state.LastExit != $"{HideoutService.HideoutIdPrefix}{state.HideoutState?.Id}")
+        if (!string.IsNullOrEmpty(state.HideoutState?.Id) &&
+            state.LastExit != $"{HideoutService.HideoutIdPrefix}{state.HideoutState?.Id}")
         {
             if (state.LastExit.IndexOf(HideoutService.HideoutIdPrefix, StringComparison.OrdinalIgnoreCase) == 0)
             {
@@ -508,7 +509,7 @@ internal static class VirtualStashService
                 {
                     return false;
                 }
-                
+
                 stashId = state.LastExit;
                 return true;
             }
