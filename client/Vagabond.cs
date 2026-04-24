@@ -93,6 +93,7 @@ public class Vagabond : BaseUnityPlugin
             "Press in raid to place the entrance to your hideout at your current location."
         );
 
+        /*
         _dumpHotkey = Config.Bind(
             "Development",
             "Save Current Location",
@@ -118,7 +119,7 @@ public class Vagabond : BaseUnityPlugin
         _locationDumpPath = Path.Combine(pluginDir, "dumped_locations.txt");
         _customExtractDumpPath = Path.Combine(pluginDir, "dumped_custom_extracts.txt");
         _customTransitDumpPath = Path.Combine(pluginDir, "dumped_custom_transits.txt");
-
+        */
         Log("loaded");
     }
 
