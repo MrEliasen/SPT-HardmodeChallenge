@@ -100,7 +100,13 @@ public sealed class RaidEndPatch : AbstractPatch
                 }
             }
 
-            if (isTransfer && !isDead)
+            var isOwnHideout = !string.IsNullOrEmpty(state.HideoutState?.Id) &&
+                               state.LastExit == $"{HideoutService.HideoutIdPrefix}{state.HideoutState?.Id}";
+            var isSharedHideout =
+                (state.LastExit.IndexOf(HideoutService.HideoutIdPrefix,
+                    StringComparison.OrdinalIgnoreCase) == 0) && VagabondConfig.Config.ShareHideoutExits;
+
+            if ((isTransfer || (!isOwnHideout && !isSharedHideout)) && !isDead)
             {
                 var firIds = new List<string>();
                 foreach (var item in items)
@@ -148,12 +154,12 @@ public sealed class RaidEndPatch : AbstractPatch
         {
             var deathGoTo = VagabondConfig.Config.OnDeathGoTo.Trim().ToLower();
             state.ResetProfile = VagabondConfig.Config.ResetOnDeath;
-            
-            var oldCurrentMap  = state.CurrentMap;
-            var oldLastExit  = state.LastExit;
+
+            var oldCurrentMap = state.CurrentMap;
+            var oldLastExit = state.LastExit;
             state.CurrentMap = "Streets";
             state.LastExit = "VGB_EXT_FENCE";
-            
+
             if (string.Equals(VagabondConfig.Config.StarterFence, "lighthouse", StringComparison.OrdinalIgnoreCase))
             {
                 state.CurrentMap = "Lighthouse";
@@ -169,16 +175,17 @@ public sealed class RaidEndPatch : AbstractPatch
                         state.CurrentMap = VagabondLocations.NormaliseMapName(state.HideoutState?.Map).ToString();
                         state.LastExit = $"{HideoutService.HideoutIdPrefix}{state.HideoutState?.Id}";
                     }
+
                     break;
                 }
-                
+
                 case "stay":
                 {
                     state.CurrentMap = oldCurrentMap;
                     state.LastExit = oldLastExit;
                     break;
                 }
-                
+
                 case "therapist":
                 {
                     state.CurrentMap = "GroundZero";
