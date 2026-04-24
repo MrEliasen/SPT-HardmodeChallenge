@@ -81,6 +81,7 @@ public class Vagabond : BaseUnityPlugin
         new MatchMakerSideSelectionScreenPatch().Enable();
         new HideUnavailableTraderCardsPatch().Enable();
         new SelectAvailableTraderPatch().Enable();
+        new BlockTraderMailClaimPatch().Enable();
         new TransitInteractionPatch().Enable();
         new SkipInsuranceFlowPatch().Enable();
         UIMessageService.Create(transform);
