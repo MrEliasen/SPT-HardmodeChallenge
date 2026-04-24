@@ -27,7 +27,7 @@
   "AllowHideoutRelocation": false,
   // Where you will be placed when you die, options are: 
   // "hideout" - will send you to your hideout if you have one, otherwise fence.
-  // "fence" - will send you to fence.
+  // "fence" - will send you to starter fence.
   // "stay" - you stay at your last known map/transit
   // "therapist" - sends you to therapist's clinic, allowing you to heal post-raid.
   "OnDeathGoTo": "hideout",

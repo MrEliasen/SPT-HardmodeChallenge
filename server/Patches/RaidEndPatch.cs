@@ -148,27 +148,42 @@ public sealed class RaidEndPatch : AbstractPatch
         {
             var deathGoTo = VagabondConfig.Config.OnDeathGoTo.Trim().ToLower();
             state.ResetProfile = VagabondConfig.Config.ResetOnDeath;
-
-            if (deathGoTo != "stay")
+            
+            var oldCurrentMap  = state.CurrentMap;
+            var oldLastExit  = state.LastExit;
+            state.CurrentMap = "Streets";
+            state.LastExit = "VGB_EXT_FENCE";
+            
+            if (string.Equals(VagabondConfig.Config.StarterFence, "lighthouse", StringComparison.OrdinalIgnoreCase))
             {
-                state.CurrentMap = "Streets";
-                state.LastExit = "VGB_EXT_FENCE";
+                state.CurrentMap = "Lighthouse";
+                state.LastExit = "VGB_EXT_FENCE_DL";
+            }
 
-                if (string.Equals(VagabondConfig.Config.StarterFence, "lighthouse", StringComparison.OrdinalIgnoreCase))
+            switch (deathGoTo)
+            {
+                case "hideout":
                 {
-                    state.CurrentMap = "Lighthouse";
-                    state.LastExit = "VGB_EXT_FENCE_DL";
+                    if (VagabondLocations.NormaliseMapName(state.HideoutState?.Map) != RaidLocation.Nil)
+                    {
+                        state.CurrentMap = VagabondLocations.NormaliseMapName(state.HideoutState?.Map).ToString();
+                        state.LastExit = $"{HideoutService.HideoutIdPrefix}{state.HideoutState?.Id}";
+                    }
+                    break;
                 }
-
-                if (!string.IsNullOrEmpty(state.HideoutState?.Id) && deathGoTo == "hideout")
+                
+                case "stay":
                 {
-                    state.CurrentMap = VagabondLocations.NormaliseMapName(state.HideoutState.Map).ToString();
-                    state.LastExit = $"{HideoutService.HideoutIdPrefix}{state.HideoutState.Id}";
+                    state.CurrentMap = oldCurrentMap;
+                    state.LastExit = oldLastExit;
+                    break;
                 }
-                else if (deathGoTo == "therapist")
+                
+                case "therapist":
                 {
                     state.CurrentMap = "GroundZero";
                     state.LastExit = "VGB_EXT_THERAPIST";
+                    break;
                 }
             }
 
