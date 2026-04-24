@@ -26,22 +26,9 @@ public sealed class QuestControllerGetClientQuestsPatch : AbstractPatch
         }
 
         var state = VagabondState.GetState(sessionId);
-        if (state.HideoutState == null)
+        if (state.HideoutState == null || state.CanPlaceHideout)
         {
-            return;
+            __result.RemoveAll(q => q.Id == HideoutRelocationQuest.QuestId);
         }
-
-        var pmcQuests = VagabondService.GetPmcProfile(sessionId)?.CharacterData?.PmcData?.Quests;
-        var isActive = pmcQuests?.Any(q =>
-            q.QId == HideoutRelocationQuest.QuestId &&
-            (q.Status == QuestStatusEnum.Started ||
-             q.Status == QuestStatusEnum.AvailableForFinish)) ?? false;
-
-        if (isActive)
-        {
-            return;
-        }
-
-        __result.RemoveAll(q => q.Id == HideoutRelocationQuest.QuestId);
     }
 }

@@ -39,10 +39,11 @@ public static class HideoutRelocationQuest
             CanShowNotificationsInGame = true,
             InstantComplete = false,
             SecretQuest = false,
+            IsKey = false,
+            TemplateId = QuestId,
 
             Conditions = new QuestConditionTypes
             {
-                Started = new List<QuestCondition>(),
                 AvailableForStart = new List<QuestCondition>(),
                 AvailableForFinish = new List<QuestCondition>
                 {
@@ -51,23 +52,22 @@ public static class HideoutRelocationQuest
                         Id = new MongoId(HandoverConditionId),
                         ConditionType = "HandoverItem",
                         DynamicLocale = false,
-                        IsNecessary = true,
+                        GlobalQuestCounterId = "",
                         Value = VagabondConfig.Config.HideoutRelocationFee,
                         Target = new ListOrT<string>(new List<string>
                         {
                             Currencies.Ruble
                         }, null),
-                        Status = new HashSet<QuestStatusEnum>
-                        {
-                            QuestStatusEnum.AvailableForFinish
-                        },
+                        DogtagLevel = 0,
+                        IsEncoded = false,
+                        MaxDurability = 100,
+                        MinDurability = 0,
                         Index = 0,
                         ParentId = "",
                         OnlyFoundInRaid = false,
                         VisibilityConditions = new List<VisibilityCondition>()
                     }
                 },
-                Success = new List<QuestCondition>(),
                 Fail = new List<QuestCondition>()
             },
 
@@ -88,10 +88,10 @@ public static class HideoutRelocationQuest
         {
             [$"{id} name"] = "Fresh Foundations",
             [$"{id} description"] =
-                "Skier claims your hideout location is compromised, or will be soon. For a sum, he’s arranged discreet specialists to assist with relocating your setup.",
+                "Here’s the deal. Your hideout? Not as hidden as you think. Places get found, raided, burned out. Happens all the time. But I know people who can move it. Quiet, fast, no traces.\n\nOf course, that kind of work ain’t cheap. You bring me the roubles, I make the call, and you get to set up somewhere new. Safer.\n\nUp to you; pay now, or wait until someone else finds it first.\n\n ** Completing this quests allows you to relocate your hideout (Repeatable) **",
             [$"{id} note"] = "",
             [$"{id} startedMessageText"] =
-                "Here’s the deal—your hideout? Not as hidden as you think. Places get found, raided, burned out. Happens all the time. But I know people who can move it. Quiet, fast, no traces.\n\nOf course, that kind of work ain’t cheap. You bring me the roubles, I make the call, and you get to set up somewhere new. Safer.\n\nUp to you; pay now, or wait until someone else finds it first.",
+                "Good. Smart choice. Get the money together and don’t drag your feet, these people don’t wait around for anyone. Bring it in, and we’ll get things moving",
             [$"{id} successMessageText"] =
                 "Good, that’s what I wanted to see. Money’s in, arrangements are made. My people are ready and waiting on your word. Go find yourself a better spot and try not to pick somewhere obvious, yeah?",
             [$"{id} failMessageText"] = "Your loss.",
@@ -99,6 +99,7 @@ public static class HideoutRelocationQuest
             [$"{id} declinePlayerMessage"] = "Not worth it.",
             [$"{id} completePlayerMessage"] = "It's all there.",
             [$"{id} changeQuestMessageText"] = "",
+            [HandoverConditionId] = "Hand over Roubles",
         };
 
         return new Dictionary<string, Dictionary<string, string>>
