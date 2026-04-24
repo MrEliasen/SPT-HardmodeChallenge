@@ -46,5 +46,7 @@
   // allow post-raid healing at Therapist (still requires money left at the Therapist)
   "AllowPostRaidHealing": true,
   // add Fence as an always available trader in hideout
-  "AddFenceToHideout": false
+  "AddFenceToHideout": false,
+  // if enabled, you can use another player's hideout exit to access your own hideout
+  "ShareHideoutExits": false
 }

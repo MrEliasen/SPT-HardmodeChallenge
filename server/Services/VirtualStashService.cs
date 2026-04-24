@@ -503,6 +503,12 @@ internal static class VirtualStashService
         {
             if (state.LastExit.IndexOf(HideoutService.HideoutIdPrefix, StringComparison.OrdinalIgnoreCase) == 0)
             {
+                // unless share hideout is enabled, in which case they use their own hideout stash
+                if (VagabondConfig.Config.ShareHideoutExits)
+                {
+                    return false;
+                }
+                
                 stashId = state.LastExit;
                 return true;
             }
