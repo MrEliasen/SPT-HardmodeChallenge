@@ -37,6 +37,12 @@ public static class MigrationService
                     From031To040(state);
                     break;
                 }
+
+                case "0.4.0":
+                {
+                    From040To041(state);
+                    break;
+                }
             }
         }
 
@@ -72,5 +78,11 @@ public static class MigrationService
     {
         state.CurrentMap = VagabondLocations.NormaliseMapName(state.CurrentMap).ToString();
         state.Version = "0.4.0";
+    }
+
+    private static void From040To041(VagabondState state)
+    {
+        state.CanPlaceHideout = state.HideoutState?.Id == null;
+        state.Version = "0.4.1";
     }
 }

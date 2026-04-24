@@ -120,11 +120,11 @@ public class VagabondRouter(
 
         var state = VagabondState.GetState(sessionId);
 
-        if (state.HideoutState != null && !VagabondConfig.Config.AllowHideoutRelocation)
+        if (state.HideoutState != null && (!VagabondConfig.Config.AllowHideoutRelocation && !state.CanPlaceHideout))
         {
             response.Success = false;
             response.Message =
-                $"You have already established your hideout in {VagabondLocations.ToHumanName(VagabondLocations.NormaliseMapName(state.HideoutState.Map))}.";
+                $"You have already established your hideout in {VagabondLocations.ToHumanName(VagabondLocations.NormaliseMapName(state.HideoutState.Map))}. Talk to Skier to relocate your hideout.";
             return response;
         }
 
@@ -143,6 +143,7 @@ public class VagabondRouter(
 
         ExfilService.RemoveHideout(state.HideoutState);
 
+        state.CanPlaceHideout = false;
         state.HideoutState.Map = mapName;
         state.HideoutState.X = payload.X;
         state.HideoutState.Y = payload.Y;

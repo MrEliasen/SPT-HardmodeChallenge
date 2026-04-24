@@ -23,6 +23,7 @@ public sealed class VagabondConfig
     public bool HealStatusEffectsOnDeath { get; set; }
     public string OnDeathGoTo { get; set; } = "hideout";
     public string StarterFence { get; set; } = "streets";
+    public int HideoutRelocationFee { get; set; } = 350000;
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
 
     // internal
