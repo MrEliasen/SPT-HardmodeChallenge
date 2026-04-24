@@ -72,14 +72,6 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.InventoryCallbacksPinOrLockPatch().Enable();
         new Patches.InventoryCallbacksSetFavoriteItemPatch().Enable();
 
-        // remove old trader from profiles
-        // this will be removed in some later version
-        if (VagabondConfig.Config.FixProfiles)
-        {
-            var coreConfig = _configServer.GetConfig<CoreConfig>();
-            coreConfig.Fixes.RemoveInvalidTradersFromProfile = true;
-        }
-
         return Task.CompletedTask;
     }
 }

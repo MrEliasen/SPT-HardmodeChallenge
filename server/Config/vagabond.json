@@ -8,9 +8,6 @@
   "DisableFlea": true,
   // disables events such as halloween etc.
   "DisableEvents": true,
-  // will enable SPTs profile fixes "RemoveInvalidTradersFromProfile". Helpful if you used older versions of this mod.
-  // will be removed in a future version.
-  "FixProfiles": false,
   // players can only send mail with attachments to eachother if:
   // "same-exit" - they share raid + exit
   // "same-map" - they share raid

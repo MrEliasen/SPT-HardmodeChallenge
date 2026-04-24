@@ -7,7 +7,6 @@ namespace Vagabond.Server.Config;
 public sealed class VagabondConfig
 {
     public bool ResetOnDeath { get; set; }
-    public bool FixProfiles { get; set; }
     public bool DisableEvents { get; set; } = true;
     public int StartingRoubles { get; set; } = 175_000;
     public int AdjustRaidTimeMins { get; set; } = 60;
