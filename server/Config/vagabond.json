@@ -19,8 +19,8 @@
   "WipeStashOnFirstRaidEntry": true,
   // adjust how long raids last by this amount of minutes, negagive values supported by be careful.
   "AdjustRaidTimeMins": 60,
-  // if enabled, you can continue to place the hideout without being told you already have.
-  // allowing relocation via an in-game feature will come in a later update.
+  // if enabled, you can continue to place the hideout without any limitation.
+  // if disabled, to be able to relocate you will need to complete the "Fresh Foundations" quest from Skier (repeatable).
   "AllowHideoutRelocation": false,
   // Where you will be placed when you die, options are: 
   // "hideout" - will send you to your hideout if you have one, otherwise fence.
@@ -45,5 +45,7 @@
   // add Fence as an always available trader in hideout
   "AddFenceToHideout": false,
   // if enabled, you can use another player's hideout exit to access your own hideout
-  "ShareHideoutExits": false
+  "ShareHideoutExits": false,
+  // how much it should cost to relocate the hideout
+  "HideoutRelocationFee": 350000
 }

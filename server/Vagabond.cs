@@ -15,6 +15,7 @@ using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using Vagabond.Common;
 using Vagabond.Server.Config;
+using Vagabond.Server.Data;
 using Vagabond.Server.Services;
 
 namespace Vagabond.Server;
@@ -59,7 +60,7 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.GetCompleteProfilePatch().Enable();
         new Patches.QuestCallbacksAcceptQuestPatch().Enable();
         new Patches.QuestCallbacksCompleteQuestPatch().Enable();
-
+        new Patches.QuestControllerGetClientQuestsPatch().Enable();
         new Patches.ItemEventRouterHandleEventsPatch().Enable();
         new Patches.TradeHelperBuyItemPatch().Enable();
         new Patches.TradeHelperSellItemPatch().Enable();
@@ -226,6 +227,40 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
                 names.Base.EscapeTimeLimit += VagabondConfig.Config.AdjustRaidTimeMins;
                 names.Base.EscapeTimeLimitCoop += VagabondConfig.Config.AdjustRaidTimeMins;
                 names.Base.EscapeTimeLimitPVE += VagabondConfig.Config.AdjustRaidTimeMins;
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+}
+
+[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 3)]
+public sealed class QuestLoader : IOnLoad
+{
+    private readonly CustomQuestService _customQuestService;
+    private readonly ISptLogger<QuestLoader> _logger;
+
+    public QuestLoader(CustomQuestService customQuestService, ISptLogger<QuestLoader> logger)
+    {
+        _customQuestService = customQuestService;
+        _logger = logger;
+    }
+
+    public Task OnLoad()
+    {
+        var details = new NewQuestDetails
+        {
+            NewQuest = HideoutRelocationQuest.QuestConfig(),
+            Locales = HideoutRelocationQuest.QuestLocales(),
+            LockedToSide = null
+        };
+
+        var result = _customQuestService.CreateQuest(details);
+        if (!result.Success)
+        {
+            foreach (var err in result.Errors)
+            {
+                _logger.Warning($"[Vagabond] custom quest registration error: {err}");
             }
         }
 

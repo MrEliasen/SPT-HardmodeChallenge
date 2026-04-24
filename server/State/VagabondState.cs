@@ -18,6 +18,7 @@ public sealed class VagabondState
     public List<string>? RaidFirItems { get; set; }
     public string Version { get; set; } = "0.3.0";
     public bool ResetProfile { get; set; }
+    public bool CanPlaceHideout { get; set; }
 
     public static VagabondState GetState(MongoId sessionId)
     {

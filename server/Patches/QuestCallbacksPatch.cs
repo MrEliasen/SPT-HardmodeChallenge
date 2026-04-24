@@ -5,6 +5,7 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.ItemEvent;
 using SPTarkov.Server.Core.Models.Eft.Quests;
 using Vagabond.Common.Data;
+using Vagabond.Server.Data;
 using Vagabond.Server.State;
 
 namespace Vagabond.Server.Patches;
@@ -49,10 +50,17 @@ public sealed class QuestCallbacksCompleteQuestPatch : AbstractPatch
         }
 
         var state = VagabondState.GetState(sessionID);
+
         if (state.QuestExfils.Contains(info.QuestId))
         {
             state.QuestExfils.Remove(info.QuestId);
-            VagabondState.SaveState(sessionID, state);
         }
+
+        if (info.QuestId == HideoutRelocationQuest.QuestId)
+        {
+            state.CanPlaceHideout = true;
+        }
+
+        VagabondState.SaveState(sessionID, state);
     }
 }
