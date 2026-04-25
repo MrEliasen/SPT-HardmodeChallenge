@@ -23,11 +23,6 @@ internal class ABPSScavDistancePatch : ModulePatch
     private static bool Prefix(ISpawnPoint spawnPoint, IReadOnlyCollection<Player> players, float distance,
         ref bool __result)
     {
-        if (!ForcedSpawnService.TryGetAbpsPosition(out _))
-        {
-            return true;
-        }
-
         if (spawnPoint == null || spawnPoint.Collider == null)
         {
             __result = false;
@@ -38,6 +33,11 @@ internal class ABPSScavDistancePatch : ModulePatch
         {
             __result = false;
             return false;
+        }
+
+        if (!ForcedSpawnService.TryGetAbpsPosition(out _))
+        {
+            return true;
         }
 
         if (players != null && players.Count != 0)
