@@ -9,12 +9,12 @@ namespace Vagabond.Server.Data.Quests;
 
 public static class AddSkierToHideoutQuest
 {
-    public const string QuestId = "69ec82900000000000000000";
-    public const string TraderId = "5c0647fdd443bc2504c2d371";
-    private const string HandoverConditionCashId = "69ec82cc0000000000000000";
-    private const string HandoverConditionValuablesId = "69ec83440000000000000000";
-    private const string HandoverConditionIntelId = "69ec84340000000000000000";
-    private const string RepConditionId = "69ec83800000000000000000";
+    public const string QuestId = "69ecacc00000000000000000";
+    public const string TraderId = "58330581ace78e27b8b10cee";
+    private const string HandoverConditionCashId = "69ecacfc0000000000000000";
+    private const string HandoverConditionValuablesId = "69ecad380000000000000000";
+    private const string HandoverConditionIntelId = "69ecad740000000000000000";
+    private const string RepConditionId = "69ecadb00000000000000000";
 
     public static NewQuestDetails Config()
     {

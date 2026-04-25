@@ -11,7 +11,7 @@ namespace Vagabond.Server.Data.Quests;
 public static class AddRagmanToHideoutQuest
 {
     public const string QuestId = "69ec58600000000000000000";
-    public const string TraderId = "5c0647fdd443bc2504c2d371";
+    public const string TraderId = "5ac3b934156ae10c4430e83c";
     private const string HandoverConditionArmorId = "69ec589c0000000000000000";
     private const string HandoverConditionRigsId = "69ec75700000000000000000";
     private const string HandoverConditionBackpacksId = "69ec58d80000000000000000";

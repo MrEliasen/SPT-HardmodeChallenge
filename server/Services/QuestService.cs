@@ -61,7 +61,6 @@ public static class QuestService
         ];
 
         var customQuestService = ReflectionUtil.GetService<CustomQuestService>();
-
         if (customQuestService == null)
         {
             VagabondLogger.Warning($"failed to load quests, customQuestService is null.");
@@ -75,7 +74,7 @@ public static class QuestService
             {
                 foreach (var err in result.Errors)
                 {
-                    VagabondLogger.Warning($"quest registration error: {err}");
+                    VagabondLogger.Warning($"quest registration of quest id {quest.NewQuest.Id}, error: {err}");
                 }
             }
         }

@@ -8,11 +8,11 @@ namespace Vagabond.Server.Data.Quests;
 
 public static class AddJaegerToHideoutQuest
 {
-    public const string QuestId = "69ec04000000000000000000";
+    public const string QuestId = "69ec82900000000000000000";
     public const string TraderId = "5c0647fdd443bc2504c2d371";
-    private const string HandoverConditionFoodId = "69ec04780000000000000000";
-    private const string HandoverConditionDrinksId = "69ec04b40000000000000000";
-    private const string RepConditionId = "69ec043c0000000000000000";
+    private const string HandoverConditionFoodId = "69ec82cc0000000000000000";
+    private const string HandoverConditionDrinksId = "69ec83080000000000000000";
+    private const string RepConditionId = "69ec83800000000000000000";
 
     public static NewQuestDetails Config()
     {

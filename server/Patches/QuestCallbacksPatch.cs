@@ -59,10 +59,60 @@ public sealed class QuestCallbacksCompleteQuestPatch : AbstractPatch
 
         if (info.QuestId == HideoutRelocationQuest.QuestId)
         {
-            state.CanPlaceHideout = true;
+        }
 
-            var pmc = VagabondService.GetPmcProfile(sessionID)?.CharacterData?.PmcData;
-            pmc?.Quests?.RemoveAll(q => q.QId == HideoutRelocationQuest.QuestId);
+        switch (info.QuestId)
+        {
+            case HideoutRelocationQuest.QuestId:
+            {
+                state.CanPlaceHideout = true;
+
+                var pmc = VagabondService.GetPmcProfile(sessionID)?.CharacterData?.PmcData;
+                pmc?.Quests?.RemoveAll(q => q.QId == HideoutRelocationQuest.QuestId);
+                break;
+            }
+
+            case AddPraporToHideoutQuest.QuestId:
+            {
+                state.HideoutTraders.Add(AddPraporToHideoutQuest.TraderId);
+                break;
+            }
+
+            case AddRagmanToHideoutQuest.QuestId:
+            {
+                state.HideoutTraders.Add(AddRagmanToHideoutQuest.TraderId);
+                break;
+            }
+
+            case AddJaegerToHideoutQuest.QuestId:
+            {
+                state.HideoutTraders.Add(AddJaegerToHideoutQuest.TraderId);
+                break;
+            }
+
+            case AddMechanicToHideoutQuest.QuestId:
+            {
+                state.HideoutTraders.Add(AddMechanicToHideoutQuest.TraderId);
+                break;
+            }
+
+            case AddPeacekeeperToHideoutQuest.QuestId:
+            {
+                state.HideoutTraders.Add(AddPeacekeeperToHideoutQuest.TraderId);
+                break;
+            }
+
+            case AddSkierToHideoutQuest.QuestId:
+            {
+                state.HideoutTraders.Add(AddSkierToHideoutQuest.TraderId);
+                break;
+            }
+
+            case AddTherapistToHideoutQuest.QuestId:
+            {
+                state.HideoutTraders.Add(AddTherapistToHideoutQuest.TraderId);
+                break;
+            }
         }
 
         VagabondState.SaveState(sessionID, state);

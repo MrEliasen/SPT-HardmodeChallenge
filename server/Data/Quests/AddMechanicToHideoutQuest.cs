@@ -93,8 +93,6 @@ public static class AddMechanicToHideoutQuest
                             "5733279d245977289b77ec24", // Car battery
                             "590a358486f77429692b2790", // Rechargeable battery
                             "5e2aedd986f7746d404f3aa4", // GreenBat lithium battery
-                            "57347c2e24597744902c94a1", // Power supply unit
-                            "59e36c6f86f774176c10a2a7", // Power cord
                             "5e2aee0a86f774755a234b62", // Cyclon rechargeable battery
                             "5d03794386f77420415576f5", // 6-STEN-140-M military battery
                         }, null),
