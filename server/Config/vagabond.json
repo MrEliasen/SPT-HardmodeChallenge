@@ -47,5 +47,9 @@
   // if enabled, you can use another player's hideout exit to access your own hideout
   "ShareHideoutExits": false,
   // how much it should cost to relocate the hideout
-  "HideoutRelocationFee": 350000
+  "HideoutRelocationFee": 350000,
+  // Along any potentiual quest requirements, how much should it cost for a trader to join your hideout?
+  "JoinHideoutRublesCost": 750000,
+  // What loyalty level will the traders need to be before they will join your hideout?
+  "JoinHideoutTherapistLoyaltyLevel": 2
 }

@@ -1,4 +1,7 @@
-﻿using Vagabond.Common.Data;
+﻿using SPTarkov.Server.Core.Models.Spt.Mod;
+using SPTarkov.Server.Core.Services.Mod;
+using Vagabond.Common.Data;
+using Vagabond.Server.Data.Quests;
 using Vagabond.Server.State;
 
 namespace Vagabond.Server.Services;
@@ -41,5 +44,33 @@ public static class QuestService
         }
 
         return exfilList;
+    }
+
+    public static void LoadQuests()
+    {
+        List<NewQuestDetails> quests = [
+            HideoutRelocationQuest.Config(),
+            AddTherapistToHideoutQuest.Config(),
+        ];
+        
+        var customQuestService = ReflectionUtil.GetService<CustomQuestService>();
+
+        if (customQuestService == null)
+        {
+            VagabondLogger.Warning($"failed to load quests, customQuestService is null.");
+            return;
+        }
+
+        foreach (var quest in quests)
+        {
+            var result = customQuestService.CreateQuest(quest);
+            if (!result.Success)
+            {
+                foreach (var err in result.Errors)
+                {
+                    VagabondLogger.Warning($"quest registration error: {err}");
+                }
+            }
+        }
     }
 }

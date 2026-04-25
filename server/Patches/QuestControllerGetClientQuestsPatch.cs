@@ -3,9 +3,7 @@ using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Controllers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
-using SPTarkov.Server.Core.Models.Enums;
-using Vagabond.Server.Data;
-using Vagabond.Server.Services;
+using Vagabond.Server.Data.Quests;
 using Vagabond.Server.State;
 
 namespace Vagabond.Server.Patches;

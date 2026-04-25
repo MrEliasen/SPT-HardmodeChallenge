@@ -1,23 +1,33 @@
-using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
+using SPTarkov.Server.Core.Models.Spt.Mod;
 using SPTarkov.Server.Core.Utils.Json;
 using Vagabond.Common.Data;
 using Vagabond.Server.Config;
 
-namespace Vagabond.Server.Data;
+namespace Vagabond.Server.Data.Quests;
 
 public static class HideoutRelocationQuest
 {
     public const string QuestId = "69eaa4700000000000000000";
     private const string SkierId = "58330581ace78e27b8b10cee";
     private const string HandoverConditionId = "69eab2800000000000000000";
-
-    public static Quest QuestConfig()
+    
+    public static NewQuestDetails Config()
+    {
+        return new NewQuestDetails
+        {
+            NewQuest = QuestConfig(),
+            Locales = QuestLocales(),
+            LockedToSide = null
+        };
+    }
+    
+    private static Quest QuestConfig()
     {
         return new Quest
         {
-            Id = new MongoId(QuestId),
+            Id = QuestId,
             QuestName = "Fresh Foundations",
             Name = $"{QuestId} name",
             Description = $"{QuestId} description",
@@ -30,7 +40,7 @@ public static class HideoutRelocationQuest
             CompletePlayerMessage = $"{QuestId} completePlayerMessage",
             ChangeQuestMessageText = $"{QuestId} changeQuestMessageText",
 
-            TraderId = new MongoId(SkierId),
+            TraderId =SkierId,
             Location = "any",
             Image = "/files/quest/icon/default.png",
             Type = QuestTypeEnum.Completion,
@@ -49,7 +59,7 @@ public static class HideoutRelocationQuest
                 {
                     new()
                     {
-                        Id = new MongoId(HandoverConditionId),
+                        Id = HandoverConditionId,
                         ConditionType = "HandoverItem",
                         DynamicLocale = false,
                         GlobalQuestCounterId = "",
@@ -80,7 +90,7 @@ public static class HideoutRelocationQuest
         };
     }
 
-    public static Dictionary<string, Dictionary<string, string>> QuestLocales()
+    private static Dictionary<string, Dictionary<string, string>> QuestLocales()
     {
         var id = QuestId;
 
