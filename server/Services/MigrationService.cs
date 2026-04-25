@@ -40,7 +40,7 @@ public static class MigrationService
 
                 case "0.4.0":
                 {
-                    From040To041(state);
+                    From040To050(state);
                     break;
                 }
             }
@@ -80,9 +80,9 @@ public static class MigrationService
         state.Version = "0.4.0";
     }
 
-    private static void From040To041(VagabondState state)
+    private static void From040To050(VagabondState state)
     {
         state.CanPlaceHideout = state.HideoutState?.Id == null;
-        state.Version = "0.4.1";
+        state.Version = "0.5.0";
     }
 }
