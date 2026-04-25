@@ -3,9 +3,7 @@ using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Controllers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
-using SPTarkov.Server.Core.Models.Enums;
-using Vagabond.Server.Data;
-using Vagabond.Server.Services;
+using Vagabond.Server.Data.Quests;
 using Vagabond.Server.State;
 
 namespace Vagabond.Server.Patches;
@@ -20,7 +18,7 @@ public sealed class QuestControllerGetClientQuestsPatch : AbstractPatch
     [PatchPostfix]
     public static void Postfix(MongoId sessionId, ref List<Quest> __result)
     {
-        if (__result == null || __result.Count == 0)
+        if (__result.Count == 0)
         {
             return;
         }

@@ -15,7 +15,6 @@ using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using Vagabond.Common;
 using Vagabond.Server.Config;
-using Vagabond.Server.Data;
 using Vagabond.Server.Services;
 
 namespace Vagabond.Server;
@@ -88,6 +87,7 @@ public sealed class VagabondDbLoader : IOnLoad
     private readonly DatabaseService _databaseService;
     private readonly MailSendService _mailSendService;
     private readonly LocationController _locationController;
+    private readonly CustomQuestService _customQuestService;
 
     private readonly ISptLogger<VagabondDbLoader> _logger;
 
@@ -100,6 +100,7 @@ public sealed class VagabondDbLoader : IOnLoad
         EventOutputHolder eventOutputHolder,
         MailSendService mailSendService,
         LocationController locationController,
+        CustomQuestService customQuestService,
         ISptLogger<VagabondDbLoader> logger)
     {
         _services = services;
@@ -110,6 +111,7 @@ public sealed class VagabondDbLoader : IOnLoad
         _eventOutputHolder = eventOutputHolder;
         _mailSendService = mailSendService;
         _locationController = locationController;
+        _customQuestService = customQuestService;
         _databaseService = databaseService;
     }
 
@@ -123,6 +125,7 @@ public sealed class VagabondDbLoader : IOnLoad
         ReflectionUtil.Register(_mailSendService);
         ReflectionUtil.Register(_locationController);
         ReflectionUtil.Register(_databaseService);
+        ReflectionUtil.Register(_customQuestService);
         ExfilService.Apply(_databaseService);
 
         if (FikaAdapter.Init(_services))
@@ -230,39 +233,7 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
             }
         }
 
-        return Task.CompletedTask;
-    }
-}
-
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 3)]
-public sealed class QuestLoader : IOnLoad
-{
-    private readonly CustomQuestService _customQuestService;
-    private readonly ISptLogger<QuestLoader> _logger;
-
-    public QuestLoader(CustomQuestService customQuestService, ISptLogger<QuestLoader> logger)
-    {
-        _customQuestService = customQuestService;
-        _logger = logger;
-    }
-
-    public Task OnLoad()
-    {
-        var details = new NewQuestDetails
-        {
-            NewQuest = HideoutRelocationQuest.QuestConfig(),
-            Locales = HideoutRelocationQuest.QuestLocales(),
-            LockedToSide = null
-        };
-
-        var result = _customQuestService.CreateQuest(details);
-        if (!result.Success)
-        {
-            foreach (var err in result.Errors)
-            {
-                _logger.Warning($"[Vagabond] custom quest registration error: {err}");
-            }
-        }
+        QuestService.LoadQuests();
 
         return Task.CompletedTask;
     }

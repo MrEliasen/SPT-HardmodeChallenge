@@ -19,6 +19,7 @@ public sealed class VagabondState
     public string Version { get; set; } = "0.3.0";
     public bool ResetProfile { get; set; }
     public bool CanPlaceHideout { get; set; }
+    public List<string> HideoutTraders { get; set; } = [];
 
     public static VagabondState GetState(MongoId sessionId)
     {

@@ -4,7 +4,7 @@ namespace Vagabond.Common.Data;
 
 public static class VagabondLocations
 {
-    private static Dictionary<RaidLocation, string> HumanNames = new()
+    private static Dictionary<RaidLocation, string> _humanNames = new()
     {
         [RaidLocation.FactoryDay] = "Factory",
         [RaidLocation.FactoryNight] = "Factory",
@@ -136,7 +136,7 @@ public static class VagabondLocations
             return "Unknown";
         }
 
-        return HumanNames[location];
+        return _humanNames[location];
     }
 
     public static RaidLocation NormaliseMapName(string? mapName)

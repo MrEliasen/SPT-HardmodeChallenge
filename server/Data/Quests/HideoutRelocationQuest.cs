@@ -1,11 +1,11 @@
-using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
+using SPTarkov.Server.Core.Models.Spt.Mod;
 using SPTarkov.Server.Core.Utils.Json;
 using Vagabond.Common.Data;
 using Vagabond.Server.Config;
 
-namespace Vagabond.Server.Data;
+namespace Vagabond.Server.Data.Quests;
 
 public static class HideoutRelocationQuest
 {
@@ -13,12 +13,22 @@ public static class HideoutRelocationQuest
     private const string SkierId = "58330581ace78e27b8b10cee";
     private const string HandoverConditionId = "69eab2800000000000000000";
 
-    public static Quest QuestConfig()
+    public static NewQuestDetails Config()
+    {
+        return new NewQuestDetails
+        {
+            NewQuest = QuestConfig(),
+            Locales = QuestLocales(),
+            LockedToSide = null
+        };
+    }
+
+    private static Quest QuestConfig()
     {
         return new Quest
         {
-            Id = new MongoId(QuestId),
-            QuestName = "Fresh Foundations",
+            Id = QuestId,
+            QuestName = "Clean Slate",
             Name = $"{QuestId} name",
             Description = $"{QuestId} description",
             Note = $"{QuestId} note",
@@ -30,7 +40,7 @@ public static class HideoutRelocationQuest
             CompletePlayerMessage = $"{QuestId} completePlayerMessage",
             ChangeQuestMessageText = $"{QuestId} changeQuestMessageText",
 
-            TraderId = new MongoId(SkierId),
+            TraderId = SkierId,
             Location = "any",
             Image = "/files/quest/icon/default.png",
             Type = QuestTypeEnum.Completion,
@@ -49,7 +59,7 @@ public static class HideoutRelocationQuest
                 {
                     new()
                     {
-                        Id = new MongoId(HandoverConditionId),
+                        Id = HandoverConditionId,
                         ConditionType = "HandoverItem",
                         DynamicLocale = false,
                         GlobalQuestCounterId = "",
@@ -80,25 +90,35 @@ public static class HideoutRelocationQuest
         };
     }
 
-    public static Dictionary<string, Dictionary<string, string>> QuestLocales()
+    private static Dictionary<string, Dictionary<string, string>> QuestLocales()
     {
         var id = QuestId;
 
         var en = new Dictionary<string, string>
         {
-            [$"{id} name"] = "Fresh Foundations",
+            [$"{id} name"] = "Clean Slate",
             [$"{id} description"] =
-                "Here’s the deal. Your hideout? Not as hidden as you think. Places get found, raided, burned out. Happens all the time. But I know people who can move it. Quiet, fast, no traces.\n\nOf course, that kind of work ain’t cheap. You bring me the roubles, I make the call, and you get to set up somewhere new. Safer.\n\nUp to you; pay now, or wait until someone else finds it first.\n\n ** Completing this quests allows you to relocate your hideout (Repeatable) **",
-            [$"{id} note"] = "",
+                "So.. your little hideout setup. You really thought no one would notice? Come on. Everything gets found eventually. Question is, who finds it first.\n\n" +
+                "Lucky for you, I know people who specialize in.. making problems disappear. Move the whole thing, clean slate, no loose ends. Quiet work. Expensive work.\n\n" +
+                "You want a relocation, you pay. Simple as that. No favors, no credit.\n\n" +
+                "Bring the roubles, I make the call, and your exit gets.. relocated. After that? Try not to screw it up again.\n\n" +
+                "** Completing this quests allows you to relocate your hideout (Repeatable) **",
             [$"{id} startedMessageText"] =
-                "Smart choice. Get the money together and don’t drag your feet, these people don’t wait around for anyone. Bring it in, and we’ll get things moving",
+                "Don't stall. These guys don't sit around waiting while you count pennies. Get the money, bring it in, and we'll move your little operation.",
             [$"{id} successMessageText"] =
-                "That’s what I like to see. Money’s in, arrangements made. My people are ready and waiting on your word. Go find yourself a better spot and try not to pick somewhere obvious, yeah?",
-            [$"{id} failMessageText"] = "Your loss.",
-            [$"{id} acceptPlayerMessage"] = "Alright. I'll get your money.",
-            [$"{id} declinePlayerMessage"] = "Not worth it.",
-            [$"{id} completePlayerMessage"] = "It's all there.",
-            [$"{id} changeQuestMessageText"] = "",
+                "Good. Money's clean.\n\n" +
+                "I've already made the call. My people will handle the relocation, fast, quiet, no questions asked.\n\n" +
+                "You'll get your chance to set things up again. Just don't pick some obvious dump this time, yeah? I'm not doing this twice for free.",
+            [$"{id} failMessageText"] =
+                "Yeah, didn't think so. Come back when you're serious.",
+            [$"{id} acceptPlayerMessage"] =
+                "Fine. I'll get your money.",
+            [$"{id} declinePlayerMessage"] =
+                "Not worth it right now.",
+            [$"{id} completePlayerMessage"] =
+                "Here. Count it if you want.",
+            [$"{id} changeQuestMessageText"] =
+                "Still waiting on the cash. No money, no move.",
             [HandoverConditionId] = "Hand over Roubles",
         };
 
