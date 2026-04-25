@@ -110,7 +110,7 @@ public static class AddSkierToHideoutQuest
                             "59e3658a86f7741776641ac4", // Cat figurine
                             "59e3647686f774176a362507", // Wooden clock
                         ], null),
-                        Value = 8,
+                        Value = 6,
                         DogtagLevel = 0,
                         IsEncoded = false,
                         OnlyFoundInRaid = true,
@@ -133,7 +133,7 @@ public static class AddSkierToHideoutQuest
                             "590c651286f7741e566b6461", // Slim diary
                             "6389c8c5dbfd5e4b95197e6b", // TerraGroup "Blue Folders" materials
                         ], null),
-                        Value = 3,
+                        Value = 4,
                         DogtagLevel = 0,
                         IsEncoded = false,
                         OnlyFoundInRaid = true,
