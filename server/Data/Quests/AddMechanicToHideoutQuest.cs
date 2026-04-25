@@ -64,6 +64,7 @@ public static class AddMechanicToHideoutQuest
                         ConditionType = "TraderLoyalty",
                         DynamicLocale = false,
                         Target = new ListOrT<string>(null, TraderId),
+                        CompareMethod = ">=",
                         Value = VagabondConfig.Config.JoinHideoutMechanicLoyaltyLevel,
                     },
                 },
@@ -75,6 +76,7 @@ public static class AddMechanicToHideoutQuest
                         ConditionType = "TraderLoyalty",
                         DynamicLocale = false,
                         Target = new ListOrT<string>(null, TraderId),
+                        CompareMethod = ">=",
                         Value = VagabondConfig.Config.JoinHideoutMechanicLoyaltyLevel,
                     },
                     new()

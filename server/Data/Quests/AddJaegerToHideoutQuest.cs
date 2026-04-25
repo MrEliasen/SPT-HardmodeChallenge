@@ -62,6 +62,7 @@ public static class AddJaegerToHideoutQuest
                         ConditionType = "TraderLoyalty",
                         DynamicLocale = false,
                         Target = new ListOrT<string>(null, TraderId),
+                        CompareMethod = ">=",
                         Value = VagabondConfig.Config.JoinHideoutJaegerLoyaltyLevel,
                     },
                 },
@@ -73,6 +74,7 @@ public static class AddJaegerToHideoutQuest
                         ConditionType = "TraderLoyalty",
                         DynamicLocale = false,
                         Target = new ListOrT<string>(null, TraderId),
+                        CompareMethod = ">=",
                         Value = VagabondConfig.Config.JoinHideoutJaegerLoyaltyLevel,
                     },
                     new()

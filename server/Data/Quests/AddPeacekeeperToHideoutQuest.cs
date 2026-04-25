@@ -64,6 +64,7 @@ public static class AddPeacekeeperToHideoutQuest
                         ConditionType = "TraderLoyalty",
                         DynamicLocale = false,
                         Target = new ListOrT<string>(null, TraderId),
+                        CompareMethod = ">=",
                         Value = VagabondConfig.Config.JoinHideoutPeacekeeperLoyaltyLevel,
                     },
                 },
@@ -75,6 +76,7 @@ public static class AddPeacekeeperToHideoutQuest
                         ConditionType = "TraderLoyalty",
                         DynamicLocale = false,
                         Target = new ListOrT<string>(null, TraderId),
+                        CompareMethod = ">=",
                         Value = VagabondConfig.Config.JoinHideoutPeacekeeperLoyaltyLevel,
                     },
                     new()

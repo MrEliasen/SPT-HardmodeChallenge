@@ -85,6 +85,7 @@ public static class AddRagmanToHideoutQuest
                         ConditionType = "TraderLoyalty",
                         DynamicLocale = false,
                         Target = new ListOrT<string>(null, TraderId),
+                        CompareMethod = ">=",
                         Value = VagabondConfig.Config.JoinHideoutRagmanLoyaltyLevel,
                     },
                 },
@@ -96,6 +97,7 @@ public static class AddRagmanToHideoutQuest
                         ConditionType = "TraderLoyalty",
                         DynamicLocale = false,
                         Target = new ListOrT<string>(null, TraderId),
+                        CompareMethod = ">=",
                         Value = VagabondConfig.Config.JoinHideoutRagmanLoyaltyLevel,
                     },
                     new()
