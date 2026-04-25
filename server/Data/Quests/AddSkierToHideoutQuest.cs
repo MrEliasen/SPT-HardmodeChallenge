@@ -31,7 +31,7 @@ public static class AddSkierToHideoutQuest
         return new Quest
         {
             Id = QuestId,
-            QuestName = "Clean Slate",
+            QuestName = "New Arrangement",
             Name = $"{QuestId} name",
             Description = $"{QuestId} description",
             Note = $"{QuestId} note",
@@ -158,7 +158,7 @@ public static class AddSkierToHideoutQuest
     {
         var en = new Dictionary<string, string>
         {
-            [$"{QuestId} name"] = "Clean Slate",
+            [$"{QuestId} name"] = "New Arrangement",
             [$"{QuestId} description"] =
                 "What, back again? Heh.. starting to think you like working for me.\n\n" +
                 "Listen up. My usual spots are burned, too many leaks, too many idiots talking when they shouldn't. Business doesn't stop though, so I need a new place to run things from.\n\n" +
