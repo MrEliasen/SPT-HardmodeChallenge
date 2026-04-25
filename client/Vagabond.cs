@@ -267,15 +267,16 @@ public class Vagabond : BaseUnityPlugin
         {
             return;
         }
-        
+
         try
         {
-           new ABPSPmcDistancePatch().Enable();
-           new ABPSScavDistancePatch().Enable();
+            new ABPSPmcDistancePatch().Enable();
+            new ABPSScavDistancePatch().Enable();
         }
         catch (Exception ex)
         {
-            LogError($"Failed to enable ABPS compatibility patches, your ABPS version is not supported - Skipping - failed patch: {ex.Message}");
+            LogError(
+                $"Failed to enable ABPS compatibility patches, your ABPS version is not supported - Skipping - failed patch: {ex.Message}");
         }
     }
 
