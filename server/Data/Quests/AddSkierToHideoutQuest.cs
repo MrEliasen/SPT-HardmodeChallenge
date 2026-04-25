@@ -159,17 +159,17 @@ public static class AddSkierToHideoutQuest
         var en = new Dictionary<string, string>
         {
             [$"{QuestId} description"] =
-                "What, back again? Heh… starting to think you like working for me.\n\n" +
-                "Listen up. My usual spots are burned, too many leaks, too many idiots talking when they shouldn’t. Business doesn’t stop though, so I need a new place to run things from.\n\n" +
-                "Your hideout? Quiet, tucked away. No traffic, no questions. That’s exactly what I need.\n\n" +
-                "But I’m not setting up shop in an empty room. I need real capital, euros, valuables, stuff that actually moves. And a bit of intel wouldn’t hurt either… information sells just as well as anything else these days.\n\n" +
-                "You bring me something worth dealing with, and I’ll start running operations out of your place. Keep it clean, keep it quiet, and we both make money.\n\n" +
+                "What, back again? Heh.. starting to think you like working for me.\n\n" +
+                "Listen up. My usual spots are burned, too many leaks, too many idiots talking when they shouldn't. Business doesn't stop though, so I need a new place to run things from.\n\n" +
+                "Your hideout? Quiet, tucked away. No traffic, no questions. That's exactly what I need.\n\n" +
+                "But I'm not setting up shop in an empty room. I need real capital, euros, valuables, stuff that actually moves. And a bit of intel wouldn't hurt either.. information sells just as well as anything else these days.\n\n" +
+                "You bring me something worth dealing with, and I'll start running operations out of your place. Keep it clean, keep it quiet, and we both make money.\n\n" +
                 "** Completing this quest allows Skier to be accessible from your hideout **",
             [$"{QuestId} startedMessageText"] =
-                "Don’t waste my time. Euros, valuables, intel. If I can’t flip it, I don’t want it.",
+                "Don't waste my time. Euros, valuables, intel. If I can't flip it, I don't want it.",
             [$"{QuestId} successMessageText"] =
-                "Now we’re talking. This is clean, valuable… exactly what I need.\n\n" +
-                "Alright, I’ll move things into your hideout. Small operation, nothing flashy. The kind of place people don’t ask about.\n\n" +
+                "Now we're talking. This is clean, valuable.. exactly what I need.\n\n" +
+                "Alright, I'll move things into your hideout. Small operation, nothing flashy. The kind of place people don't ask about.\n\n" +
                 "You did good. Don’t get comfortable though, I don’t keep people around unless they stay useful.",
             [$"{QuestId} failMessageText"] =
                 "What the hell is this? You expect me to run deals with this garbage?",

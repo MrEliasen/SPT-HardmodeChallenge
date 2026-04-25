@@ -179,16 +179,16 @@ public static class AddPraporToHideoutQuest
         {
             [$"{QuestId} name"] = "Supply Lines",
             [$"{QuestId} description"] =
-                "Hey, warrior. Situation’s getting messy. My usual routes are compromised, and the stashes I relied on? Either looted or blown to hell.\n\n" +
-                "I’ve still got people out there, and they need weapons, ammo, something to hold the line. Can’t rely on deliveries anymore, so we do it the old way, build our own supply points.\n\n" +
-                "Your hideout... not bad. Quiet, tucked away. Could work as a fallback depot. But right now, it’s empty, and empty depots don’t win fights.\n\n" +
-                "Bring me rifles chambered in 5.45x39 with ammo to match, whatever you can spare. Stock it properly, and I’ll start routing my business through your place.\n\n" +
+                "Hey, warrior. Situation's getting messy. My usual routes are compromised, and the stashes I relied on? Either looted or blown to hell.\n\n" +
+                "I've still got people out there, and they need weapons, ammo, something to hold the line. Can't rely on deliveries anymore, so we do it the old way, build our own supply points.\n\n" +
+                "Your hideout... not bad. Quiet, tucked away. Could work as a fallback depot. But right now, it's empty, and empty depots don't win fights.\n\n" +
+                "Bring me rifles chambered in 5.45x39 with ammo to match, whatever you can spare. Stock it properly, and I'll start routing my business through your place.\n\n" +
                 "** Completing this quest allows Prapor to be accessible from your hideout **",
             [$"{QuestId} startedMessageText"] =
-                "Don’t overthink it. Guns, ammo. Simple. If it shoots, it works. My boys aren’t picky, but they do like staying alive.",
+                "Don't overthink it. Guns, ammo. Simple. If it shoots, it works. My boys aren't picky, but they do like staying alive.",
             [$"{QuestId} successMessageText"] =
-                "Ha! Now that’s what I’m talking about. Proper stockpile. With this, we can actually hold something, not just run around like idiots.\n\n" +
-                "I’ll move some of my operations through your hideout. Safer that way. You need something, you know where to find me.",
+                "Ha! Now that's what I'm talking about. Proper stockpile. With this, we can actually hold something, not just run around like idiots.\n\n" +
+                "I'll move some of my operations through your hideout. Safer that way. You need something, you know where to find me.",
             [$"{QuestId} failMessageText"] =
                 "No good. This won’t keep anyone alive for long. Bring me something useful.",
             [$"{QuestId} acceptPlayerMessage"] =

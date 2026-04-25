@@ -184,19 +184,19 @@ public static class AddRagmanToHideoutQuest
             [$"{QuestId} name"] = "New Collection",
             [$"{QuestId} description"] =
                 "Hey, brother. Come in, take a look. Business is still breathing... barely.\n\n" +
-                "I’ve got clients asking for full kits, armor, rigs, packs, the whole deal. Problem is, my stock is gone. Cleaned out. Either looted or sitting in someone else's stash.\n\n" +
+                "I've got clients asking for full kits, armor, rigs, packs, the whole deal. Problem is, my stock is gone. Cleaned out. Either looted or sitting in someone else's stash.\n\n" +
                 "Your hideout... that could work. Quiet, controlled. I could run a proper setup there, assemble kits, move product, keep things flowing.\n\n" +
                 "But I need inventory first. Body armor, tactical rigs, backpacks, and some fabric to patch, reinforce, finish the work. Everything in good condition, found in raid. No trash.\n\n" +
-                "Bring me what I need, and I’ll set up shop in your hideout. After that... you’ll have access to the good stuff.\n\n" +
+                "Bring me what I need, and I'll set up shop in your hideout. After that... you'll have access to the good stuff.\n\n" +
                 "** Completing this quest allows Ragman to be accessible from your hideout **",
             [$"{QuestId} startedMessageText"] =
-                "Armor, rigs, backpacks. That’s the core. Fabric too, I use it to fix and finish things. Keep it clean, keep it usable.",
+                "Armor, rigs, backpacks. That's the core. Fabric too, I use it to fix and finish things. Keep it clean, keep it usable.",
             [$"{QuestId} successMessageText"] =
-                "Ohh, now this is a proper batch. Armor’s solid, rigs aren’t torn to hell, packs still hold weight... yeah, I can work with this.\n\n" +
-                "I’ll move everything into your hideout and get the line running. Small operation, but efficient. From now on, you come to me there.\n\n" +
-                "And trust me... once this starts moving, you’ll see the difference.",
+                "Ohh, now this is a proper batch. Armor's solid, rigs aren't torn to hell, packs still hold weight... yeah, I can work with this.\n\n" +
+                "I'll move everything into your hideout and get the line running. Small operation, but efficient. From now on, you come to me there.\n\n" +
+                "And trust me... once this starts moving, you'll see the difference.",
             [$"{QuestId} failMessageText"] =
-                "Nah, this isn’t it. I can’t build proper kits out of this junk.",
+                "Nah, this isn't it. I can't build proper kits out of this junk.",
             [$"{QuestId} changeQuestMessageText"] =
                 "Still not enough to run a full line. Bring more gear.",
             [HandoverConditionArmorId] = "Hand over body armor",

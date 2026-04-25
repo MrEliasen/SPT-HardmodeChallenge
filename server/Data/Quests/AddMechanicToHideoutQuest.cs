@@ -205,7 +205,7 @@ public static class AddMechanicToHideoutQuest
             [$"{QuestId} failMessageText"] =
                 "No. This will not work. A bad workshop is worse than no workshop at all.",
             [$"{QuestId} acceptPlayerMessage"] =
-                "I’ll gather what you need.",
+                "I'll gather what you need.",
             [$"{QuestId} declinePlayerMessage"] =
                 "Not now. I have other things to handle.",
             [$"{QuestId} completePlayerMessage"] =

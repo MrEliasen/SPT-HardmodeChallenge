@@ -162,26 +162,26 @@ public static class AddPeacekeeperToHideoutQuest
         {
             [$"{QuestId} name"] = "Forward Logistics",
             [$"{QuestId} description"] =
-                "Good day, my friend. I’ve been reviewing your hideout, and I must say, it has potential. Not just as a shelter, but as something more... structured.\n\n" +
+                "Good day, my friend. I've been reviewing your hideout, and I must say, it has potential. Not just as a shelter, but as something more... structured.\n\n" +
                 "Right now, my operations in Tarkov rely on scattered contacts and unreliable routes. That is inefficient. What I need is a stable forward logistics node. Quiet, controlled, and away from unnecessary attention.\n\n" +
                 "Your location fits the criteria. But a proper operation requires preparation. Funding, provisions, and security. Dollars to keep things moving, rations to maintain personnel, and reliable weapons to ensure nothing... interrupts business.\n\n" +
                 "You provide these, and I will establish a presence in your hideout. From there, we both benefit.\n\n" +
                 "** Completing this quest allows Peacekeeper to be accessible from your hideout **",
             [$"{QuestId} startedMessageText"] =
-                "Let’s keep this simple. I need three things: money, provisions, and security assets. Dollars are preferable, clean, flexible. MREs will do for supplies. And for security, properly assembled rifles chambered in 5.56x45. Nothing improvised.",
+                "Let's keep this simple. I need three things: money, provisions, and security assets. Dollars are preferable, clean, flexible. MREs will do for supplies. And for security, properly assembled rifles chambered in 5.56x45. Nothing improvised.",
             [$"{QuestId} successMessageText"] =
                 "Excellent work. This is exactly what I needed. With these resources, I can establish a functional forward node in your hideout, discreet, efficient, and well supplied.\n\n" +
-                "I’ll arrange for additional equipment to be moved in quietly. From now on, you’ll be able to reach me there. Let’s just say... this arrangement stays between us.",
+                "I'll arrange for additional equipment to be moved in quietly. From now on, you'll be able to reach me there. Let's just say... this arrangement stays between us.",
             [$"{QuestId} failMessageText"] =
-                "No, this won’t work. I can’t build a reliable operation on incomplete or substandard supplies.",
+                "No, this won't work. I can't build a reliable operation on incomplete or substandard supplies.",
             [$"{QuestId} acceptPlayerMessage"] =
-                "Understood. I’ll gather everything.",
+                "Understood. I'll gather everything.",
             [$"{QuestId} declinePlayerMessage"] =
                 "Not now. I have other priorities.",
             [$"{QuestId} completePlayerMessage"] =
                 "Here are the funds, supplies, and equipment.",
             [$"{QuestId} changeQuestMessageText"] =
-                "We’re not ready yet. Keep the supplies coming.",
+                "We're not ready yet. Keep the supplies coming.",
             [HandoverConditionUsdId] = "Hand over USD",
             [HandoverConditionSuppliesId] = "Hand over MREs",
             [HandoverConditionSecurityId] = "Hand over rifles",

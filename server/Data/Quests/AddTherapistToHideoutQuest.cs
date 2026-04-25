@@ -174,8 +174,8 @@ public static class AddTherapistToHideoutQuest
             [$"{QuestId} successMessageText"] =
                 "This will do. The clinic is properly stocked now... it should sustain those who remain for some time. Thank you. I can finally make preparations to leave. You have done something meaningful here.",
             [$"{QuestId} failMessageText"] = "That is unfortunate. We cannot proceed like this.",
-            [$"{QuestId} acceptPlayerMessage"] = "I understand. I’ll bring what you need.",
-            [$"{QuestId} declinePlayerMessage"] = "I can’t help with that.",
+            [$"{QuestId} acceptPlayerMessage"] = "I understand. I'll bring what you need.",
+            [$"{QuestId} declinePlayerMessage"] = "I can't help with that.",
             [$"{QuestId} completePlayerMessage"] = "Here are the supplies.",
             [HandoverConditionMedsId] = "Hand over meds",
             [HandoverConditionPkId] = "Hand over pain killers",
