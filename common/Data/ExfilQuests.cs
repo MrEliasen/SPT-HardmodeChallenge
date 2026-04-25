@@ -78,7 +78,7 @@ public static class ExfilQuests
         ["54cb50c76803fa8b248b4571"] = ["675c3507a06634b5110e3c18"],
     };
 
-    public static bool IsExfilQuest(string exitName, List<string> questExfils, out string traderId)
+    public static bool IsExfilQuest(string exitName, HashSet<string> questExfils, out string traderId)
     {
         traderId = string.Empty;
         foreach (var quest in List)

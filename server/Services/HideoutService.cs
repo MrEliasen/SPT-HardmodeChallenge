@@ -119,7 +119,7 @@ internal static class HideoutService
         var tradersInfo = pmc.TradersInfo;
         var isOwnHideout = !string.IsNullOrEmpty(state.HideoutState?.Id) &&
                            state.LastExit == $"{HideoutIdPrefix}{state.HideoutState?.Id}";
-        
+
         foreach (KeyValuePair<MongoId, TraderInfo> entry in tradersInfo)
         {
             if (IgnoredTraders.Contains(entry.Key))
@@ -136,7 +136,7 @@ internal static class HideoutService
                     continue;
                 }
             }
-            
+
             if (isOwnHideout && state.HideoutTraders.Contains(entry.Key))
             {
                 entry.Value.Disabled = false;

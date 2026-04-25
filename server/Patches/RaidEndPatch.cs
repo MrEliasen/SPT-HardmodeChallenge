@@ -108,10 +108,12 @@ public sealed class RaidEndPatch : AbstractPatch
 
             if ((isTransfer || (!isOwnHideout && !isSharedHideout)) && !isDead)
             {
-                var firIds = new List<string>();
+                var equipmentRootId = fullServerProfile.CharacterData?.PmcData?.Inventory?.Equipment?.ToString();
+                var equippedIds = GetEquipmentIds(items, equipmentRootId);
+                var firIds = new HashSet<string>();
                 foreach (var item in items)
                 {
-                    if (item.Upd?.SpawnedInSession == true)
+                    if (item.Upd?.SpawnedInSession == true && equippedIds.Contains(item.Id))
                     {
                         firIds.Add(item.Id);
                     }
@@ -237,6 +239,55 @@ public sealed class RaidEndPatch : AbstractPatch
 
         VagabondService.PersistProfileIfPossible(sessionId);
         VagabondState.SaveState(sessionId, state);
+    }
+
+    private static HashSet<string> GetEquipmentIds(List<Item> items, string? equipmentRootId)
+    {
+        var result = new HashSet<string>();
+        if (string.IsNullOrEmpty(equipmentRootId))
+        {
+            return result;
+        }
+
+        var childrenByParent = new Dictionary<string, List<Item>>();
+        foreach (var item in items)
+        {
+            var parentId = item.ParentId;
+            if (string.IsNullOrEmpty(parentId))
+            {
+                continue;
+            }
+
+            if (!childrenByParent.TryGetValue(parentId, out var itemsList))
+            {
+                itemsList = new List<Item>();
+                childrenByParent[parentId] = itemsList;
+            }
+
+            itemsList.Add(item);
+        }
+
+        var queue = new Queue<string>();
+        queue.Enqueue(equipmentRootId);
+
+        while (queue.Count > 0)
+        {
+            var parentId = queue.Dequeue();
+            if (!childrenByParent.TryGetValue(parentId, out var children))
+            {
+                continue;
+            }
+
+            foreach (var child in children)
+            {
+                if (result.Add(child.Id))
+                {
+                    queue.Enqueue(child.Id);
+                }
+            }
+        }
+
+        return result;
     }
 
     public static string GetExtractIdentifier(string? exitName, RaidLocation raid, string mapName)

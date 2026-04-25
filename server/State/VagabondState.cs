@@ -14,12 +14,12 @@ public sealed class VagabondState
     public string LastExit { get; set; } = "";
     public TransitState? TransitState { get; set; }
     public HideoutState? HideoutState { get; set; }
-    public List<string> QuestExfils { get; set; } = [];
-    public List<string>? RaidFirItems { get; set; }
+    public HashSet<string> QuestExfils { get; set; } = [];
+    public HashSet<string>? RaidFirItems { get; set; }
     public string Version { get; set; } = "0.3.0";
     public bool ResetProfile { get; set; }
     public bool CanPlaceHideout { get; set; }
-    public List<string> HideoutTraders { get; set; } = [];
+    public HashSet<string> HideoutTraders { get; set; } = [];
 
     public static VagabondState GetState(MongoId sessionId)
     {

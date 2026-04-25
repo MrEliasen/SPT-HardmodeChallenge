@@ -60,6 +60,7 @@ public class Vagabond : BaseUnityPlugin
         new ExfiltrationPointOnTriggerExitPatch().Enable();
         new SpawnSystemSelectSpawnPointPatch().Enable();
         new ActiveHealthControllerPatch().Enable();
+        new KeepFirStatusPatch().Enable();
 
         TryEnableAbpsCompatibilityPatches();
 

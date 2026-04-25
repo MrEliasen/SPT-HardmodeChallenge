@@ -117,6 +117,7 @@ public static class CommunicationService
 
         Vagabond.State.CustomExfils = resp.CustomExfils;
         Vagabond.State.QuestExfils = resp.QuestExfils;
+        Vagabond.State.RaidFirItems = resp.RaidFirItems;
 
         if (!Vagabond.IsHeadless())
         {

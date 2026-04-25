@@ -12,4 +12,5 @@ public class SyncStateResponse
     public bool AllowPostRaidHealing { get; set; }
     public Dictionary<string, List<string>> QuestExfils { get; set; } = new();
     public Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils { get; set; } = new();
+    public HashSet<string> RaidFirItems { get; set; } = new();
 }
