@@ -33,7 +33,7 @@ public class BlockTraderMailClaimPatch : ModulePatch
             return true;
         }
 
-        var name = info.Settings?.Nickname?.Localized(null) ?? "Trader";
+        var name = info.Settings?.Nickname?.Localized() ?? "Trader";
         NotificationManagerClass.DisplayWarningNotification($"{name} is not available at your current location.");
         return false;
     }

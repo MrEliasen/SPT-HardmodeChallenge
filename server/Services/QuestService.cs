@@ -48,11 +48,18 @@ public static class QuestService
 
     public static void LoadQuests()
     {
-        List<NewQuestDetails> quests = [
+        List<NewQuestDetails> quests =
+        [
             HideoutRelocationQuest.Config(),
             AddTherapistToHideoutQuest.Config(),
+            AddJaegerToHideoutQuest.Config(),
+            AddMechanicToHideoutQuest.Config(),
+            AddPeacekeeperToHideoutQuest.Config(),
+            AddPraporToHideoutQuest.Config(),
+            AddRagmanToHideoutQuest.Config(),
+            AddSkierToHideoutQuest.Config(),
         ];
-        
+
         var customQuestService = ReflectionUtil.GetService<CustomQuestService>();
 
         if (customQuestService == null)

@@ -12,7 +12,7 @@ public static class HideoutRelocationQuest
     public const string QuestId = "69eaa4700000000000000000";
     private const string SkierId = "58330581ace78e27b8b10cee";
     private const string HandoverConditionId = "69eab2800000000000000000";
-    
+
     public static NewQuestDetails Config()
     {
         return new NewQuestDetails
@@ -22,7 +22,7 @@ public static class HideoutRelocationQuest
             LockedToSide = null
         };
     }
-    
+
     private static Quest QuestConfig()
     {
         return new Quest
@@ -40,7 +40,7 @@ public static class HideoutRelocationQuest
             CompletePlayerMessage = $"{QuestId} completePlayerMessage",
             ChangeQuestMessageText = $"{QuestId} changeQuestMessageText",
 
-            TraderId =SkierId,
+            TraderId = SkierId,
             Location = "any",
             Image = "/files/quest/icon/default.png",
             Type = QuestTypeEnum.Completion,

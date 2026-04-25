@@ -234,7 +234,7 @@ public class GameChanges(DatabaseService databaseService) : IOnLoad
         }
 
         QuestService.LoadQuests();
-        
+
         return Task.CompletedTask;
     }
 }

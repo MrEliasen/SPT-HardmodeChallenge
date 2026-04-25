@@ -24,8 +24,13 @@ public sealed class VagabondConfig
     public string OnDeathGoTo { get; set; } = "hideout";
     public string StarterFence { get; set; } = "streets";
     public int HideoutRelocationFee { get; set; } = 350_000;
-    public int JoinHideoutRublesCost { get; set; } = 750_000;
     public int JoinHideoutTherapistLoyaltyLevel { get; set; } = 2;
+    public int JoinHideoutJaegerLoyaltyLevel { get; set; } = 2;
+    public int JoinHideoutMechanicLoyaltyLevel { get; set; } = 2;
+    public int JoinHideoutPeacekeeperLoyaltyLevel { get; set; } = 2;
+    public int JoinHideoutPraporLoyaltyLevel { get; set; } = 2;
+    public int JoinHideoutRagmanLoyaltyLevel { get; set; } = 2;
+    public int JoinHideoutSkierLoyaltyLevel { get; set; } = 2;
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
 
     // internal

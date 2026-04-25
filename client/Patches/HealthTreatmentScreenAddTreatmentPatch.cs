@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using EFT.UI;
 using SPT.Reflection.Patching;
-using Vagabond.Client.State;
 
 namespace Vagabond.Client.Patches;
 

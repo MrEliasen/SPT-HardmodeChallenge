@@ -8,15 +8,15 @@ namespace Vagabond.Server.Data.Quests;
 
 public static class AddTherapistToHideoutQuest
 {
-    private const string QuestId = "69ebf5f00000000000000000";
-    private const string TraderId = "54cb57776803fa99248b456e";
+    public const string QuestId = "69ebf5f00000000000000000";
+    public const string TraderId = "54cb57776803fa99248b456e";
     private const string HandoverConditionMedsId = "69ebf62c0000000000000000";
     private const string HandoverConditionPkId = "69ebf6680000000000000000";
     private const string HandoverConditionHemoId = "69ebf6a40000000000000000";
     private const string HandoverConditionSplintId = "69ebf6e00000000000000000";
     private const string HandoverConditionSurgicalId = "69ebf71c0000000000000000";
     private const string RepConditionId = "69ebf7580000000000000000";
-    
+
     public static NewQuestDetails Config()
     {
         return new NewQuestDetails()
@@ -26,13 +26,13 @@ public static class AddTherapistToHideoutQuest
             LockedToSide = null
         };
     }
-    
+
     private static Quest QuestConfig()
     {
         return new Quest
         {
             Id = QuestId,
-            QuestName = "Fresh Foundations",
+            QuestName = "Stocking the Clinic",
             Name = $"{QuestId} name",
             Description = $"{QuestId} description",
             Note = $"{QuestId} note",
@@ -74,7 +74,8 @@ public static class AddTherapistToHideoutQuest
                         Id = HandoverConditionMedsId,
                         ConditionType = "HandoverItem",
                         DynamicLocale = false,
-                        Value = 20,
+                        Value = 15,
+                        OnlyFoundInRaid = true,
                         Target = new ListOrT<string>(new List<string>
                         {
                             "590c657e86f77412b013051d", // grizzly
@@ -90,7 +91,8 @@ public static class AddTherapistToHideoutQuest
                         Id = HandoverConditionPkId,
                         ConditionType = "HandoverItem",
                         DynamicLocale = false,
-                        Value = 15,
+                        Value = 10,
+                        OnlyFoundInRaid = true,
                         Target = new ListOrT<string>(new List<string>
                         {
                             "5af0548586f7743a532b7e99", // Ibuprofen 
@@ -105,7 +107,8 @@ public static class AddTherapistToHideoutQuest
                         Id = HandoverConditionHemoId,
                         ConditionType = "HandoverItem",
                         DynamicLocale = false,
-                        Value = 15,
+                        Value = 10,
+                        OnlyFoundInRaid = true,
                         Target = new ListOrT<string>(new List<string>
                         {
                             "5e8488fa988a8701445df1e4", // CALOK-B 
@@ -119,6 +122,7 @@ public static class AddTherapistToHideoutQuest
                         ConditionType = "HandoverItem",
                         DynamicLocale = false,
                         Value = 10,
+                        OnlyFoundInRaid = true,
                         Target = new ListOrT<string>(new List<string>
                         {
                             "544fb3364bdc2d34748b456a", // Immobilizing splint
@@ -132,6 +136,7 @@ public static class AddTherapistToHideoutQuest
                         ConditionType = "HandoverItem",
                         DynamicLocale = false,
                         Value = 5,
+                        OnlyFoundInRaid = true,
                         Target = new ListOrT<string>(new List<string>
                         {
                             "5d02778e86f774203e7dedbe", // CMS surgical kit
@@ -156,16 +161,15 @@ public static class AddTherapistToHideoutQuest
         var en = new Dictionary<string, string>
         {
             [$"{QuestId} name"] = "Stocking the Clinic",
-
             [$"{QuestId} description"] =
-                "Good day. I am preparing to leave my clinic, but I cannot do so under current conditions. There are still wounded, and supplies are… insufficient.\n\n" +
-                "Before I can relocate, I need to ensure that what remains is properly stocked. Medicine, stimulants, basic supplies—anything that can help those who might still come through those doors.\n\n" +
+                "Good day. I am preparing to leave my clinic, but I cannot do so under current conditions. There are still wounded, and supplies are... insufficient.\n\n" +
+                "Before I can relocate, I need to ensure that what remains is properly stocked. Medicine, stimulants, basic supplies, anything that can help those who might still come through those doors.\n\n" +
                 "Bring me what you can. Quantity matters here. Lives may depend on it.\n\n" +
                 "** Completing this quest allows Therapist to be accessible from your hideout **",
             [$"{QuestId} startedMessageText"] =
-                "I do not ask this lightly. My clinic cannot be abandoned while it is still in need. Bring me medical supplies—enough to leave it in a stable condition. Only then can I consider moving.",
+                "I do not ask this lightly. My clinic cannot be abandoned while it is still in need. Bring me medical supplies, enough to leave it in a stable condition. Only then can I consider moving.",
             [$"{QuestId} successMessageText"] =
-                "This will do. The clinic is properly stocked now… it should sustain those who remain for some time. Thank you. I can finally make preparations to leave. You have done something meaningful here.",
+                "This will do. The clinic is properly stocked now... it should sustain those who remain for some time. Thank you. I can finally make preparations to leave. You have done something meaningful here.",
             [$"{QuestId} failMessageText"] = "That is unfortunate. We cannot proceed like this.",
             [$"{QuestId} acceptPlayerMessage"] = "I understand. I’ll bring what you need.",
             [$"{QuestId} declinePlayerMessage"] = "I can’t help with that.",

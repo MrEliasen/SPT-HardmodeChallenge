@@ -48,8 +48,12 @@
   "ShareHideoutExits": false,
   // how much it should cost to relocate the hideout
   "HideoutRelocationFee": 350000,
-  // Along any potentiual quest requirements, how much should it cost for a trader to join your hideout?
-  "JoinHideoutRublesCost": 750000,
-  // What loyalty level will the traders need to be before they will join your hideout?
-  "JoinHideoutTherapistLoyaltyLevel": 2
+  // What loyalty level is required to accept the quest to get the trader to join your hideout?
+  "JoinHideoutTherapistLoyaltyLevel": 2,
+  "JoinHideoutJaegerLoyaltyLevel": 2,
+  "JoinHideoutMechanicLoyaltyLevel": 2,
+  "JoinHideoutPeacekeeperLoyaltyLevel": 2,
+  "JoinHideoutPraporLoyaltyLevel": 2,
+  "JoinHideoutRagmanLoyaltyLevel": 2,
+  "JoinHideoutSkierLoyaltyLevel": 2
 }

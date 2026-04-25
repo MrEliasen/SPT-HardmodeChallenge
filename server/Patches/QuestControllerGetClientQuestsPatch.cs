@@ -18,7 +18,7 @@ public sealed class QuestControllerGetClientQuestsPatch : AbstractPatch
     [PatchPostfix]
     public static void Postfix(MongoId sessionId, ref List<Quest> __result)
     {
-        if (__result == null || __result.Count == 0)
+        if (__result.Count == 0)
         {
             return;
         }
