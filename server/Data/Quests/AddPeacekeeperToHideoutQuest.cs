@@ -182,6 +182,7 @@ public static class AddPeacekeeperToHideoutQuest
                 "Here are the funds, supplies, and equipment.",
             [$"{QuestId} changeQuestMessageText"] =
                 "We're not ready yet. Keep the supplies coming.",
+            [RepConditionId] = $"Reach loyalty level {VagabondConfig.Config.JoinHideoutPeacekeeperLoyaltyLevel}",
             [HandoverConditionUsdId] = "Hand over USD",
             [HandoverConditionSuppliesId] = "Hand over MREs",
             [HandoverConditionSecurityId] = "Hand over rifles",

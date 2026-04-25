@@ -167,6 +167,7 @@ public static class AddJaegerToHideoutQuest
                 "Here are the provisions.",
             [$"{QuestId} changeQuestMessageText"] =
                 "Keep bringing supplies. Food and water first, everything else later.",
+            [RepConditionId] = $"Reach loyalty level {VagabondConfig.Config.JoinHideoutJaegerLoyaltyLevel}",
             [HandoverConditionFoodId] = "Hand over food",
             [HandoverConditionDrinksId] = "Hand over drinks",
         };

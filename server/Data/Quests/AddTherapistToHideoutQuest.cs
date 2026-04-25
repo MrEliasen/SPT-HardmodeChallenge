@@ -177,6 +177,7 @@ public static class AddTherapistToHideoutQuest
             [$"{QuestId} acceptPlayerMessage"] = "I understand. I'll bring what you need.",
             [$"{QuestId} declinePlayerMessage"] = "I can't help with that.",
             [$"{QuestId} completePlayerMessage"] = "Here are the supplies.",
+            [RepConditionId] = $"Reach loyalty level {VagabondConfig.Config.JoinHideoutTherapistLoyaltyLevel}",
             [HandoverConditionMedsId] = "Hand over meds",
             [HandoverConditionPkId] = "Hand over pain killers",
             [HandoverConditionHemoId] = "Hand over hemostatics",

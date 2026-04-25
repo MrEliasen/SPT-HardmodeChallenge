@@ -212,6 +212,7 @@ public static class AddMechanicToHideoutQuest
                 "Here are the supplies. You can set up shop now.",
             [$"{QuestId} changeQuestMessageText"] =
                 "The workstation is not going to assemble itself. Keep bringing the supplies.",
+            [RepConditionId] = $"Reach loyalty level {VagabondConfig.Config.JoinHideoutMechanicLoyaltyLevel}",
             [HandoverConditionBatteryId] = "Hand over batteries",
             [HandoverConditionElectronicsId] = "Hand over electronics",
             [HandoverConditionTapeId] = "Hand over tape",

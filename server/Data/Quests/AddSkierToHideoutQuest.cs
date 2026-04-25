@@ -182,6 +182,7 @@ public static class AddSkierToHideoutQuest
                 "Here. Euros, valuables, and intel.",
             [$"{QuestId} changeQuestMessageText"] =
                 "Still not enough to get things moving. Bring me something worth my time.",
+            [RepConditionId] = $"Reach loyalty level {VagabondConfig.Config.JoinHideoutSkierLoyaltyLevel}",
             [HandoverConditionCashId] = "Hand over euros",
             [HandoverConditionValuablesId] = "Hand over valuables",
             [HandoverConditionIntelId] = "Hand over intel items",

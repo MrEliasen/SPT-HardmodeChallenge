@@ -199,6 +199,7 @@ public static class AddRagmanToHideoutQuest
                 "Nah, this isn't it. I can't build proper kits out of this junk.",
             [$"{QuestId} changeQuestMessageText"] =
                 "Still not enough to run a full line. Bring more gear.",
+            [RepConditionId] = $"Reach loyalty level {VagabondConfig.Config.JoinHideoutRagmanLoyaltyLevel}",
             [HandoverConditionArmorId] = "Hand over body armor",
             [HandoverConditionRigsId] = "Hand over tactical rigs",
             [HandoverConditionBackpacksId] = "Hand over backpacks",

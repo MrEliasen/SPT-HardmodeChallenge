@@ -199,6 +199,7 @@ public static class AddPraporToHideoutQuest
                 "Here. Weapons and ammo, like you asked.",
             [$"{QuestId} changeQuestMessageText"] =
                 "Still not enough. A depot needs to be stocked, not decorated.",
+            [RepConditionId] = $"Reach loyalty level {VagabondConfig.Config.JoinHideoutPraporLoyaltyLevel}",
             [HandoverConditionAmmoId] = "Hand over ammunition",
             [HandoverConditionWeaponsId] = "Hand over weapons",
             [HandoverConditionExplosivesId] = "Hand over explosives",
