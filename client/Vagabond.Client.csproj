@@ -52,6 +52,9 @@
         <Reference Include="Comfort">
             <HintPath>$(TarkovManagedDir)Comfort.dll</HintPath>
         </Reference>
+        <Reference Include="DissonanceVoip">
+            <HintPath>$(TarkovManagedDir)DissonanceVoip.dll</HintPath>
+        </Reference>
         <Reference Include="Comfort.Unity">
             <HintPath>$(TarkovManagedDir)Comfort.Unity.dll</HintPath>
         </Reference>

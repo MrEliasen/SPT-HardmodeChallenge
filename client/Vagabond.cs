@@ -61,11 +61,7 @@ public class Vagabond : BaseUnityPlugin
         new SpawnSystemSelectSpawnPointPatch().Enable();
         new ActiveHealthControllerPatch().Enable();
 
-        if (Chainloader.PluginInfos.ContainsKey("com.acidphantasm.botplacementsystem"))
-        {
-            new ABPSPmcDistancePatch().Enable();
-            new ABPSScavDistancePatch().Enable();
-        }
+        TryEnableAbpsCompatibilityPatches();
 
         new LocalGameStopPatch().Enable();
         new MenuShowPatch().Enable();
@@ -142,6 +138,7 @@ public class Vagabond : BaseUnityPlugin
             PromptCreateHideoutExtract();
         }
 
+        /*
         if (_dumpHotkey.Value.IsDown())
         {
             DumpCurrentLocation();
@@ -156,6 +153,7 @@ public class Vagabond : BaseUnityPlugin
         {
             DumpCustomTransitDefinition();
         }
+        */
     }
 
     private void PromptCreateHideoutExtract()
@@ -260,6 +258,24 @@ public class Vagabond : BaseUnityPlugin
     {
         return Application.isBatchMode
                || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
+    }
+
+    private static void TryEnableAbpsCompatibilityPatches()
+    {
+        if (!Chainloader.PluginInfos.ContainsKey("com.acidphantasm.botplacementsystem"))
+        {
+            return;
+        }
+        
+        try
+        {
+           new ABPSPmcDistancePatch().Enable();
+           new ABPSScavDistancePatch().Enable();
+        }
+        catch (Exception ex)
+        {
+            LogError($"Failed to enable ABPS compatibility patches, your ABPS version is not supported - Skipping - failed patch: {ex.Message}");
+        }
     }
 
     private void DumpCustomExtractDefinition()

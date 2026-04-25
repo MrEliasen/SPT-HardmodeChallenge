@@ -16,11 +16,11 @@ internal class ABPSScavDistancePatch : ModulePatch
         return AccessTools.Method(
             AccessTools.TypeByName("acidphantasm_botplacementsystem.Patches.TryToSpawnInZonePatch"),
             "IsValid",
-            new[] { typeof(ISpawnPoint), typeof(IReadOnlyCollection<IPlayer>), typeof(float) });
+            new[] { typeof(ISpawnPoint), typeof(IReadOnlyCollection<Player>), typeof(float) });
     }
 
     [PatchPrefix]
-    private static bool Prefix(ISpawnPoint spawnPoint, IReadOnlyCollection<IPlayer> players, float distance,
+    private static bool Prefix(ISpawnPoint spawnPoint, IReadOnlyCollection<Player> players, float distance,
         ref bool __result)
     {
         if (!ForcedSpawnService.TryGetAbpsPosition(out _))

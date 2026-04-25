@@ -14,13 +14,13 @@ internal class ABPSPmcDistancePatch : ModulePatch
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(
-            AccessTools.TypeByName("acidphantasm_botplacementsystem.Patches.PmcDistancePatch"),
+            AccessTools.TypeByName("acidphantasm_botplacementsystem.Patches.PmcSpawnHookPatch"),
             "IsValid",
-            new[] { typeof(ISpawnPoint), typeof(IReadOnlyCollection<IPlayer>), typeof(float) });
+            new[] { typeof(ISpawnPoint), typeof(IReadOnlyCollection<Player>), typeof(float) });
     }
 
     [PatchPrefix]
-    private static bool Prefix(ISpawnPoint spawnPoint, IReadOnlyCollection<IPlayer> players, float distance,
+    private static bool Prefix(ISpawnPoint spawnPoint, IReadOnlyCollection<Player> players, float distance,
         ref bool __result)
     {
         if (!ForcedSpawnService.TryGetAbpsPosition(out _))
