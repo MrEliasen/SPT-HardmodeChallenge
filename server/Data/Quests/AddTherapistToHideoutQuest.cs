@@ -84,6 +84,7 @@ public static class AddTherapistToHideoutQuest
                             "544fb45d4bdc2dee738b4568", // Salewa
                             "60098ad7c2240c0fe85c570a", // AFAK
                             "5755356824597772cb798962", // AI-2 medkit
+                            "5c0e534186f7747fa1419867", // eTG-change regenerative stimulant injector
                         }, null),
                     },
                     new()
@@ -99,7 +100,8 @@ public static class AddTherapistToHideoutQuest
                             "5751a89d24597722aa0e8db0", // Golden Star
                             "544fb37f4bdc2dee738b4567", // Analgin
                             "5755383e24597772cb798966", // Vaseline 
-                            "60098ad7c2240c0fe85c570a", // Salewa
+                            "544fb3f34bdc2d03748b456a", // Morphine injector 
+                            "5c0e534186f7747fa1419867", // eTG-change regenerative stimulant injector
                         }, null),
                     },
                     new()
@@ -114,6 +116,7 @@ public static class AddTherapistToHideoutQuest
                             "5e8488fa988a8701445df1e4", // CALOK-B 
                             "60098af40accd37ef2175f27", // CAT hemostatic
                             "5e831507ea0a7c419c2f9bd9", // Esmarch
+                            "637b612fb7afa97bfc3d7005", // SJ12 TGLabs combat stimulant injector
                         }, null),
                     },
                     new()
