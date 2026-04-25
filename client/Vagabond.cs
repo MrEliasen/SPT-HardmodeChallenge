@@ -25,9 +25,9 @@ public class Vagabond : BaseUnityPlugin
     private static ManualLogSource _logger;
     public static VagabondState State { get; private set; } = new();
 
-    private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
+    /*private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomExtractHotkey = null!;
-    private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;
+    private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;*/
 
     private string _locationDumpPath = null!;
     private string _customExtractDumpPath = null!;
