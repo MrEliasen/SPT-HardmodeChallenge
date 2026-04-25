@@ -116,8 +116,10 @@ internal static class HideoutService
         var traderId = GetCurrentTraderId(state) ?? string.Empty;
         var isCustomTraderLoc = state.LastExit == "VGB_EXT_MARKET";
         var traderIdList = TraderLocations.ToList().ConvertAll(x => x.Id);
-
         var tradersInfo = pmc.TradersInfo;
+        var isOwnHideout = !string.IsNullOrEmpty(state.HideoutState?.Id) &&
+                           state.LastExit == $"{HideoutIdPrefix}{state.HideoutState?.Id}";
+        
         foreach (KeyValuePair<MongoId, TraderInfo> entry in tradersInfo)
         {
             if (IgnoredTraders.Contains(entry.Key))
@@ -133,6 +135,13 @@ internal static class HideoutService
                     entry.Value.Unlocked = true;
                     continue;
                 }
+            }
+            
+            if (isOwnHideout && state.HideoutTraders.Contains(entry.Key))
+            {
+                entry.Value.Disabled = false;
+                entry.Value.Unlocked = true;
+                continue;
             }
 
             if (entry.Key == traderId || (isCustomTraderLoc && !traderIdList.Contains(entry.Key)))

@@ -65,8 +65,7 @@ public static class AddTherapistToHideoutQuest
                         Id = RepConditionId,
                         ConditionType = "TraderLoyalty",
                         DynamicLocale = false,
-                        TraderId = TraderId,
-                        CompareMethod = ">=",
+                        Target = new ListOrT<string>(null, TraderId),
                         Value = VagabondConfig.Config.JoinHideoutTherapistLoyaltyLevel,
                     },
                     new()
