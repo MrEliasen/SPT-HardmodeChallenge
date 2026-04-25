@@ -3,6 +3,7 @@ using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using Vagabond.Server.Services;
 using Vagabond.Server.State;
 
@@ -50,11 +51,38 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             }
 
             HideoutService.UpdateTraderAccess(pmc, state);
+            ApplyRaidFirItems(pmc, state);
             VagabondService.PersistProfileIfPossible(sessionId);
         }
         catch (Exception ex)
         {
             VagabondLogger.Error($"Profile updating failed: {ex}");
+        }
+    }
+
+    private static void ApplyRaidFirItems(PmcData pmc, VagabondState state)
+    {
+        if (state.RaidFirItems is not { Count: > 0 })
+        {
+            return;
+        }
+
+        var items = pmc.Inventory?.Items;
+        if (items == null)
+        {
+            return;
+        }
+
+        var firIds = new HashSet<string>(state.RaidFirItems);
+        foreach (var item in items)
+        {
+            if (!firIds.Contains(item.Id))
+            {
+                continue;
+            }
+
+            item.Upd ??= new Upd();
+            item.Upd.SpawnedInSession = true;
         }
     }
 }
