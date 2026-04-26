@@ -12,7 +12,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT\</TarkovDir>
+        <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT-dev\</TarkovDir>
         <TarkovPluginsSPTDir>$(TarkovDir)SPT\user\mods\</TarkovPluginsSPTDir>
     </PropertyGroup>
 
