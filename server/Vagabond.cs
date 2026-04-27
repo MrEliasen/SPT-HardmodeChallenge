@@ -14,6 +14,7 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using Vagabond.Common;
+using Vagabond.Common.Api;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 
@@ -47,6 +48,10 @@ public sealed class VagabondLoader : IOnLoad
 
     public Task OnLoad()
     {
+        Api.AddExfilsImpl = ExfilService.AddCustomExfils;
+        Api.RemoveExfilImpl = ExfilService.RemoveCustomExfil;
+        Api.GetExfilsImpl = ExfilService.GetCustomExfils;
+
         VagabondConfig.Initialize();
 
         new Patches.MailAttachmentsPatch().Enable();
