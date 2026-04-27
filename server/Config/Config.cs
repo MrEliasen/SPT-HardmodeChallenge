@@ -32,6 +32,7 @@ public sealed class VagabondConfig
     public int JoinHideoutRagmanLoyaltyLevel { get; set; } = 2;
     public int JoinHideoutSkierLoyaltyLevel { get; set; } = 2;
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
+    public bool LimitTraderMailAccess { get; set; } = true;
 
     // internal
     public static VagabondConfig Config = new();

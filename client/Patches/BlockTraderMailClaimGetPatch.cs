@@ -20,6 +20,11 @@ public class BlockTraderMailClaimGetPatch : ModulePatch
     [PatchPrefix]
     public static bool Prefix(AttachmentMessageView __instance)
     {
+        if (!Vagabond.State.LimitTraderMailAccess)
+        {
+            return true;
+        }
+
         var chatMessage = _messageField(__instance);
         var traderId = chatMessage?.Member?.Id;
         if (string.IsNullOrEmpty(traderId))

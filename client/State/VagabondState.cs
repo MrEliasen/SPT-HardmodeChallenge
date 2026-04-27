@@ -20,4 +20,5 @@ public sealed class VagabondState
     public Dictionary<string, List<string>> QuestExfils { get; set; } = new();
     public Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>> CustomExfils { get; set; } = new();
     public HashSet<string> RaidFirItems { get; set; } = new();
+    public bool LimitTraderMailAccess { get; set; } = true;
 }

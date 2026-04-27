@@ -82,6 +82,7 @@ public class VagabondRouter(
         response.WipeFirstRaid = VagabondConfig.Config.WipeStashOnFirstRaidEntry;
         response.CurrentMap = VagabondService.GetCurrentRaidId(state);
         response.NewCharacter = string.IsNullOrEmpty(state.CurrentMap);
+        response.LimitTraderMailAccess = VagabondConfig.Config.LimitTraderMailAccess;
         response.RaidFirItems = state.RaidFirItems ?? new HashSet<string>();
 
         return response;

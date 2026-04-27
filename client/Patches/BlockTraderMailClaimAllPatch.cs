@@ -17,6 +17,11 @@ public class BlockTraderMailClaimAllPatch : ModulePatch
     [PatchPrefix]
     public static bool Prefix(DialogueClass dialog)
     {
+        if (!Vagabond.State.LimitTraderMailAccess)
+        {
+            return true;
+        }
+
         if (dialog == null || dialog.Type != EMessageType.NpcTraderMessage)
         {
             return true;

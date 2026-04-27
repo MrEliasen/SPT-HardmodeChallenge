@@ -55,5 +55,7 @@
   "JoinHideoutPeacekeeperLoyaltyLevel": 2,
   "JoinHideoutPraporLoyaltyLevel": 2,
   "JoinHideoutRagmanLoyaltyLevel": 2,
-  "JoinHideoutSkierLoyaltyLevel": 2
+  "JoinHideoutSkierLoyaltyLevel": 2,
+  // limit mail from traders so you can only access mail attachments if the trader is available where you are.
+  "LimitTraderMailAccess": true
 }

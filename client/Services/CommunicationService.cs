@@ -127,6 +127,7 @@ public static class CommunicationService
             Vagabond.State.LastRefreshUtc = DateTime.UtcNow;
             Vagabond.State.NewCharacter = resp.NewCharacter;
             Vagabond.State.AllowPostRaidHealing = resp.AllowPostRaidHealing;
+            Vagabond.State.LimitTraderMailAccess = resp.LimitTraderMailAccess;
         }
     }
 }
