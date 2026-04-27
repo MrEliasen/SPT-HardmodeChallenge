@@ -7,17 +7,22 @@ using SPT.Reflection.Utils;
 
 namespace Vagabond.Client.Patches;
 
-public class BlockTraderMailClaimPatch : ModulePatch
+public class BlockTraderMailClaimGetPatch : ModulePatch
 {
+    private static readonly AccessTools.FieldRef<MessageView, ChatMessageClass> _messageField =
+        AccessTools.FieldRefAccess<MessageView, ChatMessageClass>("DialogueChatMessage");
+
     protected override MethodBase GetTargetMethod()
     {
-        return AccessTools.Method(typeof(ChatScreen), "method_3", new[] { typeof(DialogueClass) });
+        return AccessTools.Method(typeof(AttachmentMessageView), "method_4");
     }
 
     [PatchPrefix]
-    public static bool Prefix(DialogueClass dialog)
+    public static bool Prefix(AttachmentMessageView __instance)
     {
-        if (dialog == null || dialog.Type != EMessageType.NpcTraderMessage)
+        var chatMessage = _messageField(__instance);
+        var traderId = chatMessage?.Member?.Id;
+        if (string.IsNullOrEmpty(traderId))
         {
             return true;
         }
@@ -28,7 +33,7 @@ public class BlockTraderMailClaimPatch : ModulePatch
             return true;
         }
 
-        if (!profile.TradersInfo.TryGetValue(dialog._id, out var info) || info == null || info.Available)
+        if (!profile.TradersInfo.TryGetValue(traderId, out var info) || info == null || info.Available)
         {
             return true;
         }
