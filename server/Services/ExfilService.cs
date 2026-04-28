@@ -21,148 +21,6 @@ internal static class ExfilService
     // API-added entires offset start
     private static int _nextApiExfilOffset = 20000;
 
-    /// <summary>
-    /// API: add/replace custom exfils.
-    /// </summary>
-    internal static void AddCustomExfils(RaidLocation raid, List<CustomExfil> transits, List<CustomExfil> extracts)
-    {
-        if (!CustomExfils.TryGetValue(raid, out var raidMaps))
-        {
-            VagabondLogger.Warning($"AddCustomExfils: invalid raid '{raid}'.");
-            return;
-        }
-
-        var databaseService = ReflectionUtil.GetService<DatabaseService>();
-        var location = RaidLocationToLocation(databaseService!, raid);
-        if (location == null)
-        {
-            VagabondLogger.Warning($"AddCustomExfils: no live location for raid '{raid}'; nothing applied.");
-            return;
-        }
-
-        var newTransits = new List<CustomExfil>(transits);
-        var newExtracts = new List<CustomExfil>(extracts);
-
-        // dedupe
-        var ids = new HashSet<string>(
-            newTransits.Select(t => t.Identifier).Concat(newExtracts.Select(e => e.Identifier)),
-            StringComparer.OrdinalIgnoreCase);
-        foreach (var list in raidMaps.Values)
-        {
-            list.RemoveAll(x => ids.Contains(x.Identifier));
-        }
-
-        // assign unique id
-        foreach (var transit in newTransits)
-        {
-            transit.TransitPointId ??= Interlocked.Increment(ref _nextApiExfilOffset);
-        }
-
-        foreach (var alias in raidMaps.Keys)
-        {
-            AddExtractions(0, location, new CustomExtilData
-            {
-                MapName = alias,
-                Raid = raid,
-                Extracts = newExtracts,
-                Transits = newTransits,
-            });
-        }
-
-        BuildCustomExfilSnapshot(forceRebuild: true);
-    }
-
-    /// <summary>
-    /// API: remove custom exfil.
-    /// </summary>
-    internal static bool RemoveCustomExfil(RaidLocation raid, string exfilId)
-    {
-        if (string.IsNullOrWhiteSpace(exfilId))
-        {
-            return false;
-        }
-
-        if (!CustomExfils.TryGetValue(raid, out var byMap))
-        {
-            return false;
-        }
-
-        var removed = false;
-        foreach (var list in byMap.Values)
-        {
-            removed |= list.RemoveAll(x =>
-                string.Equals(x.Identifier, exfilId, StringComparison.OrdinalIgnoreCase)) > 0;
-        }
-
-        if (!removed)
-        {
-            return false;
-        }
-
-        var databaseService = ReflectionUtil.GetService<DatabaseService>();
-        if (databaseService == null)
-        {
-            return true;
-        }
-
-        var location = RaidLocationToLocation(databaseService, raid);
-
-        if (location != null)
-        {
-            var displayNames = new HashSet<string>(
-                location.AllExtracts
-                    .Where(e => string.Equals(e.SptName, exfilId, StringComparison.OrdinalIgnoreCase))
-                    .Select(e => e.Name)
-                    .Where(n => !string.IsNullOrEmpty(n))
-                    .Select(n => n ?? ""),
-                StringComparer.OrdinalIgnoreCase);
-
-            location.AllExtracts = location.AllExtracts
-                .Where(e => !string.Equals(e.SptName, exfilId, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            location.Base.Exits = location.Base.Exits
-                .Where(e => string.IsNullOrEmpty(e.Name) || !displayNames.Contains(e.Name))
-                .ToList();
-
-            if (location.Base.Transits != null)
-            {
-                location.Base.Transits = location.Base.Transits
-                    .Where(t => !string.Equals(t.Name, exfilId, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-            }
-        }
-
-        BuildCustomExfilSnapshot(forceRebuild: true);
-        return true;
-    }
-
-    /// <summary>
-    /// API: returns list of current custom exfils.
-    /// </summary>
-    internal static IReadOnlyList<CustomExfil> GetCustomExfils(RaidLocation raid)
-    {
-        if (!CustomExfils.TryGetValue(raid, out var byMap))
-        {
-            return Array.Empty<CustomExfil>();
-        }
-
-        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var merged = new List<CustomExfil>();
-        foreach (var list in byMap.Values)
-        {
-            foreach (var exfil in list)
-            {
-                if (seen.Add(exfil.Identifier))
-                {
-                    merged.Add(exfil);
-                }
-            }
-        }
-
-        return merged;
-    }
-
     private static Location? RaidLocationToLocation(DatabaseService databaseService, RaidLocation raid)
     {
         var locations = databaseService.GetLocations();
@@ -577,5 +435,147 @@ internal static class ExfilService
         _snapshotCache = snapshot;
         SnapshotCacheVersion++;
         return snapshot;
+    }
+
+    /// <summary>
+    /// API: add/replace custom exfils.
+    /// </summary>
+    internal static void AddCustomExfils(RaidLocation raid, List<CustomExfil> transits, List<CustomExfil> extracts)
+    {
+        if (!CustomExfils.TryGetValue(raid, out var raidMaps))
+        {
+            VagabondLogger.Warning($"AddCustomExfils: invalid raid '{raid}'.");
+            return;
+        }
+
+        var databaseService = ReflectionUtil.GetService<DatabaseService>();
+        var location = RaidLocationToLocation(databaseService!, raid);
+        if (location == null)
+        {
+            VagabondLogger.Warning($"AddCustomExfils: no live location for raid '{raid}'; nothing applied.");
+            return;
+        }
+
+        var newTransits = new List<CustomExfil>(transits);
+        var newExtracts = new List<CustomExfil>(extracts);
+
+        // dedupe
+        var ids = new HashSet<string>(
+            newTransits.Select(t => t.Identifier).Concat(newExtracts.Select(e => e.Identifier)),
+            StringComparer.OrdinalIgnoreCase);
+        foreach (var list in raidMaps.Values)
+        {
+            list.RemoveAll(x => ids.Contains(x.Identifier));
+        }
+
+        // assign unique id
+        foreach (var transit in newTransits)
+        {
+            transit.TransitPointId ??= Interlocked.Increment(ref _nextApiExfilOffset);
+        }
+
+        foreach (var alias in raidMaps.Keys)
+        {
+            AddExtractions(0, location, new CustomExtilData
+            {
+                MapName = alias,
+                Raid = raid,
+                Extracts = newExtracts,
+                Transits = newTransits,
+            });
+        }
+
+        BuildCustomExfilSnapshot(forceRebuild: true);
+    }
+
+    /// <summary>
+    /// API: remove custom exfil.
+    /// </summary>
+    internal static bool RemoveCustomExfil(RaidLocation raid, string exfilId)
+    {
+        if (string.IsNullOrWhiteSpace(exfilId))
+        {
+            return false;
+        }
+
+        if (!CustomExfils.TryGetValue(raid, out var byMap))
+        {
+            return false;
+        }
+
+        var removed = false;
+        foreach (var list in byMap.Values)
+        {
+            removed |= list.RemoveAll(x =>
+                string.Equals(x.Identifier, exfilId, StringComparison.OrdinalIgnoreCase)) > 0;
+        }
+
+        if (!removed)
+        {
+            return false;
+        }
+
+        var databaseService = ReflectionUtil.GetService<DatabaseService>();
+        if (databaseService == null)
+        {
+            return true;
+        }
+
+        var location = RaidLocationToLocation(databaseService, raid);
+
+        if (location != null)
+        {
+            var displayNames = new HashSet<string>(
+                location.AllExtracts
+                    .Where(e => string.Equals(e.SptName, exfilId, StringComparison.OrdinalIgnoreCase))
+                    .Select(e => e.Name)
+                    .Where(n => !string.IsNullOrEmpty(n))
+                    .Select(n => n ?? ""),
+                StringComparer.OrdinalIgnoreCase);
+
+            location.AllExtracts = location.AllExtracts
+                .Where(e => !string.Equals(e.SptName, exfilId, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            location.Base.Exits = location.Base.Exits
+                .Where(e => string.IsNullOrEmpty(e.Name) || !displayNames.Contains(e.Name))
+                .ToList();
+
+            if (location.Base.Transits != null)
+            {
+                location.Base.Transits = location.Base.Transits
+                    .Where(t => !string.Equals(t.Name, exfilId, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+        }
+
+        BuildCustomExfilSnapshot(forceRebuild: true);
+        return true;
+    }
+
+    /// <summary>
+    /// API: returns list of current custom exfils.
+    /// </summary>
+    internal static IReadOnlyList<CustomExfil> GetCustomExfils(RaidLocation raid)
+    {
+        if (!CustomExfils.TryGetValue(raid, out var byMap))
+        {
+            return Array.Empty<CustomExfil>();
+        }
+
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var merged = new List<CustomExfil>();
+        foreach (var list in byMap.Values)
+        {
+            foreach (var exfil in list)
+            {
+                if (seen.Add(exfil.Identifier))
+                {
+                    merged.Add(exfil);
+                }
+            }
+        }
+
+        return merged;
     }
 }

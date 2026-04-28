@@ -48,9 +48,14 @@ public sealed class VagabondLoader : IOnLoad
 
     public Task OnLoad()
     {
+        // exfils/transits
         Api.AddExfilsImpl = ExfilService.AddCustomExfils;
         Api.RemoveExfilImpl = ExfilService.RemoveCustomExfil;
         Api.GetExfilsImpl = ExfilService.GetCustomExfils;
+        // traders
+        Api.AddTraderLocationsImpl = HideoutService.AddTraderLocations;
+        Api.RemoveTraderLocationImpl = HideoutService.RemoveTraderLocation;
+        Api.GetTraderLocationsImpl = HideoutService.GetTraderLocations;
 
         VagabondConfig.Initialize();
 

@@ -13,6 +13,10 @@ public static class Api
     internal static Func<RaidLocation, string, bool>? RemoveExfilImpl;
     internal static Func<RaidLocation, IReadOnlyList<CustomExfil>>? GetExfilsImpl;
 
+    internal static Action<List<TraderLocation>>? AddTraderLocationsImpl;
+    internal static Func<string, bool>? RemoveTraderLocationImpl;
+    internal static Func<IReadOnlyList<TraderLocation>>? GetTraderLocationsImpl;
+
     /// <summary>
     /// Add/replace a custom exfils on the given raid.
     /// If a custom exfil with the same id already exists, it is replaced.
@@ -34,6 +38,24 @@ public static class Api
     /// </summary>
     public static IReadOnlyList<CustomExfil> GetExfils(RaidLocation raid)
         => Required(GetExfilsImpl)(raid);
+
+    /// <summary>
+    /// Add/replace trader location. Entries with an ExfilIdentifier matching an existing one replace it.
+    /// </summary>
+    public static void AddTraderLocations(List<TraderLocation> extractions)
+        => Required(AddTraderLocationsImpl)(extractions);
+
+    /// <summary>
+    /// Removes a trader location by ExfilIdentifier. Returns true if removed.
+    /// </summary>
+    public static bool RemoveTraderExtraction(string exitName)
+        => Required(RemoveTraderLocationImpl)(exitName);
+
+    /// <summary>
+    /// Returns all currently registered trader locations.
+    /// </summary>
+    public static IReadOnlyList<TraderLocation> GetTraderExtractions()
+        => Required(GetTraderLocationsImpl)();
 
     private static T Required<T>(T? impl) where T : class
         => impl ?? throw new InvalidOperationException(

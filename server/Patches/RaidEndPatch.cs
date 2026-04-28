@@ -223,7 +223,7 @@ public sealed class RaidEndPatch : AbstractPatch
                 if (traderLoc != null)
                 {
                     state.CurrentMap = traderLoc.Raid.ToString();
-                    state.LastExit = traderLoc.ExitName;
+                    state.LastExit = traderLoc.ExfilIdentifier;
                 }
 
                 // Light keeper
