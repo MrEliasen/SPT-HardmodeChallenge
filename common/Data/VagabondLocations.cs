@@ -106,6 +106,12 @@ public static class VagabondLocations
             "labyrinth",
         },
     };
+    
+    // helper used in api example
+    public static string RaidLocationToMapName(RaidLocation raid)
+    {
+        return InverseLookupTable[raid].First();
+    }
 
     public static Dictionary<string, RaidLocation> LookupTable = new(StringComparer.OrdinalIgnoreCase)
     {

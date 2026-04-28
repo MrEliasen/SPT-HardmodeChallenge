@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <RootNamespace>Vagabond.ApiExample</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
+        <LangVersion>latest</LangVersion>
+        <OutputPath>build\\api-example\\$(Configuration)\\$(AssemblyName)\\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <PackageId>APIExample</PackageId>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT-dev\</TarkovDir>
+        <TarkovPluginsSPTDir>$(TarkovDir)SPT\user\mods\</TarkovPluginsSPTDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="SPTarkov.Common" Version="4.0.13"/>
+        <PackageReference Include="SPTarkov.DI" Version="4.0.13"/>
+        <PackageReference Include="SPTarkov.Server.Core" Version="4.0.13"/>
+        <PackageReference Include="SPTarkov.Reflection" Version="4.0.13"/>
+    </ItemGroup>
+
+    <!--
+      Vagabond.Common.dll ships with Vagabond itself.
+      Reference it for compile only, do NOT copy it into your release (leave Private=false).
+      The player already has it from Vagabond and shipping a second copy causes version drift.
+    -->
+    <ItemGroup>
+        <Reference Include="Vagabond.Common">
+            <HintPath>$(TarkovDir)BepInEx\plugins\Vagabond\Vagabond.Common.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
+
+    <!--
+      copy the compiled DLL to your local server for testing, just left here as example
+    -->
+    <Target Name="PostBuild" AfterTargets="Build">
+        <ItemGroup>
+            <OutputDLL Include="$(ProjectDir)$(OutDir)$(TargetName).dll"/>
+        </ItemGroup>
+
+        <ItemGroup>
+            <PluginFiles Include="$(ProjectDir)$(OutDir)$(TargetName).dll"/>
+        </ItemGroup>
+
+        <!-- Copy to Tarkov plugin directory -->
+        <Copy SourceFiles="@(PluginFiles)"
+              DestinationFolder="$(TarkovPluginsSPTDir)Vagabond-API-Example\"
+              SkipUnchangedFiles="true"/>
+    </Target>
+</Project>
