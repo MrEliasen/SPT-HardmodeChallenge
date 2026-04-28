@@ -90,29 +90,29 @@ public class Vagabond : BaseUnityPlugin
             new KeyboardShortcut(KeyCode.P, KeyCode.LeftControl),
             "Press in raid to place the entrance to your hideout at your current location."
         );
-
+        
         _dumpHotkey = Config.Bind(
             "For Modders",
-            "Save Current Location",
+            "Dump Current Location",
             new KeyboardShortcut(KeyCode.F8),
-            "Press in raid to dump current map, position and yaw to file."
+            "Press in raid to dump current map, position and yaw to file in the Vagabond mod dir."
         );
 
         _dumpCustomExtractHotkey = Config.Bind(
-            "Development",
-            "Generate Extraction From Location",
+            "For Modders",
+            "Dump Extraction From Current Location",
             new KeyboardShortcut(KeyCode.F9),
-            "Press in raid to dump a copy/paste ready custom extract snippet using the current player position"
+            "Press in raid to dump a copy/paste ready custom extract snippet using the current player position, to a file in the Vagabond mod dir"
         );
 
         _dumpCustomTransitHotkey = Config.Bind(
-            "Development",
-            "Generate Transit From Location",
+            "For Modders",
+            "Dump Transit From Current Location",
             new KeyboardShortcut(KeyCode.F10),
-            "Press in raid to dump a copy/paste ready custom transit snippet using the current player position"
+            "Press in raid to dump a copy/paste ready custom transit snippet using the current player position, to a file in the Vagabond mod dir"
         );
 
-        var pluginDir = Path.GetDirectoryName(Info.Location);
+        var pluginDir = Path.GetDirectoryName(Info.Location)!;
         _locationDumpPath = Path.Combine(pluginDir, "dumped_locations.txt");
         _customExtractDumpPath = Path.Combine(pluginDir, "dumped_custom_extracts.txt");
         _customTransitDumpPath = Path.Combine(pluginDir, "dumped_custom_transits.txt");
