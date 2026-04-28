@@ -25,7 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="Config\\vagabond.json" CopyToOutputDirectory="Always"/>
+        <None Include="Config\\vagabond.json" Link="config\\vagabond.json" CopyToOutputDirectory="Always"/>
     </ItemGroup>
 
 
