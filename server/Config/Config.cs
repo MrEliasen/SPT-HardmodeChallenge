@@ -17,10 +17,10 @@ public sealed class VagabondConfig
     public bool EnablePickRaidLocation { get; set; }
     public bool AddFenceToHideout { get; set; }
     public bool ShareHideoutExits { get; set; }
-    public bool EnableVirtualStashes { get; set; }
+    public bool EnableVirtualStashes { get; set; } = true;
     public bool WipeVirtualStashesOnRaidEntry { get; set; }
-    public bool AllowPostRaidHealing { get; set; }
-    public bool HealStatusEffectsOnDeath { get; set; }
+    public bool AllowPostRaidHealing { get; set; } = true;
+    public bool HealStatusEffectsOnDeath { get; set; } = true;
     public string OnDeathGoTo { get; set; } = "hideout";
     public string StarterFence { get; set; } = "streets";
     public int HideoutRelocationFee { get; set; } = 350_000;
@@ -55,7 +55,7 @@ public sealed class VagabondConfig
             var chosen = File.Exists(localConfig) ? localConfig : siblingConfig;
             if (!File.Exists(chosen))
             {
-                return new VagabondConfig();
+                throw new Exception($"vagabond.json config not found, tried {localConfig} and {siblingConfig}");
             }
 
             var json = File.ReadAllText(chosen);
@@ -63,11 +63,11 @@ public sealed class VagabondConfig
             {
                 ReadCommentHandling = JsonCommentHandling.Skip,
                 PropertyNameCaseInsensitive = true
-            }) ?? new VagabondConfig();
+            }) ?? throw new Exception($"failed to read {chosen}");
         }
         catch (Exception ex)
         {
-            VagabondLogger.Error($"Failed to load config, using defaults: {ex}");
+            VagabondLogger.Error($"config error, will use default. Error: {ex}");
             return new VagabondConfig();
         }
     }
