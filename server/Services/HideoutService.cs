@@ -30,61 +30,61 @@ internal static class HideoutService
     {
         new TraderLocation
         {
-            Id = "54cb57776803fa99248b456e", // Therapist
+            TraderId = "54cb57776803fa99248b456e", // Therapist
             Raid = RaidLocation.GroundZero,
             ExfilIdentifier = "VGB_EXT_THERAPIST",
         },
         new TraderLocation
         {
-            Id = "58330581ace78e27b8b10cee", // Skier
+            TraderId = "58330581ace78e27b8b10cee", // Skier
             Raid = RaidLocation.Customs,
             ExfilIdentifier = "VGB_EXT_SKIER",
         },
         new TraderLocation
         {
-            Id = "5c0647fdd443bc2504c2d371", // Jaeger
+            TraderId = "5c0647fdd443bc2504c2d371", // Jaeger
             Raid = RaidLocation.Woods,
             ExfilIdentifier = "VGB_EXT_JAEGER",
         },
         new TraderLocation
         {
-            Id = "5a7c2eca46aef81a7ca2145d", // Mechanic
+            TraderId = "5a7c2eca46aef81a7ca2145d", // Mechanic
             Raid = RaidLocation.FactoryDay,
             ExfilIdentifier = "VGB_EXT_MECHANIC",
         },
         new TraderLocation
         {
-            Id = "5a7c2eca46aef81a7ca2145d", // Mechanic
+            TraderId = "5a7c2eca46aef81a7ca2145d", // Mechanic
             Raid = RaidLocation.FactoryNight,
             ExfilIdentifier = "VGB_EXT_MECHANIC",
         },
         new TraderLocation
         {
-            Id = "54cb50c76803fa8b248b4571", // Prapor
+            TraderId = "54cb50c76803fa8b248b4571", // Prapor
             Raid = RaidLocation.Streets,
             ExfilIdentifier = "VGB_EXT_PRAPOR",
         },
         new TraderLocation
         {
-            Id = "5ac3b934156ae10c4430e83c", // Ragman
+            TraderId = "5ac3b934156ae10c4430e83c", // Ragman
             Raid = RaidLocation.Interchange,
             ExfilIdentifier = "VGB_EXT_RAGMAN",
         },
         new TraderLocation
         {
-            Id = "5935c25fb3acc3127c3d8cd9", // Peacekeeper
+            TraderId = "5935c25fb3acc3127c3d8cd9", // Peacekeeper
             Raid = RaidLocation.Shoreline,
             ExfilIdentifier = "VGB_EXT_PEACEKEEPER",
         },
         new TraderLocation
         {
-            Id = "579dc571d53a0658a154fbec", // Fence
+            TraderId = "579dc571d53a0658a154fbec", // Fence
             Raid = RaidLocation.Streets,
             ExfilIdentifier = "VGB_EXT_FENCE",
         },
         new TraderLocation
         {
-            Id = "579dc571d53a0658a154fbec", // Fence
+            TraderId = "579dc571d53a0658a154fbec", // Fence
             Raid = RaidLocation.Lighthouse,
             ExfilIdentifier = "VGB_EXT_FENCE_DL",
         }
@@ -93,7 +93,7 @@ internal static class HideoutService
     public static IReadOnlyCollection<string> GetAllTraderIds()
     {
         return TraderLocations
-            .Select(x => x.Id)
+            .Select(x => x.TraderId)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
     }
@@ -108,14 +108,14 @@ internal static class HideoutService
 
         return TraderLocations.FirstOrDefault(x =>
             x.Raid == raid
-            && string.Equals(x.ExfilIdentifier, state.LastExit, StringComparison.OrdinalIgnoreCase))?.Id;
+            && string.Equals(x.ExfilIdentifier, state.LastExit, StringComparison.OrdinalIgnoreCase))?.TraderId;
     }
 
     public static void UpdateTraderAccess(PmcData pmc, VagabondState state)
     {
         var traderId = GetCurrentTraderId(state) ?? string.Empty;
         var isCustomTraderLoc = state.LastExit == "VGB_EXT_MARKET";
-        var traderIdList = TraderLocations.ToList().ConvertAll(x => x.Id);
+        var traderIdList = TraderLocations.ToList().ConvertAll(x => x.TraderId);
         var tradersInfo = pmc.TradersInfo;
         var isOwnHideout = !string.IsNullOrEmpty(state.HideoutState?.Id) &&
                            state.LastExit == $"{HideoutIdPrefix}{state.HideoutState?.Id}";

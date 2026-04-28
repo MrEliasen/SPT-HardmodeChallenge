@@ -219,7 +219,7 @@ public sealed class RaidEndPatch : AbstractPatch
         {
             if (ExfilQuests.IsExfilQuest(state.LastExit, state.QuestExfils, out var traderId))
             {
-                var traderLoc = HideoutService.TraderLocations.FirstOrDefault(x => x.Id == traderId);
+                var traderLoc = HideoutService.TraderLocations.FirstOrDefault(x => x.TraderId == traderId);
                 if (traderLoc != null)
                 {
                     state.CurrentMap = traderLoc.Raid.ToString();

@@ -117,6 +117,15 @@ public sealed class VagabondApiExampleLoader : IOnLoad
         // here we add the transits and exfils we made, to "Customs"
         Api.AddExfils(RaidLocation.Woods, myCustomTransits, myCustomExfils);
         _logger.Info("Added additional exfils via Vagabond API");
+        
+        // Now, lets add  the new Fence exfil we made
+        Api.AddTraderLocations([
+        new TraderLocation
+        {
+            
+        }
+        ]);
+        
         return Task.CompletedTask;
     }
 }

@@ -7,7 +7,7 @@ public sealed class TraderLocation
     /// <summary>
     /// The Trader ID
     /// </summary>
-    public string Id { get; set; } = string.Empty;
+    public string TraderId { get; set; } = string.Empty;
     /// <summary>
     /// Which raid the trader is available in
     /// </summary>
