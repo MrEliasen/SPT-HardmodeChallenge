@@ -400,9 +400,9 @@ internal class CustomExfilPlacementPatch : ModulePatch
             conditions = string.Empty,
             activateAfterSec = definition.ActivateAfterSeconds,
             time = (ushort)Mathf.Clamp(Mathf.RoundToInt(definition.ExfiltrationTime), 1, ushort.MaxValue),
-            target = string.IsNullOrWhiteSpace(definition.TargetLocation)
+            target = string.IsNullOrWhiteSpace(definition.AccessKeysSourceLocation)
                 ? definition.DestinationLocation
-                : definition.TargetLocation,
+                : definition.AccessKeysSourceLocation,
             location = definition.DestinationLocation,
             events = definition.Events,
             hideIfNoKey = definition.HideIfNoKey,

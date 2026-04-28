@@ -329,9 +329,9 @@ internal static class ExfilService
             Conditions = string.Empty,
             Id = definition.TransitPointId,
             Location = definition.DestinationLocation,
-            Target = string.IsNullOrWhiteSpace(definition.TargetLocation)
+            Target = string.IsNullOrWhiteSpace(definition.AccessKeysSourceLocation)
                 ? definition.DestinationLocation
-                : definition.TargetLocation,
+                : definition.AccessKeysSourceLocation,
             ActivateAfterSeconds = definition.ActivateAfterSeconds,
             Time = (long)Math.Round(definition.ExfiltrationTime),
             IsActive = definition.IsActive,

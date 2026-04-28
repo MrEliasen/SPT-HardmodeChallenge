@@ -55,7 +55,7 @@ public sealed class VagabondApiExampleLoader : IOnLoad
                 EntryPoints = "",
                 // how long extraction timer is 20s in this case
                 ExfiltrationTime = 20f,
-                // the XYZ coords of the exfil
+                // the XYZ coords of the exfil location on the map
                 X = -122.74f,
                 Y = 10.576f,
                 Z = -843.164f,
@@ -74,24 +74,49 @@ public sealed class VagabondApiExampleLoader : IOnLoad
                 Identifier = "MYMOD_WOODS_TO_GZ",
                 // since its a transit, make sure you designate it as such
                 IsTransit = true,
-                // Specify 
-                DestinationLocation = VagabondLocations.RaidLocationToMapName(RaidLocation.Woods),
-                TargetLocation = VagabondLocations.RaidLocationToMapName(RaidLocation.GroundZero),
-                Description = "Transit to Woods",
-                ExfiltrationTime = 15f,
-                ActivateAfterSeconds = 0,
+                // What raid this transit goes to.
+                DestinationLocation = VagabondLocations.RaidLocationToMapName(RaidLocation.GroundZero),
+                Description = "Transit to Ground Zero",
+                ExfiltrationTime = 15f, // 15s transit timer
                 IsActive = true,
-                Events = false,
-                HideIfNoKey = false,
+                // the XYZ coords of the transit location on the map
                 X = 653.017f,
                 Y = -0.292f,
                 Z = -24.815f,
+                // and which way to look if this location is used as an infil from another transition
+                RotationY = 258.376f
+            },
+            new CustomExfil
+            {
+                // The unique Identifier for your exfil.
+                // If an exfil exists with this Identifier it will be overwritten by this one
+                Identifier = "MYMOD_WOODS_TO_GZ",
+                // since its a transit, make sure you designate it as such
+                IsTransit = true,
+                // What raid this transit goes to.
+                DestinationLocation = VagabondLocations.RaidLocationToMapName(RaidLocation.Labs),
+                // here we override the need for a labs key to transit to labs via this transit,
+                // by specifying a location which does not require a key, like customs.
+                // If you leave it blank it will use the Destination's default key (in this case Labs) - vanilla behavior 
+                AccessKeysSourceLocation = VagabondLocations.RaidLocationToMapName(RaidLocation.Customs),
+                Description = "Transit to Labs",
+                ExfiltrationTime = 15f,
+                IsActive = true,
+                // in case we didn't override AccessKeysSourceLocation, it would require a labs key to use this transit.
+                // in which case, if you set this to true, it would hide this transit if you didn't have a labs key on you.
+                HideIfNoKey = false,
+                // the XYZ coords of the transit location on the map
+                X = 653.017f,
+                Y = -0.292f,
+                Z = -24.815f,
+                // and which way to look if this location is used as an infil from another transition
                 RotationY = 258.376f
             },
         ];
         
-        // the raid to add the transits and exfils to
-        Api.AddExfils(RaidLocation.Customs, myCustomTransits, myCustomExfils);
+        // here we add the transits and exfils we made, to "Customs"
+        Api.AddExfils(RaidLocation.Woods, myCustomTransits, myCustomExfils);
+        _logger.Info("Added additional exfils via Vagabond API");
         return Task.CompletedTask;
     }
 }

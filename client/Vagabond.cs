@@ -331,7 +331,6 @@ public class Vagabond : BaseUnityPlugin
                 "    IsTransit = true,",
                 $"    TransitPointId = 0,// gets auto generated",
                 "    DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),",
-                "    TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),",
                 "    Description = \"Transit to \",",
                 "    ExfiltrationTime = 5f,",
                 "    ActivateAfterSeconds = 0,",

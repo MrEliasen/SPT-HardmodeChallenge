@@ -41,7 +41,6 @@ public class ExfilsShoreline : ICustomExtilData
             IsTransit = true,
             TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Customs].First(),
-            TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Customs].First(),
             Description = "Transit to Customs",
             ExfiltrationTime = 15f,
             ActivateAfterSeconds = 0,
@@ -59,7 +58,6 @@ public class ExfilsShoreline : ICustomExtilData
             IsTransit = true,
             TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Reserve].First(),
-            TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Reserve].First(),
             Description = "Mountain climb to Reserve",
             ExfiltrationTime = 15f,
             ActivateAfterSeconds = 0,
@@ -95,7 +93,6 @@ public class ExfilsShoreline : ICustomExtilData
             IsTransit = true,
             TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Lighthouse].First(),
-            TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Lighthouse].First(),
             Description = "Transit to Lighthouse",
             ExfiltrationTime = 15f,
             ActivateAfterSeconds = 0,
