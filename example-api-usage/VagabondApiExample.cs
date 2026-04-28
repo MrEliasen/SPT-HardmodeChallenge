@@ -95,6 +95,10 @@ public sealed class VagabondApiExampleLoader : IOnLoad
                 IsTransit = true,
                 // What raid this transit goes to.
                 DestinationLocation = VagabondLocations.RaidLocationToMapName(RaidLocation.Labs),
+                // If you want a player to infil / spawn on a specific extract or transit location,
+                // specify the exfils Identifier here.
+                // Example: assuming we had another transit or extract we added to GZ
+                ConnectedIdentifier = "MYMOD_GZ_TO_WOODS",
                 // here we override the need for a labs key to transit to labs via this transit,
                 // by specifying a location which does not require a key, like customs.
                 // If you leave it blank it will use the Destination's default key (in this case Labs) - vanilla behavior 
@@ -120,11 +124,17 @@ public sealed class VagabondApiExampleLoader : IOnLoad
         
         // Now, lets add  the new Fence exfil we made
         Api.AddTraderLocations([
-        new TraderLocation
-        {
-            
-        }
+            new TraderLocation
+            {
+                // The ID of the trader
+                TraderId = "579dc571d53a0658a154fbec",
+                // the raid we are adding the location to
+                Raid = RaidLocation.Woods,
+                // the Identifier of the exfil they need to use to access this trader
+                ExfilIdentifier = "MYMOD_EXT_FENCE",
+            }
         ]);
+        _logger.Info("Added additional fence location via Vagabond API");
         
         return Task.CompletedTask;
     }
