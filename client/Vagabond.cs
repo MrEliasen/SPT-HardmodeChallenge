@@ -85,7 +85,7 @@ public class Vagabond : BaseUnityPlugin
         UIMessageService.Create(transform);
 
         _hideoutHotkey = Config.Bind(
-            "Vagabond",
+            "For Players",
             "Place Hideout Entrance",
             new KeyboardShortcut(KeyCode.P, KeyCode.LeftControl),
             "Press in raid to place the entrance to your hideout at your current location."

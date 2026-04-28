@@ -38,6 +38,7 @@ public sealed class VagabondApiExampleLoader : IOnLoad
 
     public Task OnLoad()
     {
+        _logger.Warning("Adding stuff via Vagabond API");
         List<CustomExfil> myCustomExfils = [
             // example of adding a custom extract, which we will hook up to give access to Fence trader.
             new CustomExfil
@@ -48,19 +49,21 @@ public sealed class VagabondApiExampleLoader : IOnLoad
                 DisplayName = "Fence's Woods Hideout",
                 // only fill if you want this extract to copy a specific exfil's template which already exists in the game
                 TemplateExitName = "",
-                // if you specify a template name above and want to hijacks its functionality (like D2 bunker on reserver)
-                // set this to true, however note an exfil can only be hijacked once across all mods.
-                HijackExfil = true,
+                // Set to true ONLY if you want to repurpose an existing in-scene exfil
+                // (e.g. Reserve's D2 bunker switch). When true, X/Y/Z are IGNORED — the
+                // hijacked exfil keeps its original position. For a brand-new exfil at
+                // your X/Y/Z coords, leave this false.
+                HijackExfil = false,
                 // only fill if you want to use specific entry points
                 EntryPoints = "",
                 // how long extraction timer is 20s in this case
                 ExfiltrationTime = 20f,
                 // the XYZ coords of the exfil location on the map
-                X = -122.74f,
-                Y = 10.576f,
-                Z = -843.164f,
+                X = -211.918f,
+                Y = 76.064f,
+                Z = -269.262f,
                 // and which way to look when spawning back in from this exfil
-                RotationY = 90.926f,
+                RotationY = 161.529f,
                 // who can use it, players are Pmc, but maybe you want to do a scav extension or something.
                 Side = "Pmc"
             }     
@@ -76,29 +79,29 @@ public sealed class VagabondApiExampleLoader : IOnLoad
                 IsTransit = true,
                 // What raid this transit goes to.
                 DestinationLocation = VagabondLocations.RaidLocationToMapName(RaidLocation.GroundZero),
+                // If you want a player to infil / spawn on a specific extract or transit location,
+                // specify the exfils Identifier here.
+                // Example: assuming we had another transit or extract we added to GZ
+                ConnectedIdentifier = "MYMOD_GZ_TO_WOODS",
                 Description = "Transit to Ground Zero",
                 ExfiltrationTime = 15f, // 15s transit timer
                 IsActive = true,
                 // the XYZ coords of the transit location on the map
-                X = 653.017f,
-                Y = -0.292f,
-                Z = -24.815f,
+                X = -178.181f,
+                Y = 58.151f,
+                Z = -306.06f,
                 // and which way to look if this location is used as an infil from another transition
-                RotationY = 258.376f
+                RotationY = 194.459f,
             },
             new CustomExfil
             {
                 // The unique Identifier for your exfil.
                 // If an exfil exists with this Identifier it will be overwritten by this one
-                Identifier = "MYMOD_WOODS_TO_GZ",
+                Identifier = "MYMOD_WOODS_TO_LABS",
                 // since its a transit, make sure you designate it as such
                 IsTransit = true,
                 // What raid this transit goes to.
                 DestinationLocation = VagabondLocations.RaidLocationToMapName(RaidLocation.Labs),
-                // If you want a player to infil / spawn on a specific extract or transit location,
-                // specify the exfils Identifier here.
-                // Example: assuming we had another transit or extract we added to GZ
-                ConnectedIdentifier = "MYMOD_GZ_TO_WOODS",
                 // here we override the need for a labs key to transit to labs via this transit,
                 // by specifying a location which does not require a key, like customs.
                 // If you leave it blank it will use the Destination's default key (in this case Labs) - vanilla behavior 
@@ -110,17 +113,17 @@ public sealed class VagabondApiExampleLoader : IOnLoad
                 // in which case, if you set this to true, it would hide this transit if you didn't have a labs key on you.
                 HideIfNoKey = false,
                 // the XYZ coords of the transit location on the map
-                X = 653.017f,
-                Y = -0.292f,
-                Z = -24.815f,
+                X = -207.251f,
+                Y = 57.438f,
+                Z = -322.552f,
                 // and which way to look if this location is used as an infil from another transition
-                RotationY = 258.376f
+                RotationY = 45.435f,
             },
         ];
         
         // here we add the transits and exfils we made, to "Customs"
         Api.AddExfils(RaidLocation.Woods, myCustomTransits, myCustomExfils);
-        _logger.Info("Added additional exfils via Vagabond API");
+        _logger.Success("Added additional exfils via Vagabond API");
         
         // Now, lets add  the new Fence exfil we made
         Api.AddTraderLocations([
@@ -134,7 +137,7 @@ public sealed class VagabondApiExampleLoader : IOnLoad
                 ExfilIdentifier = "MYMOD_EXT_FENCE",
             }
         ]);
-        _logger.Info("Added additional fence location via Vagabond API");
+        _logger.Success("Added additional fence location via Vagabond API");
         
         return Task.CompletedTask;
     }
