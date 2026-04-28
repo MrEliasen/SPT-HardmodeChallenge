@@ -28,7 +28,7 @@ public class Vagabond : BaseUnityPlugin
     private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomExtractHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;
-    
+
     private string _locationDumpPath = null!;
     private string _customExtractDumpPath = null!;
     private string _customTransitDumpPath = null!;
@@ -90,7 +90,7 @@ public class Vagabond : BaseUnityPlugin
             new KeyboardShortcut(KeyCode.P, KeyCode.LeftControl),
             "Press in raid to place the entrance to your hideout at your current location."
         );
-        
+
         _dumpHotkey = Config.Bind(
             "For Modders",
             "Dump Current Location",
@@ -116,7 +116,7 @@ public class Vagabond : BaseUnityPlugin
         _locationDumpPath = Path.Combine(pluginDir, "dumped_locations.txt");
         _customExtractDumpPath = Path.Combine(pluginDir, "dumped_custom_extracts.txt");
         _customTransitDumpPath = Path.Combine(pluginDir, "dumped_custom_transits.txt");
-        
+
         Log("loaded");
     }
 

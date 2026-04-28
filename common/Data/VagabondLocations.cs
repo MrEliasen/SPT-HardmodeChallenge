@@ -106,7 +106,7 @@ public static class VagabondLocations
             "labyrinth",
         },
     };
-    
+
     // helper used in api example
     public static string RaidLocationToMapName(RaidLocation raid)
     {
