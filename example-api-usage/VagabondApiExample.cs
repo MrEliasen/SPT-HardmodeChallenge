@@ -139,6 +139,18 @@ public sealed class VagabondApiExampleLoader : IOnLoad
         ]);
         _logger.Success("Added additional fence location via Vagabond API");
         
+        // placeholder for sessionId or profileId for a player
+        var sessionId = "69ebbbcfa4878b67303ec776";
+        var vagabondState = Api.GetState(sessionId);
+        if (vagabondState != null)
+        {
+            // change the current map and exit of the profile to the fence we just created.
+            vagabondState.CurrentMap = nameof(RaidLocation.Woods);
+            vagabondState.LastExit = "MYMOD_EXT_FENCE";
+            Api.SaveState(sessionId, vagabondState);
+        }
+        _logger.Success("Changed the profiles location via Vagabond API");
+        
         return Task.CompletedTask;
     }
 }
