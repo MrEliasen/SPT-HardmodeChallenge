@@ -28,7 +28,7 @@ public sealed class GetCompleteProfilePatch : AbstractPatch
             return;
         }
 
-        var state = VagabondService.GetState(sessionId);
+        var state = VagabondStateService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             return;

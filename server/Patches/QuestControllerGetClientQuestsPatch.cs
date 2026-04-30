@@ -24,7 +24,7 @@ public sealed class QuestControllerGetClientQuestsPatch : AbstractPatch
             return;
         }
 
-        var state = VagabondService.GetState(sessionId);
+        var state = VagabondStateService.GetState(sessionId);
         if (state.HideoutState == null || state.CanPlaceHideout)
         {
             __result.RemoveAll(q => q.Id == HideoutRelocationQuest.QuestId);

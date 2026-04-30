@@ -6,7 +6,6 @@ using SPTarkov.Server.Core.Models.Eft.Inventory;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Routers;
 using SPTarkov.Server.Core.Servers;
-using SPTarkov.Server.Core.Services.Mod;
 using Vagabond.Common.Data;
 using Vagabond.Server.Config;
 using Vagabond.Common.Enums;
@@ -17,7 +16,6 @@ namespace Vagabond.Server.Services;
 
 internal static class VagabondService
 {
-    private const string ModKey = "dev.oogabooga.spt-vagabond";
     public static Dictionary<string, List<string>> TraderLocations = new();
 
     public static void ResetProfile(MongoId sessionId, PmcData pmc)
@@ -36,7 +34,7 @@ internal static class VagabondService
             return;
         }
 
-        var state = GetState(sessionId);
+        var state = VagabondStateService.GetState(sessionId);
         state.ResetProfile = false;
 
         RaidRuntimeState.Left(sessionId);
@@ -54,7 +52,7 @@ internal static class VagabondService
 
         state.TransitState = null;
         HideoutService.UpdateTraderAccess(pmc, state);
-        SaveState(sessionId, state);
+        VagabondStateService.SaveState(sessionId, state);
         using var stashState = VirtualStashService.OpenStash(sessionId, pmc);
         AddMoney(sessionId, pmc);
     }
@@ -318,22 +316,5 @@ internal static class VagabondService
         }
 
         return false;
-    }
-
-    public static VagabondSessionState GetState(MongoId sessionId)
-    {
-        var profileDataService = ReflectionUtil.GetService<ProfileDataService>();
-        if (profileDataService == null)
-        {
-            return new();
-        }
-
-        return profileDataService.GetProfileData<VagabondSessionState>(sessionId, ModKey) ?? new VagabondSessionState();
-    }
-
-    public static void SaveState(MongoId sessionId, VagabondSessionState state)
-    {
-        var profileDataService = ReflectionUtil.GetService<ProfileDataService>();
-        profileDataService?.SaveProfileData(sessionId, ModKey, state);
     }
 }

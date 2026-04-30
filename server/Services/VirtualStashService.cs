@@ -486,7 +486,7 @@ internal static class VirtualStashService
             return false;
         }
 
-        var state = VagabondService.GetState(sessionId);
+        var state = VagabondStateService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             return false;

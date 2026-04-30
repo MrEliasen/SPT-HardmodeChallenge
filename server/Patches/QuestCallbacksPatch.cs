@@ -26,11 +26,11 @@ public sealed class QuestCallbacksAcceptQuestPatch : AbstractPatch
             return;
         }
 
-        var state = VagabondService.GetState(sessionID);
+        var state = VagabondStateService.GetState(sessionID);
         if (ExfilQuests.List.ContainsKey(info.QuestId) && !state.QuestExfils.Contains(info.QuestId))
         {
             state.QuestExfils.Add(info.QuestId);
-            VagabondService.SaveState(sessionID, state);
+            VagabondStateService.SaveState(sessionID, state);
         }
     }
 }
@@ -50,7 +50,7 @@ public sealed class QuestCallbacksCompleteQuestPatch : AbstractPatch
             return;
         }
 
-        var state = VagabondService.GetState(sessionID);
+        var state = VagabondStateService.GetState(sessionID);
 
         if (state.QuestExfils.Contains(info.QuestId))
         {
@@ -115,6 +115,6 @@ public sealed class QuestCallbacksCompleteQuestPatch : AbstractPatch
             }
         }
 
-        VagabondService.SaveState(sessionID, state);
+        VagabondStateService.SaveState(sessionID, state);
     }
 }
