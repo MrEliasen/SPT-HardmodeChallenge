@@ -1,5 +1,6 @@
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Services.Mod;
+using Vagabond.Common;
 using Vagabond.Server.Services;
 
 namespace Vagabond.Server.State;
@@ -16,10 +17,12 @@ public sealed class VagabondState
     public HideoutState? HideoutState { get; set; }
     public HashSet<string> QuestExfils { get; set; } = [];
     public HashSet<string>? RaidFirItems { get; set; }
-    public string Version { get; set; } = "0.3.0";
+    public string Version { get; set; } = ModInfo.Version;
     public bool ResetProfile { get; set; }
     public bool CanPlaceHideout { get; set; }
     public HashSet<string> HideoutTraders { get; set; } = [];
+    public string LastExtractMap { get; set; } = "";
+    public int ConsecutiveExtractsSameMap { get; set; } = 0;
 
     public static VagabondState GetState(MongoId sessionId)
     {

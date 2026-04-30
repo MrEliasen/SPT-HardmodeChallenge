@@ -57,5 +57,8 @@
   "JoinHideoutRagmanLoyaltyLevel": 2,
   "JoinHideoutSkierLoyaltyLevel": 2,
   // limit mail from traders so you can only access mail attachments if the trader is available where you are.
-  "LimitTraderMailAccess": true
+  "LimitTraderMailAccess": true,
+  "EnableConsecutiveMapLootReduction": true,
+  "ConsecutiveMapLootReductionRate": 0.5,
+  "ConsecutiveMapLootReductionMin": 0.05
 }
