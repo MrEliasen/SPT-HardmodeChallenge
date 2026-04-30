@@ -3,15 +3,15 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Enums;
 using Vagabond.Common;
 using Vagabond.Common.Data;
-using Vagabond.Server.State;
+using Vagabond.Common.Definitions;
 
 namespace Vagabond.Server.Services;
 
 public static class MigrationService
 {
-    private static readonly string CurrentVersion = ModInfo.Version;
+    private static readonly string CurrentVersion = VagabondModInfo.Version;
 
-    public static void MigrateProfile(MongoId sessionId, PmcData pmc, VagabondState state)
+    public static void MigrateProfile(MongoId sessionId, PmcData pmc, VagabondSessionState state)
     {
         if (state.Version == CurrentVersion)
         {
@@ -46,11 +46,11 @@ public static class MigrationService
             }
         }
 
-        state.Version = ModInfo.Version;
-        VagabondState.SaveState(sessionId, state);
+        state.Version = VagabondModInfo.Version;
+        StateService.SaveState(sessionId, state);
     }
 
-    private static void From030To031(PmcData pmc, VagabondState state)
+    private static void From030To031(PmcData pmc, VagabondSessionState state)
     {
         if (pmc.Quests == null)
         {
@@ -74,13 +74,13 @@ public static class MigrationService
         state.Version = "0.3.1";
     }
 
-    private static void From031To040(VagabondState state)
+    private static void From031To040(VagabondSessionState state)
     {
         state.CurrentMap = VagabondLocations.NormaliseMapName(state.CurrentMap).ToString();
         state.Version = "0.4.0";
     }
 
-    private static void From040To050(VagabondState state)
+    private static void From040To050(VagabondSessionState state)
     {
         state.CanPlaceHideout = state.HideoutState?.Id == null;
         state.Version = "0.5.0";

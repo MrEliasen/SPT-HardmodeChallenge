@@ -9,6 +9,7 @@ using SPTarkov.Server.Core.Servers;
 using Vagabond.Common.Data;
 using Vagabond.Server.Config;
 using Vagabond.Common.Enums;
+using Vagabond.Common.Definitions;
 using Vagabond.Server.State;
 
 namespace Vagabond.Server.Services;
@@ -33,7 +34,7 @@ internal static class VagabondService
             return;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         state.ResetProfile = false;
 
         RaidRuntimeState.Left(sessionId);
@@ -51,7 +52,7 @@ internal static class VagabondService
 
         state.TransitState = null;
         HideoutService.UpdateTraderAccess(pmc, state);
-        VagabondState.SaveState(sessionId, state);
+        StateService.SaveState(sessionId, state);
         using var stashState = VirtualStashService.OpenStash(sessionId, pmc);
         AddMoney(sessionId, pmc);
     }
@@ -251,7 +252,7 @@ internal static class VagabondService
         }
     }
 
-    public static string GetCurrentRaidId(VagabondState state)
+    public static string GetCurrentRaidId(VagabondSessionState state)
     {
         if (string.IsNullOrEmpty(state.CurrentMap))
         {

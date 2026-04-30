@@ -5,7 +5,6 @@ using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Interfaces;
 using Vagabond.Common.Enums;
-using Vagabond.Server.State;
 using Location = SPTarkov.Server.Core.Models.Eft.Common.Location;
 
 namespace Vagabond.Server.Services;
@@ -17,6 +16,30 @@ internal static class ExfilService
     private static Dictionary<RaidLocation, Dictionary<string, List<CustomExfil>>>? _snapshotCache;
     public static int SnapshotCacheVersion = 1;
     private static HashSet<string> _loadedHideoutExfils = new();
+
+    // API-added entires offset start
+    private static int _nextApiExfilOffset = 20000;
+
+    private static Location? RaidLocationToLocation(DatabaseService databaseService, RaidLocation raid)
+    {
+        var locations = databaseService.GetLocations();
+        return raid switch
+        {
+            RaidLocation.Customs => locations.Bigmap,
+            RaidLocation.FactoryDay => locations.Factory4Day,
+            RaidLocation.FactoryNight => locations.Factory4Night,
+            RaidLocation.GroundZero => locations.SandboxHigh,
+            RaidLocation.Interchange => locations.Interchange,
+            RaidLocation.Lighthouse => locations.Lighthouse,
+            RaidLocation.Reserve => locations.RezervBase,
+            RaidLocation.Shoreline => locations.Shoreline,
+            RaidLocation.Streets => locations.TarkovStreets,
+            RaidLocation.Woods => locations.Woods,
+            RaidLocation.Labs => locations.Laboratory,
+            RaidLocation.Labyrinth => locations.Labyrinth,
+            _ => null
+        };
+    }
 
     public static void RemoveHideout(HideoutState? state)
     {
@@ -115,7 +138,7 @@ internal static class ExfilService
         var i = 1;
         foreach (var transit in data.Transits)
         {
-            transit.TransitPointId = pointIdOffset + i;
+            transit.TransitPointId ??= pointIdOffset + i;
             CustomExfils[data.Raid][data.MapName].Add(transit);
             AddOrReplaceTransit(location, transit);
             i++;
@@ -163,9 +186,9 @@ internal static class ExfilService
             Conditions = string.Empty,
             Id = definition.TransitPointId,
             Location = definition.DestinationLocation,
-            Target = string.IsNullOrWhiteSpace(definition.TargetLocation)
+            Target = string.IsNullOrWhiteSpace(definition.AccessKeysSourceLocation)
                 ? definition.DestinationLocation
-                : definition.TargetLocation,
+                : definition.AccessKeysSourceLocation,
             ActivateAfterSeconds = definition.ActivateAfterSeconds,
             Time = (long)Math.Round(definition.ExfiltrationTime),
             IsActive = definition.IsActive,
@@ -240,7 +263,7 @@ internal static class ExfilService
         };
     }
 
-    public static bool AddHideoutExfil(PmcData pmc, VagabondState state)
+    public static bool AddHideoutExfil(PmcData pmc, VagabondSessionState state)
     {
         if (string.IsNullOrEmpty(state.HideoutState?.Id) || _loadedHideoutExfils.Contains(state.HideoutState.Id))
         {
@@ -320,7 +343,7 @@ internal static class ExfilService
         return true;
     }
 
-    private static CustomExfil? GenerateHideoutExfil(string profileName, VagabondState state)
+    private static CustomExfil? GenerateHideoutExfil(string profileName, VagabondSessionState state)
     {
         if (string.IsNullOrEmpty(state.HideoutState?.Id))
         {
@@ -411,5 +434,147 @@ internal static class ExfilService
         _snapshotCache = snapshot;
         SnapshotCacheVersion++;
         return snapshot;
+    }
+
+    /// <summary>
+    /// API: add/replace custom exfils.
+    /// </summary>
+    internal static void AddCustomExfils(RaidLocation raid, List<CustomExfil> transits, List<CustomExfil> extracts)
+    {
+        if (!CustomExfils.TryGetValue(raid, out var raidMaps))
+        {
+            VagabondLogger.Warning($"AddCustomExfils: invalid raid '{raid}'.");
+            return;
+        }
+
+        var databaseService = ReflectionUtil.GetService<DatabaseService>();
+        var location = RaidLocationToLocation(databaseService!, raid);
+        if (location == null)
+        {
+            VagabondLogger.Warning($"AddCustomExfils: no live location for raid '{raid}'; nothing applied.");
+            return;
+        }
+
+        var newTransits = new List<CustomExfil>(transits);
+        var newExtracts = new List<CustomExfil>(extracts);
+
+        // dedupe
+        var ids = new HashSet<string>(
+            newTransits.Select(t => t.Identifier).Concat(newExtracts.Select(e => e.Identifier)),
+            StringComparer.OrdinalIgnoreCase);
+        foreach (var list in raidMaps.Values)
+        {
+            list.RemoveAll(x => ids.Contains(x.Identifier));
+        }
+
+        // assign unique id
+        foreach (var transit in newTransits)
+        {
+            transit.TransitPointId ??= Interlocked.Increment(ref _nextApiExfilOffset);
+        }
+
+        foreach (var alias in raidMaps.Keys)
+        {
+            AddExtractions(0, location, new CustomExtilData
+            {
+                MapName = alias,
+                Raid = raid,
+                Extracts = newExtracts,
+                Transits = newTransits,
+            });
+        }
+
+        BuildCustomExfilSnapshot(forceRebuild: true);
+    }
+
+    /// <summary>
+    /// API: remove custom exfil.
+    /// </summary>
+    internal static bool RemoveCustomExfil(RaidLocation raid, string exfilId)
+    {
+        if (string.IsNullOrWhiteSpace(exfilId))
+        {
+            return false;
+        }
+
+        if (!CustomExfils.TryGetValue(raid, out var byMap))
+        {
+            return false;
+        }
+
+        var removed = false;
+        foreach (var list in byMap.Values)
+        {
+            removed |= list.RemoveAll(x =>
+                string.Equals(x.Identifier, exfilId, StringComparison.OrdinalIgnoreCase)) > 0;
+        }
+
+        if (!removed)
+        {
+            return false;
+        }
+
+        var databaseService = ReflectionUtil.GetService<DatabaseService>();
+        if (databaseService == null)
+        {
+            return true;
+        }
+
+        var location = RaidLocationToLocation(databaseService, raid);
+
+        if (location != null)
+        {
+            var displayNames = new HashSet<string>(
+                location.AllExtracts
+                    .Where(e => string.Equals(e.SptName, exfilId, StringComparison.OrdinalIgnoreCase))
+                    .Select(e => e.Name)
+                    .Where(n => !string.IsNullOrEmpty(n))
+                    .Select(n => n ?? ""),
+                StringComparer.OrdinalIgnoreCase);
+
+            location.AllExtracts = location.AllExtracts
+                .Where(e => !string.Equals(e.SptName, exfilId, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            location.Base.Exits = location.Base.Exits
+                .Where(e => string.IsNullOrEmpty(e.Name) || !displayNames.Contains(e.Name))
+                .ToList();
+
+            if (location.Base.Transits != null)
+            {
+                location.Base.Transits = location.Base.Transits
+                    .Where(t => !string.Equals(t.Name, exfilId, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+        }
+
+        BuildCustomExfilSnapshot(forceRebuild: true);
+        return true;
+    }
+
+    /// <summary>
+    /// API: returns list of current custom exfils.
+    /// </summary>
+    internal static IReadOnlyList<CustomExfil> GetCustomExfils(RaidLocation raid)
+    {
+        if (!CustomExfils.TryGetValue(raid, out var byMap))
+        {
+            return Array.Empty<CustomExfil>();
+        }
+
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var merged = new List<CustomExfil>();
+        foreach (var list in byMap.Values)
+        {
+            foreach (var exfil in list)
+            {
+                if (seen.Add(exfil.Identifier))
+                {
+                    merged.Add(exfil);
+                }
+            }
+        }
+
+        return merged;
     }
 }

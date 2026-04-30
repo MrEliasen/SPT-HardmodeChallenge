@@ -6,4 +6,10 @@
         <LangVersion>latest</LangVersion>
         <RootNamespace>Vagabond.Common</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>Vagabond.Server</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 </Project>

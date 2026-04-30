@@ -8,15 +8,15 @@ using SPTarkov.Server.Core.Routers;
 using SPTarkov.Server.Core.Services.Mod;
 using SPTarkov.Server.Core.Utils.Cloners;
 using Vagabond.Server.Models;
-using Vagabond.Server.State;
 using Vagabond.Common;
 using Vagabond.Server.Config;
+using Vagabond.Server.State;
 
 namespace Vagabond.Server.Services;
 
 internal static class VirtualStashService
 {
-    private const string ProfileDataKeyPrefix = ModInfo.Guid + ".virtual_stash";
+    private const string ProfileDataKeyPrefix = VagabondModInfo.Guid + ".virtual_stash";
     private const string StashRootIdPlaceholder = "vgb_stash_root";
     private const string SortingTableRootIdPlaceholder = "vgb_sorting_root";
 
@@ -486,7 +486,7 @@ internal static class VirtualStashService
             return false;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             return false;

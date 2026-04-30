@@ -44,7 +44,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
             return;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         state.CurrentMap = "Streets";
         state.LastExit = "VGB_EXT_FENCE";
 
@@ -56,7 +56,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
 
         state.VagabondModeEnabled = true;
         state.IsNewCharacter = true;
-        VagabondState.SaveState(sessionId, state);
+        StateService.SaveState(sessionId, state);
 
         var changed = InitializeNewCharacter(sessionId, pmc);
         if (!changed)
@@ -64,7 +64,7 @@ public sealed class ProfileCreatePatch : AbstractPatch
             state.CurrentMap = "";
             state.LastExit = "";
             state.VagabondModeEnabled = false;
-            VagabondState.SaveState(sessionId, state);
+            StateService.SaveState(sessionId, state);
             VagabondLogger.Error(
                 $"BootstrapProfile did not modify profile for {sessionId}; InitializeNewCharacter did not complete.");
             return;

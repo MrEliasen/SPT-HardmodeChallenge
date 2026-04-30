@@ -7,7 +7,6 @@ using SPTarkov.Server.Core.Models.Eft.Quests;
 using Vagabond.Common.Data;
 using Vagabond.Server.Data.Quests;
 using Vagabond.Server.Services;
-using Vagabond.Server.State;
 
 namespace Vagabond.Server.Patches;
 
@@ -26,11 +25,11 @@ public sealed class QuestCallbacksAcceptQuestPatch : AbstractPatch
             return;
         }
 
-        var state = VagabondState.GetState(sessionID);
+        var state = StateService.GetState(sessionID);
         if (ExfilQuests.List.ContainsKey(info.QuestId) && !state.QuestExfils.Contains(info.QuestId))
         {
             state.QuestExfils.Add(info.QuestId);
-            VagabondState.SaveState(sessionID, state);
+            StateService.SaveState(sessionID, state);
         }
     }
 }
@@ -50,7 +49,7 @@ public sealed class QuestCallbacksCompleteQuestPatch : AbstractPatch
             return;
         }
 
-        var state = VagabondState.GetState(sessionID);
+        var state = StateService.GetState(sessionID);
 
         if (state.QuestExfils.Contains(info.QuestId))
         {
@@ -115,6 +114,6 @@ public sealed class QuestCallbacksCompleteQuestPatch : AbstractPatch
             }
         }
 
-        VagabondState.SaveState(sessionID, state);
+        StateService.SaveState(sessionID, state);
     }
 }

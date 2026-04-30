@@ -2,10 +2,9 @@
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using Vagabond.Common.Data;
+using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Config;
-using Vagabond.Server.Definitions;
-using Vagabond.Server.State;
 
 namespace Vagabond.Server.Services;
 
@@ -26,79 +25,79 @@ internal static class HideoutService
         "688246958448b05efd61d462", // Voevoda
     ];
 
-    public static readonly List<TraderLocation> TraderLocations = new()
+    public static List<TraderLocation> TraderLocations = new()
     {
         new TraderLocation
         {
-            Id = "54cb57776803fa99248b456e", // Therapist
+            TraderId = "54cb57776803fa99248b456e", // Therapist
             Raid = RaidLocation.GroundZero,
-            ExitName = "VGB_EXT_THERAPIST",
+            ExfilIdentifier = "VGB_EXT_THERAPIST",
         },
         new TraderLocation
         {
-            Id = "58330581ace78e27b8b10cee", // Skier
+            TraderId = "58330581ace78e27b8b10cee", // Skier
             Raid = RaidLocation.Customs,
-            ExitName = "VGB_EXT_SKIER",
+            ExfilIdentifier = "VGB_EXT_SKIER",
         },
         new TraderLocation
         {
-            Id = "5c0647fdd443bc2504c2d371", // Jaeger
+            TraderId = "5c0647fdd443bc2504c2d371", // Jaeger
             Raid = RaidLocation.Woods,
-            ExitName = "VGB_EXT_JAEGER",
+            ExfilIdentifier = "VGB_EXT_JAEGER",
         },
         new TraderLocation
         {
-            Id = "5a7c2eca46aef81a7ca2145d", // Mechanic
+            TraderId = "5a7c2eca46aef81a7ca2145d", // Mechanic
             Raid = RaidLocation.FactoryDay,
-            ExitName = "VGB_EXT_MECHANIC",
+            ExfilIdentifier = "VGB_EXT_MECHANIC",
         },
         new TraderLocation
         {
-            Id = "5a7c2eca46aef81a7ca2145d", // Mechanic
+            TraderId = "5a7c2eca46aef81a7ca2145d", // Mechanic
             Raid = RaidLocation.FactoryNight,
-            ExitName = "VGB_EXT_MECHANIC",
+            ExfilIdentifier = "VGB_EXT_MECHANIC",
         },
         new TraderLocation
         {
-            Id = "54cb50c76803fa8b248b4571", // Prapor
+            TraderId = "54cb50c76803fa8b248b4571", // Prapor
             Raid = RaidLocation.Streets,
-            ExitName = "VGB_EXT_PRAPOR",
+            ExfilIdentifier = "VGB_EXT_PRAPOR",
         },
         new TraderLocation
         {
-            Id = "5ac3b934156ae10c4430e83c", // Ragman
+            TraderId = "5ac3b934156ae10c4430e83c", // Ragman
             Raid = RaidLocation.Interchange,
-            ExitName = "VGB_EXT_RAGMAN",
+            ExfilIdentifier = "VGB_EXT_RAGMAN",
         },
         new TraderLocation
         {
-            Id = "5935c25fb3acc3127c3d8cd9", // Peacekeeper
+            TraderId = "5935c25fb3acc3127c3d8cd9", // Peacekeeper
             Raid = RaidLocation.Shoreline,
-            ExitName = "VGB_EXT_PEACEKEEPER",
+            ExfilIdentifier = "VGB_EXT_PEACEKEEPER",
         },
         new TraderLocation
         {
-            Id = "579dc571d53a0658a154fbec", // Fence
+            TraderId = "579dc571d53a0658a154fbec", // Fence
             Raid = RaidLocation.Streets,
-            ExitName = "VGB_EXT_FENCE",
+            ExfilIdentifier = "VGB_EXT_FENCE",
         },
         new TraderLocation
         {
-            Id = "579dc571d53a0658a154fbec", // Fence
+            TraderId = "579dc571d53a0658a154fbec", // Fence
             Raid = RaidLocation.Lighthouse,
-            ExitName = "VGB_EXT_FENCE_DL",
+            ExfilIdentifier = "VGB_EXT_FENCE_DL",
         }
     };
 
     public static IReadOnlyCollection<string> GetAllTraderIds()
     {
         return TraderLocations
-            .Select(x => x.Id)
+            .Select(x => x.TraderId)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
     }
 
-    public static string? GetCurrentTraderId(VagabondState state)
+    public static string? GetCurrentTraderId(VagabondSessionState state)
     {
         var raid = VagabondLocations.NormaliseMapName(state.CurrentMap);
         if (raid == RaidLocation.Nil || string.IsNullOrWhiteSpace(state.LastExit))
@@ -108,14 +107,14 @@ internal static class HideoutService
 
         return TraderLocations.FirstOrDefault(x =>
             x.Raid == raid
-            && string.Equals(x.ExitName, state.LastExit, StringComparison.OrdinalIgnoreCase))?.Id;
+            && string.Equals(x.ExfilIdentifier, state.LastExit, StringComparison.OrdinalIgnoreCase))?.TraderId;
     }
 
-    public static void UpdateTraderAccess(PmcData pmc, VagabondState state)
+    public static void UpdateTraderAccess(PmcData pmc, VagabondSessionState state)
     {
         var traderId = GetCurrentTraderId(state) ?? string.Empty;
         var isCustomTraderLoc = state.LastExit == "VGB_EXT_MARKET";
-        var traderIdList = TraderLocations.ToList().ConvertAll(x => x.Id);
+        var traderIdList = TraderLocations.ToList().ConvertAll(x => x.TraderId);
         var tradersInfo = pmc.TradersInfo;
         var isOwnHideout = !string.IsNullOrEmpty(state.HideoutState?.Id) &&
                            state.LastExit == $"{HideoutIdPrefix}{state.HideoutState?.Id}";
@@ -155,4 +154,38 @@ internal static class HideoutService
             entry.Value.Unlocked = false;
         }
     }
+
+    /// <summary>
+    /// API: add or replace trader locations. Entries with an ExfilIdentifier matching an existing one replace it.
+    /// </summary>
+    internal static void AddTraderLocations(List<TraderLocation> extractions)
+    {
+        var newTraderLocations = new List<TraderLocation>(extractions);
+
+        var ids = new HashSet<string>(
+            newTraderLocations.Select(t => t.ExfilIdentifier),
+            StringComparer.OrdinalIgnoreCase);
+        TraderLocations.RemoveAll(x => ids.Contains(x.ExfilIdentifier));
+        TraderLocations.AddRange(newTraderLocations);
+    }
+
+    /// <summary>
+    /// API: remove a trader location by ExfilIdentifier. Returns true if removed.
+    /// </summary>
+    internal static bool RemoveTraderLocation(string exfilIdentifier)
+    {
+        if (string.IsNullOrWhiteSpace(exfilIdentifier))
+        {
+            return false;
+        }
+
+        return TraderLocations.RemoveAll(x =>
+            string.Equals(x.ExfilIdentifier, exfilIdentifier, StringComparison.OrdinalIgnoreCase)) > 0;
+    }
+
+    /// <summary>
+    /// API: returns all current registered trader locations.
+    /// </summary>
+    internal static IReadOnlyList<TraderLocation> GetTraderLocations()
+        => TraderLocations.AsReadOnly();
 }

@@ -14,6 +14,7 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using Vagabond.Common;
+using Vagabond.Common.Api;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
 
@@ -21,14 +22,14 @@ namespace Vagabond.Server;
 
 public record ModMetadata : AbstractModMetadata
 {
-    public override string ModGuid { get; init; } = ModInfo.Guid;
-    public override string Name { get; init; } = ModInfo.Name;
-    public override string Author { get; init; } = ModInfo.Author;
-    public override SemanticVersioning.Version Version { get; init; } = new(ModInfo.Version);
-    public override SemanticVersioning.Range SptVersion { get; init; } = new(ModInfo.SptVersion);
-    public override string? Url { get; init; } = ModInfo.Url;
-    public override string License { get; init; } = ModInfo.License;
-    public override List<string>? Contributors { get; init; } = new() { ModInfo.Author };
+    public override string ModGuid { get; init; } = VagabondModInfo.Guid;
+    public override string Name { get; init; } = VagabondModInfo.Name;
+    public override string Author { get; init; } = VagabondModInfo.Author;
+    public override SemanticVersioning.Version Version { get; init; } = new(VagabondModInfo.Version);
+    public override SemanticVersioning.Range SptVersion { get; init; } = new(VagabondModInfo.SptVersion);
+    public override string? Url { get; init; } = VagabondModInfo.Url;
+    public override string License { get; init; } = VagabondModInfo.License;
+    public override List<string>? Contributors { get; init; } = new() { VagabondModInfo.Author };
     public override List<string>? Incompatibilities { get; init; }
     public override Dictionary<string, SemanticVersioning.Range>? ModDependencies { get; init; }
     public override bool? IsBundleMod { get; init; }
@@ -37,16 +38,25 @@ public record ModMetadata : AbstractModMetadata
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
 public sealed class VagabondLoader : IOnLoad
 {
-    private readonly ConfigServer _configServer;
-
-    public VagabondLoader(ISptLogger<VagabondLoader> logger, ConfigServer configServer)
+    public VagabondLoader(ISptLogger<VagabondLoader> logger)
     {
         VagabondLogger.Init(logger);
-        _configServer = configServer;
     }
 
     public Task OnLoad()
     {
+        // exfils/transits
+        Api.AddExfilsImpl = ExfilService.AddCustomExfils;
+        Api.RemoveExfilImpl = ExfilService.RemoveCustomExfil;
+        Api.GetExfilsImpl = ExfilService.GetCustomExfils;
+        // traders
+        Api.AddTraderLocationsImpl = HideoutService.AddTraderLocations;
+        Api.RemoveTraderLocationImpl = HideoutService.RemoveTraderLocation;
+        Api.GetTraderLocationsImpl = HideoutService.GetTraderLocations;
+        // state
+        Api.GetStateImpl = StateService.GetState;
+        Api.SaveStateImpl = StateService.SaveState;
+
         VagabondConfig.Initialize();
 
         new Patches.MailAttachmentsPatch().Enable();

@@ -17,7 +17,7 @@ using Vagabond.Common.Models;
 
 namespace Vagabond.Client;
 
-[BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
+[BepInPlugin(VagabondModInfo.Guid, VagabondModInfo.Name, VagabondModInfo.Version)]
 [BepInDependency("com.acidphantasm.botplacementsystem", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
 public class Vagabond : BaseUnityPlugin
@@ -25,9 +25,9 @@ public class Vagabond : BaseUnityPlugin
     private static ManualLogSource _logger;
     public static VagabondState State { get; private set; } = new();
 
-    /*private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
+    private ConfigEntry<KeyboardShortcut> _dumpHotkey = null!;
     private ConfigEntry<KeyboardShortcut> _dumpCustomExtractHotkey = null!;
-    private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;*/
+    private ConfigEntry<KeyboardShortcut> _dumpCustomTransitHotkey = null!;
 
     private string _locationDumpPath = null!;
     private string _customExtractDumpPath = null!;
@@ -85,39 +85,38 @@ public class Vagabond : BaseUnityPlugin
         UIMessageService.Create(transform);
 
         _hideoutHotkey = Config.Bind(
-            "Vagabond",
+            "For Players",
             "Place Hideout Entrance",
             new KeyboardShortcut(KeyCode.P, KeyCode.LeftControl),
             "Press in raid to place the entrance to your hideout at your current location."
         );
 
-        /*
         _dumpHotkey = Config.Bind(
-            "Development",
-            "Save Current Location",
+            "For Modders",
+            "Dump Current Location",
             new KeyboardShortcut(KeyCode.F8),
-            "Press in raid to dump current map, position and yaw to file."
+            "Press in raid to dump current map, position and yaw to file in the Vagabond mod dir."
         );
 
         _dumpCustomExtractHotkey = Config.Bind(
-            "Development",
-            "Generate Extraction From Location",
+            "For Modders",
+            "Dump Extraction From Current Location",
             new KeyboardShortcut(KeyCode.F9),
-            "Press in raid to dump a copy/paste ready custom extract snippet using the current player position"
+            "Press in raid to dump a copy/paste ready custom extract snippet using the current player position, to a file in the Vagabond mod dir"
         );
 
         _dumpCustomTransitHotkey = Config.Bind(
-            "Development",
-            "Generate Transit From Location",
+            "For Modders",
+            "Dump Transit From Current Location",
             new KeyboardShortcut(KeyCode.F10),
-            "Press in raid to dump a copy/paste ready custom transit snippet using the current player position"
+            "Press in raid to dump a copy/paste ready custom transit snippet using the current player position, to a file in the Vagabond mod dir"
         );
 
-        var pluginDir = Path.GetDirectoryName(Info.Location);
+        var pluginDir = Path.GetDirectoryName(Info.Location)!;
         _locationDumpPath = Path.Combine(pluginDir, "dumped_locations.txt");
         _customExtractDumpPath = Path.Combine(pluginDir, "dumped_custom_extracts.txt");
         _customTransitDumpPath = Path.Combine(pluginDir, "dumped_custom_transits.txt");
-        */
+
         Log("loaded");
     }
 
@@ -140,7 +139,6 @@ public class Vagabond : BaseUnityPlugin
             PromptCreateHideoutExtract();
         }
 
-        /*
         if (_dumpHotkey.Value.IsDown())
         {
             DumpCurrentLocation();
@@ -155,7 +153,6 @@ public class Vagabond : BaseUnityPlugin
         {
             DumpCustomTransitDefinition();
         }
-        */
     }
 
     private void PromptCreateHideoutExtract()
@@ -296,7 +293,6 @@ public class Vagabond : BaseUnityPlugin
                 "{",
                 $"    Identifier = \"VGB_EXT_\",",
                 $"    DisplayName = \"Human Readable Label\",",
-                "    IsTransit = false,",
                 "    TemplateExitName = \"\",// only fill if you want a specific template",
                 "    EntryPoints = \"\",",
                 "    ExfiltrationTime = 20f,",
@@ -329,14 +325,11 @@ public class Vagabond : BaseUnityPlugin
                 "{",
                 $"    Identifier = \"VGB_\",",
                 "    IsTransit = true,",
-                $"    TransitPointId = 0,// gets auto generated",
-                "    DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),",
-                "    TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.DESTINATION].First(),",
-                "    Description = \"Transit to \",",
-                "    ExfiltrationTime = 5f,",
-                "    ActivateAfterSeconds = 0,",
+                $"    TransitPointId = 0,// gets auto generated, leave at 0",
+                "    DestinationLocation = VagabondLocations.RaidLocationToMapName(RaidLocation.DESTINATION),",
+                "    Description = \"Transit to ..\",",
+                "    ExfiltrationTime = 15f,",
                 "    IsActive = true,",
-                "    Events = false,",
                 "    HideIfNoKey = false,",
                 $"    X = {snapshot.Position.x:0.###}f,",
                 $"    Y = {snapshot.Position.y:0.###}f,",

@@ -4,7 +4,6 @@ using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using Vagabond.Server.Services;
-using Vagabond.Server.State;
 
 namespace Vagabond.Server.Patches;
 
@@ -28,7 +27,7 @@ public sealed class GetCompleteProfilePatch : AbstractPatch
             return;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             return;

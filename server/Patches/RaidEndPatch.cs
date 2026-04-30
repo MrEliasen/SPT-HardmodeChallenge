@@ -10,6 +10,7 @@ using Vagabond.Common.Enums;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
+using Vagabond.Common.Definitions;
 using Vagabond.Server.State;
 
 namespace Vagabond.Server.Patches;
@@ -43,7 +44,7 @@ public sealed class RaidEndPatch : AbstractPatch
         __state = null;
         if (!isDead && VagabondService.ShouldApplyVagabondRules(sessionId))
         {
-            var state = VagabondState.GetState(sessionId);
+            var state = StateService.GetState(sessionId);
             if (state.VagabondModeEnabled && state.RaidFirItems?.Count > 0)
             {
                 __state = new HashSet<string>(state.RaidFirItems);
@@ -64,7 +65,7 @@ public sealed class RaidEndPatch : AbstractPatch
                 return;
             }
 
-            var state = VagabondState.GetState(sessionId);
+            var state = StateService.GetState(sessionId);
             if (!state.VagabondModeEnabled)
             {
                 return;
@@ -126,7 +127,7 @@ public sealed class RaidEndPatch : AbstractPatch
                 state.RaidFirItems = null;
             }
 
-            VagabondState.SaveState(sessionId, state);
+            StateService.SaveState(sessionId, state);
         }
         catch (Exception ex)
         {
@@ -142,7 +143,7 @@ public sealed class RaidEndPatch : AbstractPatch
             return;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             return;
@@ -196,7 +197,7 @@ public sealed class RaidEndPatch : AbstractPatch
                 }
             }
 
-            VagabondState.SaveState(sessionId, state);
+            StateService.SaveState(sessionId, state);
             return;
         }
 
@@ -221,11 +222,11 @@ public sealed class RaidEndPatch : AbstractPatch
         {
             if (ExfilQuests.IsExfilQuest(state.LastExit, state.QuestExfils, out var traderId))
             {
-                var traderLoc = HideoutService.TraderLocations.FirstOrDefault(x => x.Id == traderId);
+                var traderLoc = HideoutService.TraderLocations.FirstOrDefault(x => x.TraderId == traderId);
                 if (traderLoc != null)
                 {
                     state.CurrentMap = traderLoc.Raid.ToString();
-                    state.LastExit = traderLoc.ExitName;
+                    state.LastExit = traderLoc.ExfilIdentifier;
                 }
 
                 // Light keeper
@@ -240,7 +241,7 @@ public sealed class RaidEndPatch : AbstractPatch
         }
 
         VagabondService.PersistProfileIfPossible(sessionId);
-        VagabondState.SaveState(sessionId, state);
+        StateService.SaveState(sessionId, state);
     }
 
     private static HashSet<string> GetEquipmentIds(List<Item> items, string? equipmentRootId)

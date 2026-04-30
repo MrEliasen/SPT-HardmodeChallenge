@@ -19,17 +19,25 @@ public static class Messages
     public static string FirstWarning(bool wipeFirstRaid, bool permadeath)
     {
         var message = "Welcome, Vagabond.\n\n" +
-                      "Stashes at traders, like the one you are using right now, are unique to that trader and is not your personal permanent stash.";
+                      "You start out with a bit of money, maybe just enough to buy a ragtag setup from Fence.\n" +
+                      "While in a raid, you can press CTRL+P (change via F12) to place the entrance to your hideout to get access to your stash. However once placed you have to pay Skier before you can move it.\n" +
+                      "To get traders to be accessible via your hideout, you will need to complete a unique quest for each one. These quests will be available once you reach a certain rep level.\n";
 
         if (permadeath)
         {
             message +=
-                "\nPerma-Death is enabled. If you die for any reason, your profile is wiped and you are reset back to the start map.\n";
+                "\nAll stashes, except your hideout stash, is unique to that trader and/or extraction. Some features are disabled in these stashes like sorting.\n";
+        }
+
+        if (permadeath)
+        {
+            message +=
+                "\nPerma-Death is enabled. If you die or the game treats you as dead, your equipment and all stashes are wiped and you are reset back to the starter map.\n";
         }
 
         if (wipeFirstRaid)
         {
-            message += $"\nFirst time you enter a raid anything left in this stash will get wiped";
+            message += $"\nFirst time you enter a raid anything left in this stash will get wiped.";
         }
 
         return message;

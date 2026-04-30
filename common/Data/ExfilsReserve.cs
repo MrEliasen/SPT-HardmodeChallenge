@@ -39,7 +39,6 @@ public class ExfilsReserve : ICustomExtilData
             IsTransit = true,
             TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Shoreline].First(),
-            TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Shoreline].First(),
             Description = "Mountain climb to Shoreline",
             ExfiltrationTime = 15f,
             ActivateAfterSeconds = 0,

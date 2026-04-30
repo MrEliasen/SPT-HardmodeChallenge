@@ -41,7 +41,6 @@ public class ExfilsInterchange : ICustomExtilData
             IsTransit = true,
             TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.GroundZero].First(),
-            TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.GroundZero].First(),
             Description = "Transit to Ground Zero",
             ExfiltrationTime = 15f,
             ActivateAfterSeconds = 0,

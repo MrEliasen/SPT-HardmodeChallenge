@@ -39,7 +39,7 @@ public sealed class RaidJoinPatch : AbstractPatch
             return;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             return;
@@ -77,10 +77,10 @@ public sealed class RaidJoinPatch : AbstractPatch
         {
             VirtualStashService.ClearAllTraderStashes(sessionId);
         }
-        
+
         state.IsNewCharacter = false;
 
-        VagabondState.SaveState(sessionId, state);
+        StateService.SaveState(sessionId, state);
         VagabondService.PersistProfileIfPossible(sessionId);
     }
 }

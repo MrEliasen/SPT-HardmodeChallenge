@@ -1,6 +1,6 @@
 namespace Vagabond.Common;
 
-public static class ModInfo
+public static class VagabondModInfo
 {
     public const string Guid = "dev.oogabooga.spt-vagabond";
     public const string Name = "Vagabond";

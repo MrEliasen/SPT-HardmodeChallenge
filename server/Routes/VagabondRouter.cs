@@ -8,6 +8,7 @@ using Vagabond.Common.Models;
 using Vagabond.Server.Config;
 using Vagabond.Server.Models;
 using Vagabond.Server.Services;
+using Vagabond.Common.Definitions;
 using Vagabond.Server.State;
 
 namespace Vagabond.Server.Routes;
@@ -68,7 +69,7 @@ public class VagabondRouter(
             return response;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         // load their hideout first time
         if (ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state))
         {
@@ -120,7 +121,7 @@ public class VagabondRouter(
             return response;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
 
         if (state.HideoutState != null && (!VagabondConfig.Config.AllowHideoutRelocation && !state.CanPlaceHideout))
         {
@@ -155,7 +156,7 @@ public class VagabondRouter(
         ExfilService.AddHideoutExfil(pmc.CharacterData.PmcData, state);
         ExfilService.BuildCustomExfilSnapshot(true);
 
-        VagabondState.SaveState(sessionId, state);
+        StateService.SaveState(sessionId, state);
         response.Success = true;
         response.CurrentRaid = mapName;
         response.MapName = mapName;

@@ -2,13 +2,13 @@
 using Vagabond.Common.Enums;
 using Vagabond.Common.Models;
 using Vagabond.Server.Services;
-using Vagabond.Server.State;
+using Vagabond.Common.Definitions;
 
 namespace Vagabond.Server.Data;
 
 public static class StaticMapTransitions
 {
-    public static ManualSpawnPoint? GetSpawnLocation(VagabondState state, RaidLocation location)
+    public static ManualSpawnPoint? GetSpawnLocation(VagabondSessionState state, RaidLocation location)
     {
         if (location == RaidLocation.Nil)
         {
@@ -58,7 +58,7 @@ public static class StaticMapTransitions
         return StaticTransitionSpawns.GetStaticSpawn(from, to);
     }
 
-    private static bool GetNormalRaidLocation(VagabondState state, RaidLocation location,
+    private static bool GetNormalRaidLocation(VagabondSessionState state, RaidLocation location,
         out ManualSpawnPoint? customExitSpawn)
     {
         customExitSpawn = null;
@@ -81,7 +81,7 @@ public static class StaticMapTransitions
         return true;
     }
 
-    private static bool GetHideoutLocation(VagabondState state, RaidLocation location,
+    private static bool GetHideoutLocation(VagabondSessionState state, RaidLocation location,
         out ManualSpawnPoint? customHideoutExitSpawn)
     {
         customHideoutExitSpawn = null;
@@ -109,7 +109,7 @@ public static class StaticMapTransitions
         return true;
     }
 
-    private static bool GetTransitSpecificSpawnLocation(VagabondState state, RaidLocation location,
+    private static bool GetTransitSpecificSpawnLocation(VagabondSessionState state, RaidLocation location,
         out ManualSpawnPoint? customTransitSpawn)
     {
         customTransitSpawn = null;

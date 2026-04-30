@@ -41,7 +41,6 @@ public class ExfilsLighthouse : ICustomExtilData
             IsTransit = true,
             TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Shoreline].First(),
-            TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Shoreline].First(),
             Description = "Transit to Shoreline",
             ExfiltrationTime = 15f,
             ActivateAfterSeconds = 0,

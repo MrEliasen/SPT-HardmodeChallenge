@@ -42,9 +42,13 @@ public sealed class CustomExfil
     public string DestinationLocation { get; set; } = string.Empty;
 
     /// <summary>
-    /// Location id used for access-key lookup. For a simple example this can match DestinationLocation.
+    /// Example: set this to "laboratory" to require the TerraGroup keycard regardless
+    /// of where the transit actually goes there.
+    /// Combined with <see cref="HideIfNoKey"/>, the transit is hidden when the key
+    /// is absent. If empty, falls back to <see cref="DestinationLocation"/>, meaning
+    /// the destination map's own AccessKeys gate the transit (vanilla behavior).
     /// </summary>
-    public string TargetLocation { get; set; } = string.Empty;
+    public string AccessKeysSourceLocation { get; set; } = string.Empty;
 
     /// <summary>
     /// Text shown by the transit interaction UI.

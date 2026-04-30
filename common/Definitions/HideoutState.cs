@@ -1,4 +1,4 @@
-﻿namespace Vagabond.Server.State;
+﻿namespace Vagabond.Common.Definitions;
 
 public sealed class HideoutState
 {

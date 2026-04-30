@@ -69,7 +69,6 @@ public class ExfilsWoods : ICustomExtilData
             IsTransit = true,
             TransitPointId = 0, // gets auto generated
             DestinationLocation = VagabondLocations.InverseLookupTable[RaidLocation.Streets].First(),
-            TargetLocation = VagabondLocations.InverseLookupTable[RaidLocation.Streets].First(),
             Description = "Transit To Streets (Under Bridge)",
             ExfiltrationTime = 15f,
             ActivateAfterSeconds = 0,
