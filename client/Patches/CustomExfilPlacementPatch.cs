@@ -140,6 +140,15 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 cloneObject.SetActive(true);
                 ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
 
+                // other mods's patches which hits the ExfiltrationPoint.Awake (found with AmandsSense
+                // throwing on missing Exfil.png for example) seems to leave it enabled=false.
+                // This should force set the state as a backup, and warn if it happens.
+                if (!clone.enabled || !cloneObject.activeInHierarchy)
+                {
+                    cloneObject.SetActive(true);
+                    clone.enabled = true;
+                }
+
                 if (!force)
                 {
                     var mainPlayer = Singleton<GameWorld>.Instance?.MainPlayer;
