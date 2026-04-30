@@ -1,8 +1,8 @@
 using SPTarkov.Server.Core.Models.Common;
 using Vagabond.Common.Data;
+using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Config;
-using Vagabond.Server.State;
 
 namespace Vagabond.Server.Services;
 
@@ -34,7 +34,7 @@ public static class LootStreakService
             return 1.0;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         if (state.LastExtractMap != GetStreakMapName(location) || state.ConsecutiveExtractsSameMap <= 0)
         {
             return 1.0;
@@ -44,7 +44,7 @@ public static class LootStreakService
             Math.Pow(VagabondConfig.Config.ConsecutiveMapLootReductionRate, state.ConsecutiveExtractsSameMap));
     }
 
-    public static void HandleSuccessfulExtract(VagabondState state, string location)
+    public static void HandleSuccessfulExtract(VagabondSessionState state, string location)
     {
         if (!VagabondConfig.Config.EnableConsecutiveMapLootReduction)
         {

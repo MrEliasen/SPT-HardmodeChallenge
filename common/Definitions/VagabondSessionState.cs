@@ -14,4 +14,6 @@ public sealed class VagabondSessionState
     public bool ResetProfile { get; set; }
     public bool CanPlaceHideout { get; set; } = true;
     public HashSet<string> HideoutTraders { get; set; } = [];
+    public string LastExtractMap { get; set; } = "";
+    public int ConsecutiveExtractsSameMap { get; set; } = 0;
 }
