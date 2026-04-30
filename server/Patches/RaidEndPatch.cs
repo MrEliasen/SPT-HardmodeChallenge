@@ -205,6 +205,8 @@ public sealed class RaidEndPatch : AbstractPatch
         state.CurrentMap = locationMapStr;
         state.LastExit = GetExtractIdentifier(request.Results?.ExitName, locationMapE, locationName);
 
+        LootStreakService.HandleSuccessfulExtract(state, locationName);
+
         if (isTransfer)
         {
             state.TransitState = new TransitState
