@@ -16,6 +16,8 @@ public static class Api
     internal static Action<List<TraderLocation>>? AddTraderLocationsImpl;
     internal static Func<string, bool>? RemoveTraderLocationImpl;
     internal static Func<IReadOnlyList<TraderLocation>>? GetTraderLocationsImpl;
+    internal static Func<string, VagabondSessionState?>? GetStateImpl;
+    internal static Action<string, VagabondSessionState>? SaveStateImpl;
 
     /// <summary>
     /// Add/replace a custom exfils on the given raid.
@@ -56,6 +58,19 @@ public static class Api
     /// </summary>
     public static IReadOnlyList<TraderLocation> GetTraderExtractions()
         => Required(GetTraderLocationsImpl)();
+
+    /// <summary>
+    /// Returns the Vagabond session state for the given profile.
+    /// Returns null if the profile does not have one, or if its not yet available.
+    /// </summary>
+    public static VagabondSessionState? GetState(string sessionId)
+        => Required(GetStateImpl)(sessionId);
+
+    /// <summary>
+    /// Saves the Vagabond session state for the given profile to disk.
+    /// </summary>
+    public static void SaveState(string sessionId, VagabondSessionState state)
+        => Required(SaveStateImpl)(sessionId, state);
 
     private static T Required<T>(T? impl) where T : class
         => impl ?? throw new InvalidOperationException(

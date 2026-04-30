@@ -34,7 +34,7 @@ internal static class VagabondService
             return;
         }
 
-        var state = VagabondStateService.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         state.ResetProfile = false;
 
         RaidRuntimeState.Left(sessionId);
@@ -52,7 +52,7 @@ internal static class VagabondService
 
         state.TransitState = null;
         HideoutService.UpdateTraderAccess(pmc, state);
-        VagabondStateService.SaveState(sessionId, state);
+        StateService.SaveState(sessionId, state);
         using var stashState = VirtualStashService.OpenStash(sessionId, pmc);
         AddMoney(sessionId, pmc);
     }

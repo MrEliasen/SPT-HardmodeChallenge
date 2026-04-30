@@ -47,7 +47,7 @@ public static class MigrationService
         }
 
         state.Version = ModInfo.Version;
-        VagabondStateService.SaveState(sessionId, state);
+        StateService.SaveState(sessionId, state);
     }
 
     private static void From030To031(PmcData pmc, VagabondSessionState state)

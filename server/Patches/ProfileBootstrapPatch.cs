@@ -31,7 +31,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
                 return;
             }
 
-            var state = VagabondStateService.GetState(sessionId);
+            var state = StateService.GetState(sessionId);
             if (!state.VagabondModeEnabled)
             {
                 return;
@@ -42,7 +42,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             if (state.ResetProfile)
             {
                 state.ResetProfile = false;
-                VagabondStateService.SaveState(sessionId, state);
+                StateService.SaveState(sessionId, state);
                 VirtualStashService.ClearAllTraderStashes(sessionId);
                 VagabondService.ResetProfile(sessionId, pmc);
                 VagabondService.PersistProfileIfPossible(sessionId);

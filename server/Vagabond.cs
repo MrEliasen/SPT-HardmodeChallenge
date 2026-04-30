@@ -56,6 +56,9 @@ public sealed class VagabondLoader : IOnLoad
         Api.AddTraderLocationsImpl = HideoutService.AddTraderLocations;
         Api.RemoveTraderLocationImpl = HideoutService.RemoveTraderLocation;
         Api.GetTraderLocationsImpl = HideoutService.GetTraderLocations;
+        // state
+        Api.GetStateImpl = StateService.GetState;
+        Api.SaveStateImpl = StateService.SaveState;
 
         VagabondConfig.Initialize();
 

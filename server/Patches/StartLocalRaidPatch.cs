@@ -32,7 +32,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
                 return;
             }
 
-            var state = VagabondStateService.GetState(serverOwnerSessionId);
+            var state = StateService.GetState(serverOwnerSessionId);
             var location = VagabondLocations.NormaliseMapName(request.Location);
 
             if (string.IsNullOrWhiteSpace(request.Location) || location == RaidLocation.Nil)
@@ -46,7 +46,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
                 ApplyForcedSpawn(__result, request.Location, forcedSpawn);
             }
 
-            VagabondStateService.SaveState(serverOwnerSessionId, state);
+            StateService.SaveState(serverOwnerSessionId, state);
         }
         catch (Exception ex)
         {

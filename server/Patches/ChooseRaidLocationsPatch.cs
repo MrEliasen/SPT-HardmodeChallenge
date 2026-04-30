@@ -47,7 +47,7 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
             return jsonString;
         }
 
-        var state = VagabondStateService.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             VagabondLogger.Error($"Missing state {sessionId}.");

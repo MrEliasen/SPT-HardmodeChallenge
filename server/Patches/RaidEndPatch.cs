@@ -44,7 +44,7 @@ public sealed class RaidEndPatch : AbstractPatch
         __state = null;
         if (!isDead && VagabondService.ShouldApplyVagabondRules(sessionId))
         {
-            var state = VagabondStateService.GetState(sessionId);
+            var state = StateService.GetState(sessionId);
             if (state.VagabondModeEnabled && state.RaidFirItems?.Count > 0)
             {
                 __state = new HashSet<string>(state.RaidFirItems);
@@ -65,7 +65,7 @@ public sealed class RaidEndPatch : AbstractPatch
                 return;
             }
 
-            var state = VagabondStateService.GetState(sessionId);
+            var state = StateService.GetState(sessionId);
             if (!state.VagabondModeEnabled)
             {
                 return;
@@ -127,7 +127,7 @@ public sealed class RaidEndPatch : AbstractPatch
                 state.RaidFirItems = null;
             }
 
-            VagabondStateService.SaveState(sessionId, state);
+            StateService.SaveState(sessionId, state);
         }
         catch (Exception ex)
         {
@@ -143,7 +143,7 @@ public sealed class RaidEndPatch : AbstractPatch
             return;
         }
 
-        var state = VagabondStateService.GetState(sessionId);
+        var state = StateService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             return;
@@ -197,7 +197,7 @@ public sealed class RaidEndPatch : AbstractPatch
                 }
             }
 
-            VagabondStateService.SaveState(sessionId, state);
+            StateService.SaveState(sessionId, state);
             return;
         }
 
@@ -239,7 +239,7 @@ public sealed class RaidEndPatch : AbstractPatch
         }
 
         VagabondService.PersistProfileIfPossible(sessionId);
-        VagabondStateService.SaveState(sessionId, state);
+        StateService.SaveState(sessionId, state);
     }
 
     private static HashSet<string> GetEquipmentIds(List<Item> items, string? equipmentRootId)

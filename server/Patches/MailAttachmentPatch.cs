@@ -47,8 +47,8 @@ public sealed class MailAttachmentsPatch : AbstractPatch
             return true;
         }
 
-        var senderState = VagabondStateService.GetState(senderDetails.Id);
-        var recipientState = VagabondStateService.GetState(messageDetails.RecipientId);
+        var senderState = StateService.GetState(senderDetails.Id);
+        var recipientState = StateService.GetState(messageDetails.RecipientId);
 
         if (string.IsNullOrEmpty(senderState.CurrentMap))
         {
