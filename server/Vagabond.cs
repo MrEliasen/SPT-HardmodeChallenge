@@ -71,6 +71,9 @@ public sealed class VagabondLoader : IOnLoad
         new Patches.InventoryCallbacksSortInventoryPatch().Enable();
         new Patches.InventoryCallbacksPinOrLockPatch().Enable();
         new Patches.InventoryCallbacksSetFavoriteItemPatch().Enable();
+        new Patches.RaidLootGenerationPatch().Enable();
+        new Patches.LooseLootMultiplierPatch().Enable();
+        new Patches.StaticLootMultiplierPatch().Enable();
 
         return Task.CompletedTask;
     }
