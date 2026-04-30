@@ -4,7 +4,6 @@ using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Dialog;
 using SPTarkov.Server.Core.Services;
 using Vagabond.Server.Config;
-using Vagabond.Common.Definitions;
 using Vagabond.Server.Services;
 
 namespace Vagabond.Server.Patches;

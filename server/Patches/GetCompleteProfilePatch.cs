@@ -4,7 +4,6 @@ using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using Vagabond.Server.Services;
-using Vagabond.Common.Definitions;
 
 namespace Vagabond.Server.Patches;
 

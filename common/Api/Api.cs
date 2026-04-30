@@ -9,6 +9,7 @@ namespace Vagabond.Common.Api;
 /// </summary>
 public static class Api
 {
+    // exfils
     internal static Action<RaidLocation, List<CustomExfil>, List<CustomExfil>>? AddExfilsImpl;
     internal static Func<RaidLocation, string, bool>? RemoveExfilImpl;
     internal static Func<RaidLocation, IReadOnlyList<CustomExfil>>? GetExfilsImpl;
@@ -16,6 +17,7 @@ public static class Api
     internal static Action<List<TraderLocation>>? AddTraderLocationsImpl;
     internal static Func<string, bool>? RemoveTraderLocationImpl;
     internal static Func<IReadOnlyList<TraderLocation>>? GetTraderLocationsImpl;
+
     internal static Func<string, VagabondSessionState?>? GetStateImpl;
     internal static Action<string, VagabondSessionState>? SaveStateImpl;
 

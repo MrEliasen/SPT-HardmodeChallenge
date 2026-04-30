@@ -7,7 +7,6 @@ using SPTarkov.Server.Core.Models.Eft.Quests;
 using Vagabond.Common.Data;
 using Vagabond.Server.Data.Quests;
 using Vagabond.Server.Services;
-using Vagabond.Common.Definitions;
 
 namespace Vagabond.Server.Patches;
 

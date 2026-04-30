@@ -7,7 +7,6 @@ using Vagabond.Common.Data;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
-using Vagabond.Common.Definitions;
 
 namespace Vagabond.Server.Patches;
 

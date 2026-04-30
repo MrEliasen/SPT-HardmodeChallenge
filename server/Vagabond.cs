@@ -38,12 +38,9 @@ public record ModMetadata : AbstractModMetadata
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
 public sealed class VagabondLoader : IOnLoad
 {
-    private readonly ConfigServer _configServer;
-
-    public VagabondLoader(ISptLogger<VagabondLoader> logger, ConfigServer configServer)
+    public VagabondLoader(ISptLogger<VagabondLoader> logger)
     {
         VagabondLogger.Init(logger);
-        _configServer = configServer;
     }
 
     public Task OnLoad()

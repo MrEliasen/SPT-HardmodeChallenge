@@ -4,7 +4,6 @@ using SPTarkov.Server.Core.Controllers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using Vagabond.Server.Data.Quests;
-using Vagabond.Common.Definitions;
 using Vagabond.Server.Services;
 
 namespace Vagabond.Server.Patches;
