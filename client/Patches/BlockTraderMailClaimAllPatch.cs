@@ -27,6 +27,12 @@ public class BlockTraderMailClaimAllPatch : ModulePatch
             return true;
         }
 
+        // whitelist BTR driver
+        if (dialog._id == "656f0f98d80a697f855d34b1")
+        {
+            return true;
+        }
+
         var profile = ClientAppUtils.GetClientApp()?.Session?.Profile;
         if (profile?.TradersInfo == null)
         {
