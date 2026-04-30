@@ -58,7 +58,12 @@
   "JoinHideoutSkierLoyaltyLevel": 2,
   // limit mail from traders so you can only access mail attachments if the trader is available where you are.
   "LimitTraderMailAccess": true,
+  // if enabled, each consecutive successful extract from the same map reduces the loot the next raid into that map.
+  // This streak resets when you successfully extract from a different map. death/aborts do not change the streak.
+  // factory day and night count as the same map.
   "EnableConsecutiveMapLootReduction": true,
+  // Loot multiplier. 0.5 = halving each repeated raid (1st=100%, 2nd=50%, 3rd=25%, etc)
   "ConsecutiveMapLootReductionRate": 0.5,
+  // the minimum amount of loot regardless of streeak. 0.05 = 5% of the normal amount of loot.
   "ConsecutiveMapLootReductionMin": 0.05
 }
