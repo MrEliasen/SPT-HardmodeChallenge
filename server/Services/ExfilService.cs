@@ -5,7 +5,6 @@ using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Interfaces;
 using Vagabond.Common.Enums;
-using Vagabond.Server.State;
 using Location = SPTarkov.Server.Core.Models.Eft.Common.Location;
 
 namespace Vagabond.Server.Services;
@@ -264,7 +263,7 @@ internal static class ExfilService
         };
     }
 
-    public static bool AddHideoutExfil(PmcData pmc, VagabondState state)
+    public static bool AddHideoutExfil(PmcData pmc, VagabondSessionState state)
     {
         if (string.IsNullOrEmpty(state.HideoutState?.Id) || _loadedHideoutExfils.Contains(state.HideoutState.Id))
         {
@@ -344,7 +343,7 @@ internal static class ExfilService
         return true;
     }
 
-    private static CustomExfil? GenerateHideoutExfil(string profileName, VagabondState state)
+    private static CustomExfil? GenerateHideoutExfil(string profileName, VagabondSessionState state)
     {
         if (string.IsNullOrEmpty(state.HideoutState?.Id))
         {

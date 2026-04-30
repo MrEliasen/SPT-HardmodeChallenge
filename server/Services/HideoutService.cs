@@ -5,7 +5,6 @@ using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Config;
-using Vagabond.Server.State;
 
 namespace Vagabond.Server.Services;
 
@@ -98,7 +97,7 @@ internal static class HideoutService
             .ToArray();
     }
 
-    public static string? GetCurrentTraderId(VagabondState state)
+    public static string? GetCurrentTraderId(VagabondSessionState state)
     {
         var raid = VagabondLocations.NormaliseMapName(state.CurrentMap);
         if (raid == RaidLocation.Nil || string.IsNullOrWhiteSpace(state.LastExit))
@@ -111,7 +110,7 @@ internal static class HideoutService
             && string.Equals(x.ExfilIdentifier, state.LastExit, StringComparison.OrdinalIgnoreCase))?.TraderId;
     }
 
-    public static void UpdateTraderAccess(PmcData pmc, VagabondState state)
+    public static void UpdateTraderAccess(PmcData pmc, VagabondSessionState state)
     {
         var traderId = GetCurrentTraderId(state) ?? string.Empty;
         var isCustomTraderLoc = state.LastExit == "VGB_EXT_MARKET";

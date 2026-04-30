@@ -2,13 +2,13 @@
 using SPTarkov.Server.Core.Services.Mod;
 using Vagabond.Common.Data;
 using Vagabond.Server.Data.Quests;
-using Vagabond.Server.State;
+using Vagabond.Common.Definitions;
 
 namespace Vagabond.Server.Services;
 
 public static class QuestService
 {
-    public static Dictionary<string, List<string>> BuildExfilList(VagabondState state)
+    public static Dictionary<string, List<string>> BuildExfilList(VagabondSessionState state)
     {
         Dictionary<string, List<string>> exfilList = new();
 

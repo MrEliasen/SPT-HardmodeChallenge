@@ -9,7 +9,7 @@ using Vagabond.Common.Enums;
 using Vagabond.Server.Data;
 using Vagabond.Common.Models;
 using Vagabond.Server.Services;
-using Vagabond.Server.State;
+using Vagabond.Common.Definitions;
 
 namespace Vagabond.Server.Patches;
 
@@ -32,7 +32,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
                 return;
             }
 
-            var state = VagabondState.GetState(serverOwnerSessionId);
+            var state = VagabondService.GetState(serverOwnerSessionId);
             var location = VagabondLocations.NormaliseMapName(request.Location);
 
             if (string.IsNullOrWhiteSpace(request.Location) || location == RaidLocation.Nil)
@@ -46,7 +46,7 @@ public sealed class StartLocalRaidPatch : AbstractPatch
                 ApplyForcedSpawn(__result, request.Location, forcedSpawn);
             }
 
-            VagabondState.SaveState(serverOwnerSessionId, state);
+            VagabondService.SaveState(serverOwnerSessionId, state);
         }
         catch (Exception ex)
         {

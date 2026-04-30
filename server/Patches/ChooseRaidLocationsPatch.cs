@@ -7,7 +7,7 @@ using Vagabond.Common.Data;
 using Vagabond.Common.Enums;
 using Vagabond.Server.Config;
 using Vagabond.Server.Services;
-using Vagabond.Server.State;
+using Vagabond.Common.Definitions;
 
 namespace Vagabond.Server.Patches;
 
@@ -47,7 +47,7 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
             return jsonString;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = VagabondService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             VagabondLogger.Error($"Missing state {sessionId}.");

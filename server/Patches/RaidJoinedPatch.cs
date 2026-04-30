@@ -39,7 +39,7 @@ public sealed class RaidJoinPatch : AbstractPatch
             return;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = VagabondService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             return;
@@ -80,7 +80,7 @@ public sealed class RaidJoinPatch : AbstractPatch
 
         state.IsNewCharacter = false;
 
-        VagabondState.SaveState(sessionId, state);
+        VagabondService.SaveState(sessionId, state);
         VagabondService.PersistProfileIfPossible(sessionId);
     }
 }

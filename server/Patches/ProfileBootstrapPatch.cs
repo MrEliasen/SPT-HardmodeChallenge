@@ -5,7 +5,7 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using Vagabond.Server.Services;
-using Vagabond.Server.State;
+using Vagabond.Common.Definitions;
 
 namespace Vagabond.Server.Patches;
 
@@ -31,7 +31,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
                 return;
             }
 
-            var state = VagabondState.GetState(sessionId);
+            var state = VagabondService.GetState(sessionId);
             if (!state.VagabondModeEnabled)
             {
                 return;
@@ -42,7 +42,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
             if (state.ResetProfile)
             {
                 state.ResetProfile = false;
-                VagabondState.SaveState(sessionId, state);
+                VagabondService.SaveState(sessionId, state);
                 VirtualStashService.ClearAllTraderStashes(sessionId);
                 VagabondService.ResetProfile(sessionId, pmc);
                 VagabondService.PersistProfileIfPossible(sessionId);
@@ -60,7 +60,7 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
         }
     }
 
-    private static void ApplyRaidFirItems(PmcData pmc, VagabondState state)
+    private static void ApplyRaidFirItems(PmcData pmc, VagabondSessionState state)
     {
         if (state.RaidFirItems is not { Count: > 0 })
         {

@@ -8,9 +8,9 @@ using SPTarkov.Server.Core.Routers;
 using SPTarkov.Server.Core.Services.Mod;
 using SPTarkov.Server.Core.Utils.Cloners;
 using Vagabond.Server.Models;
-using Vagabond.Server.State;
 using Vagabond.Common;
 using Vagabond.Server.Config;
+using Vagabond.Server.State;
 
 namespace Vagabond.Server.Services;
 
@@ -486,7 +486,7 @@ internal static class VirtualStashService
             return false;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = VagabondService.GetState(sessionId);
         if (!state.VagabondModeEnabled)
         {
             return false;

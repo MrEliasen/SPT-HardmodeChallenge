@@ -4,7 +4,8 @@ using SPTarkov.Server.Core.Controllers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using Vagabond.Server.Data.Quests;
-using Vagabond.Server.State;
+using Vagabond.Common.Definitions;
+using Vagabond.Server.Services;
 
 namespace Vagabond.Server.Patches;
 
@@ -23,7 +24,7 @@ public sealed class QuestControllerGetClientQuestsPatch : AbstractPatch
             return;
         }
 
-        var state = VagabondState.GetState(sessionId);
+        var state = VagabondService.GetState(sessionId);
         if (state.HideoutState == null || state.CanPlaceHideout)
         {
             __result.RemoveAll(q => q.Id == HideoutRelocationQuest.QuestId);

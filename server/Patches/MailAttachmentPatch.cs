@@ -4,7 +4,8 @@ using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Dialog;
 using SPTarkov.Server.Core.Services;
 using Vagabond.Server.Config;
-using Vagabond.Server.State;
+using Vagabond.Common.Definitions;
+using Vagabond.Server.Services;
 
 namespace Vagabond.Server.Patches;
 
@@ -46,8 +47,8 @@ public sealed class MailAttachmentsPatch : AbstractPatch
             return true;
         }
 
-        var senderState = VagabondState.GetState(senderDetails.Id);
-        var recipientState = VagabondState.GetState(messageDetails.RecipientId);
+        var senderState = VagabondService.GetState(senderDetails.Id);
+        var recipientState = VagabondService.GetState(messageDetails.RecipientId);
 
         if (string.IsNullOrEmpty(senderState.CurrentMap))
         {
