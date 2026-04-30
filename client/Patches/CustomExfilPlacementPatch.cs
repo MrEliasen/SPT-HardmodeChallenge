@@ -140,6 +140,18 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 cloneObject.SetActive(true);
                 ConfigureExtractClone(clone, template, definition, pmcExfils.Count + 1);
 
+                // other mods's patches which hits the ExfiltrationPoint.Awake (found with AmandsSense
+                // throwing on missing Exfil.png for example) seems to leave it enabled=false.
+                // This should force set the state as a backup, and warn if it happens.
+                if (!clone.enabled || !cloneObject.activeInHierarchy)
+                {
+                    Vagabond.LogError(
+                        $"Clone '{definition.Identifier}' state after configure: component.enabled={clone.enabled}, activeInHierarchy={cloneObject.activeInHierarchy}. " +
+                        "Another mods's patch likely threw an error. Forcing object to be enabled and active as a failover.");
+                    cloneObject.SetActive(true);
+                    clone.enabled = true;
+                }
+
                 if (!force)
                 {
                     var mainPlayer = Singleton<GameWorld>.Instance?.MainPlayer;
@@ -487,8 +499,9 @@ internal class CustomExfilPlacementPatch : ModulePatch
         clone.EnableInteraction();
         clone.SetStatusLogged(EExfiltrationStatus.RegularMode, "Vagabond.CustomExfilPlacementPatch");
 
+        var playerEntryDiag = Singleton<GameWorld>.Instance?.MainPlayer?.Profile?.Info?.EntryPoint ?? "<null>";
         Vagabond.Log(
-            $"Configured extract clone '{definition.Identifier}' with EligibleEntryPoints=[{string.Join(", ", eligibleEntryPoints)}]");
+            $"Configured extract clone '{definition.Identifier}' (player entry='{playerEntryDiag}', enabled={clone.enabled}, activeInHierarchy={clone.gameObject.activeInHierarchy}, isActiveAndEnabled={clone.isActiveAndEnabled}) with EligibleEntryPoints=[{string.Join(", ", eligibleEntryPoints)}]");
     }
 
     private static string[] BuildEligibleEntryPoints(CustomExfil definition, ExfiltrationPoint template)
