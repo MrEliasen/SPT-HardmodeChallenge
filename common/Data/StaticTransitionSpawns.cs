@@ -27,7 +27,7 @@ public class StaticTransitionSpawns
             (RaidLocation.FactoryNight, RaidLocation.Customs) => new ManualSpawnPoint
                 { X = 353.939f, Y = 1.123f, Z = -189.197f, Rotation = 3.389f },
             (RaidLocation.Woods, RaidLocation.Customs) => new ManualSpawnPoint
-                { X = -4.414f, Y = 1.104f, Z = -136.337f, Rotation = 352.916f },
+                { X = 653.017f, Y = -0.292f, Z = -24.815f, Rotation = 258.376f },
 
             // Streets
             (RaidLocation.Labs, RaidLocation.Streets) => new ManualSpawnPoint
