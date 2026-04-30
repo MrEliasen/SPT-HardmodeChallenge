@@ -16,7 +16,7 @@ namespace Vagabond.Server.Services;
 
 internal static class VirtualStashService
 {
-    private const string ProfileDataKeyPrefix = ModInfo.Guid + ".virtual_stash";
+    private const string ProfileDataKeyPrefix = VagabondModInfo.Guid + ".virtual_stash";
     private const string StashRootIdPlaceholder = "vgb_stash_root";
     private const string SortingTableRootIdPlaceholder = "vgb_sorting_root";
 

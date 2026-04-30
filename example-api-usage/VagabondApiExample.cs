@@ -30,7 +30,7 @@ public record ModMetadata : AbstractModMetadata
 public sealed class VagabondApiExampleLoader : IOnLoad
 {
     private readonly ISptLogger<VagabondApiExampleLoader> _logger;
-    
+
     public VagabondApiExampleLoader(ISptLogger<VagabondApiExampleLoader> logger)
     {
         _logger = logger;
@@ -39,7 +39,8 @@ public sealed class VagabondApiExampleLoader : IOnLoad
     public Task OnLoad()
     {
         _logger.Warning("Adding stuff via Vagabond API");
-        List<CustomExfil> myCustomExfils = [
+        List<CustomExfil> myCustomExfils =
+        [
             // example of adding a custom extract, which we will hook up to give access to Fence trader.
             new CustomExfil
             {
@@ -66,10 +67,11 @@ public sealed class VagabondApiExampleLoader : IOnLoad
                 RotationY = 161.529f,
                 // who can use it, players are Pmc, but maybe you want to do a scav extension or something.
                 Side = "Pmc"
-            }     
+            }
         ];
-        
-        List<CustomExfil> myCustomTransits = [
+
+        List<CustomExfil> myCustomTransits =
+        [
             new CustomExfil
             {
                 // The unique Identifier for your exfil.
@@ -120,11 +122,11 @@ public sealed class VagabondApiExampleLoader : IOnLoad
                 RotationY = 45.435f,
             },
         ];
-        
+
         // here we add the transits and exfils we made, to "Customs"
         Api.AddExfils(RaidLocation.Woods, myCustomTransits, myCustomExfils);
         _logger.Success("Added additional exfils via Vagabond API");
-        
+
         // Now, lets add  the new Fence exfil we made
         Api.AddTraderLocations([
             new TraderLocation
@@ -138,7 +140,7 @@ public sealed class VagabondApiExampleLoader : IOnLoad
             }
         ]);
         _logger.Success("Added additional fence location via Vagabond API");
-        
+
         // placeholder for sessionId or profileId for a player
         var sessionId = "69ebbbcfa4878b67303ec776";
         var vagabondState = Api.GetState(sessionId);
@@ -149,8 +151,9 @@ public sealed class VagabondApiExampleLoader : IOnLoad
             vagabondState.LastExit = "MYMOD_EXT_FENCE";
             Api.SaveState(sessionId, vagabondState);
         }
+
         _logger.Success("Changed the profiles location via Vagabond API");
-        
+
         return Task.CompletedTask;
     }
 }

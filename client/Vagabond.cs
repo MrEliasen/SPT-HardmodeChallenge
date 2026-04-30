@@ -17,7 +17,7 @@ using Vagabond.Common.Models;
 
 namespace Vagabond.Client;
 
-[BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
+[BepInPlugin(VagabondModInfo.Guid, VagabondModInfo.Name, VagabondModInfo.Version)]
 [BepInDependency("com.acidphantasm.botplacementsystem", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
 public class Vagabond : BaseUnityPlugin

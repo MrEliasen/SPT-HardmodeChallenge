@@ -22,13 +22,13 @@ public static class Messages
                       "You start out with a bit of money, maybe just enough to buy a ragtag setup from Fence.\n" +
                       "While in a raid, you can press CTRL+P (change via F12) to place the entrance to your hideout to get access to your stash. However once placed you have to pay Skier before you can move it.\n" +
                       "To get traders to be accessible via your hideout, you will need to complete a unique quest for each one. These quests will be available once you reach a certain rep level.\n";
-        
+
         if (permadeath)
         {
             message +=
                 "\nAll stashes, except your hideout stash, is unique to that trader and/or extraction. Some features are disabled in these stashes like sorting.\n";
         }
-        
+
         if (permadeath)
         {
             message +=

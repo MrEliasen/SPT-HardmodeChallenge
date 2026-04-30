@@ -9,7 +9,7 @@ namespace Vagabond.Server.Services;
 
 public static class MigrationService
 {
-    private static readonly string CurrentVersion = ModInfo.Version;
+    private static readonly string CurrentVersion = VagabondModInfo.Version;
 
     public static void MigrateProfile(MongoId sessionId, PmcData pmc, VagabondSessionState state)
     {
@@ -46,7 +46,7 @@ public static class MigrationService
             }
         }
 
-        state.Version = ModInfo.Version;
+        state.Version = VagabondModInfo.Version;
         StateService.SaveState(sessionId, state);
     }
 
