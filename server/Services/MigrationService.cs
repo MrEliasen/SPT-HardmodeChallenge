@@ -43,6 +43,14 @@ public static class MigrationService
                     From040To050(state);
                     break;
                 }
+
+                case "0.5.0":
+                case "0.5.1":
+                case "0.5.2":
+                {
+                    From05To060(state);
+                    break;
+                }
             }
         }
 
@@ -84,5 +92,12 @@ public static class MigrationService
     {
         state.CanPlaceHideout = state.HideoutState?.Id == null;
         state.Version = "0.5.0";
+    }
+
+    private static void From05To060(VagabondSessionState state)
+    {
+        state.ConsecutiveExtractsSameMap = 1;
+        state.LastExtractMap = state.CurrentMap;
+        state.Version = "0.6.0";
     }
 }
