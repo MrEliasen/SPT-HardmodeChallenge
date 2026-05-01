@@ -1,0 +1,26 @@
+{
+  "extracts": [
+    {
+      "identifier": "VGB_EXT_SKIER",
+      "displayName": "Skier's Depot",
+      "exfiltrationTime": 20,
+      "x": 65.594,
+      "y": 1.162,
+      "z": -174.755,
+      "rotationY": 356.056
+    }
+  ],
+  "transits": [
+    {
+      "identifier": "VGB_CT_WD",
+      "destinationLocation": "Woods",
+      "description": "Transit to Woods",
+      "exfiltrationTime": 15,
+      "activateAfterSeconds": 0,
+      "x": 653.017,
+      "y": -0.292,
+      "z": -24.815,
+      "rotationY": 258.376
+    }
+  ]
+}

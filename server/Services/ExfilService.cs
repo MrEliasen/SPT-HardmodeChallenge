@@ -3,8 +3,8 @@ using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Services;
 using Vagabond.Common.Data;
 using Vagabond.Common.Definitions;
-using Vagabond.Common.Interfaces;
 using Vagabond.Common.Enums;
+using Vagabond.Server.Config;
 using Location = SPTarkov.Server.Core.Models.Eft.Common.Location;
 
 namespace Vagabond.Server.Services;
@@ -109,37 +109,58 @@ internal static class ExfilService
             HideoutExfils.Add(loc, entHideout);
         }
 
-        var locations = databaseService.GetLocations();
-        AddExtractions(9000, locations.Bigmap, new ExfilsCustoms());
-        AddExtractions(9100, locations.Factory4Day, new ExfilsFactoryDay());
-        AddExtractions(9200, locations.Factory4Night, new ExfilsFactoryNight());
-        AddExtractions(9300, locations.SandboxHigh, new ExfilsGroundZero());
-        AddExtractions(9400, locations.Interchange, new ExfilsInterchange());
-        AddExtractions(9500, locations.Lighthouse, new ExfilsLighthouse());
-        AddExtractions(9600, locations.RezervBase, new ExfilsReserve());
-        AddExtractions(9700, locations.Shoreline, new ExfilsShoreline());
-        AddExtractions(9800, locations.TarkovStreets, new ExfilsStreets());
-        AddExtractions(9900, locations.Woods, new ExfilsWoods());
-        AddExtractions(10000, locations.Laboratory, new ExfilsLabs());
-        AddExtractions(1100, locations.Labyrinth, new ExfilsLabyrinth());
+        var raidToOffset = new Dictionary<RaidLocation, int>
+        {
+            [RaidLocation.Customs] = 9000,
+            [RaidLocation.FactoryDay] = 9100,
+            [RaidLocation.FactoryNight] = 9200,
+            [RaidLocation.GroundZero] = 9300,
+            [RaidLocation.Interchange] = 9400,
+            [RaidLocation.Lighthouse] = 9500,
+            [RaidLocation.Reserve] = 9600,
+            [RaidLocation.Shoreline] = 9700,
+            [RaidLocation.Streets] = 9800,
+            [RaidLocation.Woods] = 9900,
+            [RaidLocation.Labs] = 10000,
+            [RaidLocation.Labyrinth] = 11000,
+        };
+
+        foreach (var (raid, entry) in ExfilsConfig.Maps)
+        {
+            var location = RaidLocationToLocation(databaseService, raid);
+            if (location == null)
+            {
+                continue;
+            }
+
+            if (!VagabondLocations.InverseLookupTable.TryGetValue(raid, out var maps) || maps.Count == 0)
+            {
+                continue;
+            }
+
+            var mapName = maps.First();
+            var offset = raidToOffset.GetValueOrDefault(raid, 12000);
+            AddExtractions(offset, location, raid, mapName, entry.Extracts, entry.Transits);
+        }
     }
 
-    private static void AddExtractions(int pointIdOffset, Location location, ICustomExtilData data)
+    private static void AddExtractions(int pointIdOffset, Location location, RaidLocation raid, string mapName,
+        List<CustomExfil> extracts, List<CustomExfil> transits)
     {
         var pmcEntryPoints = GetPmcEntryPoints(location);
 
-        foreach (var ext in data.Extracts)
+        foreach (var ext in extracts)
         {
             ext.EntryPoints = pmcEntryPoints;
-            CustomExfils[data.Raid][data.MapName].Add(ext);
+            CustomExfils[raid][mapName].Add(ext);
             AddOrReplaceExtract(location, ext);
         }
 
         var i = 1;
-        foreach (var transit in data.Transits)
+        foreach (var transit in transits)
         {
             transit.TransitPointId ??= pointIdOffset + i;
-            CustomExfils[data.Raid][data.MapName].Add(transit);
+            CustomExfils[raid][mapName].Add(transit);
             AddOrReplaceTransit(location, transit);
             i++;
         }
@@ -241,6 +262,29 @@ internal static class ExfilService
         return string.Join(",", entryPoints);
     }
 
+    private static CustomExfil GetExtractTemplate(RaidLocation raid)
+    {
+        if (ExfilsConfig.Maps.TryGetValue(raid, out var entry) && entry.Extracts.Count > 0)
+        {
+            return entry.Extracts.First();
+        }
+
+        return new CustomExfil
+        {
+            Identifier = "",
+            DisplayName = "",
+            IsTransit = false,
+            TemplateExitName = "",
+            EntryPoints = "",
+            ExfiltrationTime = 0f,
+            X = 0f,
+            Y = 0f,
+            Z = 0f,
+            RotationY = 0f,
+            Side = "Pmc"
+        };
+    }
+
     public static bool AddHideoutExfil(PmcData pmc, VagabondSessionState state)
     {
         if (string.IsNullOrEmpty(state.HideoutState?.Id) || _loadedHideoutExfils.Contains(state.HideoutState.Id))
@@ -328,9 +372,8 @@ internal static class ExfilService
             return null;
         }
 
-        var template =
-            StaticTransitionSpawns.GetMapExtractTemplate(
-                VagabondLocations.NormaliseMapName(state.HideoutState?.Map ?? state.CurrentMap));
+        var template = GetExtractTemplate(
+            VagabondLocations.NormaliseMapName(state.HideoutState?.Map ?? state.CurrentMap));
 
         var hideoutExfil = new CustomExfil
         {
@@ -453,13 +496,7 @@ internal static class ExfilService
 
         foreach (var alias in raidMaps.Keys)
         {
-            AddExtractions(0, location, new CustomExtilData
-            {
-                MapName = alias,
-                Raid = raid,
-                Extracts = newExtracts,
-                Transits = newTransits,
-            });
+            AddExtractions(0, location, raid, alias, newExtracts, newTransits);
         }
 
         BuildCustomExfilSnapshot(forceRebuild: true);

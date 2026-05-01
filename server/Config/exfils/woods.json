@@ -1,0 +1,27 @@
+{
+  "extracts": [
+    {
+      "identifier": "VGB_EXT_JAEGER",
+      "displayName": "Jaegers Hideout",
+      "exfiltrationTime": 20,
+      "x": -155.956,
+      "y": 51.164,
+      "z": -273.296,
+      "rotationY": 169.732
+    }
+  ],
+  "transits": [
+    {
+      "identifier": "VGB_WD_ST",
+      "destinationLocation": "TarkovStreets",
+      "description": "Transit To Streets (Under Bridge)",
+      "exfiltrationTime": 15,
+      "activateAfterSeconds": 0,
+      "x": -467.818,
+      "y": 8.167,
+      "z": -524.334,
+      "rotationY": 331.695,
+      "connectedIdentifier": "VGB_ST_WD"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "extracts": [
+    {
+      "identifier": "VGB_EXT_MARKET",
+      "displayName": "Underground Market via Hermetic Door (Custom Traders)",
+      "templateExitName": "EXFIL_Bunker",
+      "hijackExfil": true,
+      "x": 62.5,
+      "y": -6.936,
+      "z": -193.896,
+      "rotationY": 17.317
+    }
+  ],
+  "transits": [
+    {
+      "identifier": "VGB_RS_SL",
+      "destinationLocation": "Shoreline",
+      "description": "Mountain climb to Shoreline",
+      "exfiltrationTime": 15,
+      "activateAfterSeconds": 0,
+      "x": -14.466,
+      "y": 18.409,
+      "z": 205.046,
+      "rotationY": 179.555,
+      "connectedIdentifier": "VGB_SL_RS",
+      "requirements": [
+        {
+          "type": "HasItem",
+          "id": "5c012ffc0db834001d23f03f",
+          "count": 1,
+          "requirementTip": "Requires Red Rebel"
+        },
+        {
+          "type": "HasItem",
+          "id": "5d80c60f86f77440373c4ece",
+          "count": 1,
+          "requirementTip": "Requires Paracord"
+        }
+      ]
+    }
+  ]
+}

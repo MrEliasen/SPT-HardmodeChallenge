@@ -1,0 +1,27 @@
+{
+  "extracts": [
+    {
+      "identifier": "VGB_EXT_FENCE_DL",
+      "displayName": "Fence's Hub",
+      "exfiltrationTime": 20,
+      "x": -122.74,
+      "y": 10.576,
+      "z": -843.164,
+      "rotationY": 90.926
+    }
+  ],
+  "transits": [
+    {
+      "identifier": "VGB_LH_SL",
+      "destinationLocation": "Shoreline",
+      "description": "Transit to Shoreline",
+      "exfiltrationTime": 15,
+      "activateAfterSeconds": 0,
+      "x": -286.691,
+      "y": 5.971,
+      "z": 419.177,
+      "rotationY": 110.061,
+      "connectedIdentifier": "VGB_SL_LH"
+    }
+  ]
+}

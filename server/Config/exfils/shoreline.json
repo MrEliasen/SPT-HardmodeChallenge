@@ -1,0 +1,64 @@
+{
+  "extracts": [
+    {
+      "identifier": "VGB_EXT_PEACEKEEPER",
+      "displayName": "Peacekeeper's Safe Zone",
+      "exfiltrationTime": 20,
+      "x": -968.499,
+      "y": -59.614,
+      "z": 377.603,
+      "rotationY": 150.939
+    }
+  ],
+  "transits": [
+    {
+      "identifier": "VGB_SL_CU",
+      "destinationLocation": "bigmap",
+      "description": "Transit to Customs",
+      "exfiltrationTime": 15,
+      "activateAfterSeconds": 0,
+      "x": -855.903,
+      "y": -42.52,
+      "z": 10.129,
+      "rotationY": 7.715
+    },
+    {
+      "identifier": "VGB_SL_RS",
+      "destinationLocation": "RezervBase",
+      "description": "Mountain climb to Reserve",
+      "exfiltrationTime": 15,
+      "activateAfterSeconds": 0,
+      "x": -199.952,
+      "y": -12.753,
+      "z": -356.269,
+      "rotationY": 23.539,
+      "connectedIdentifier": "VGB_RS_SL",
+      "requirements": [
+        {
+          "type": "HasItem",
+          "id": "5c012ffc0db834001d23f03f",
+          "count": 1,
+          "requirementTip": "Requires Red Rebel"
+        },
+        {
+          "type": "HasItem",
+          "id": "5d80c60f86f77440373c4ece",
+          "count": 1,
+          "requirementTip": "Requires Paracord"
+        }
+      ]
+    },
+    {
+      "identifier": "VGB_SL_LH",
+      "destinationLocation": "Lighthouse",
+      "description": "Transit to Lighthouse",
+      "exfiltrationTime": 15,
+      "activateAfterSeconds": 0,
+      "x": 364.809,
+      "y": -59.601,
+      "z": 333.119,
+      "rotationY": 235.559,
+      "connectedIdentifier": "VGB_LH_SL"
+    }
+  ]
+}

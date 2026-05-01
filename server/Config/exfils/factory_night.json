@@ -1,0 +1,15 @@
+{
+  "extracts": [
+    {
+      "identifier": "VGB_EXT_MECHANIC",
+      "displayName": "Mechanic's Workshop",
+      "exfiltrationTime": 15,
+      "activateAfterSeconds": 0,
+      "x": -0.048,
+      "y": -2.633,
+      "z": 56.923,
+      "rotationY": 179.542
+    }
+  ],
+  "transits": []
+}

@@ -239,11 +239,12 @@ public class Vagabond : BaseUnityPlugin
             var pos = player.Position;
             var yaw = player.Transform.eulerAngles.y;
             var csharpLine = string.Format(
-                "(mapFrom, mapTo) => new ManualSpawnPoint {{ X = {0:0.###}f, Y = {1:0.###}f, Z = {2:0.###}f, Rotation = {3:0.###}f }},",
-                pos.x,
-                pos.y,
-                pos.z,
-                yaw
+                "{",
+                $"    \"x\": {pos.x:0.###},",
+                $"    \"y\": {pos.y:0.###},",
+                $"    \"z\": {pos.z:0.###},",
+                $"    \"rotationY\": {yaw:0.###},",
+                "},"
             );
             File.AppendAllText(_locationDumpPath, csharpLine + Environment.NewLine);
         }
@@ -289,20 +290,16 @@ public class Vagabond : BaseUnityPlugin
 
             File.AppendAllText(_customExtractDumpPath, string.Join(Environment.NewLine, new[]
             {
-                $"new CustomExfil",
                 "{",
-                $"    Identifier = \"VGB_EXT_\",",
-                $"    DisplayName = \"Human Readable Label\",",
-                "    TemplateExitName = \"\",// only fill if you want a specific template",
-                "    EntryPoints = \"\",",
-                "    ExfiltrationTime = 20f,",
-                $"    X = {snapshot.Position.x:0.###}f,",
-                $"    Y = {snapshot.Position.y:0.###}f,",
-                $"    Z = {snapshot.Position.z:0.###}f,",
-                $"    RotationY = {snapshot.Yaw:0.###}f,",
-                "    Side = \"Pmc\"",
+                "    \"identifier\": \"VGB_EXT_\",",
+                "    \"displayName\": \"Human Readable Label\",",
+                "    \"exfiltrationTime\": 20,",
+                $"    \"x\": {snapshot.Position.x:0.###},",
+                $"    \"y\": {snapshot.Position.y:0.###},",
+                $"    \"z\": {snapshot.Position.z:0.###},",
+                $"    \"rotationY\": {snapshot.Yaw:0.###}",
                 "},"
-            }));
+            }) + Environment.NewLine);
         }
         catch (Exception ex)
         {
@@ -321,23 +318,19 @@ public class Vagabond : BaseUnityPlugin
 
             File.AppendAllText(_customTransitDumpPath, string.Join(Environment.NewLine, new[]
             {
-                "new CustomExfil",
                 "{",
-                $"    Identifier = \"VGB_\",",
-                "    IsTransit = true,",
-                $"    TransitPointId = 0,// gets auto generated, leave at 0",
-                "    DestinationLocation = VagabondLocations.RaidLocationToMapName(RaidLocation.DESTINATION),",
-                "    Description = \"Transit to ..\",",
-                "    ExfiltrationTime = 15f,",
-                "    IsActive = true,",
-                "    HideIfNoKey = false,",
-                $"    X = {snapshot.Position.x:0.###}f,",
-                $"    Y = {snapshot.Position.y:0.###}f,",
-                $"    Z = {snapshot.Position.z:0.###}f,",
-                $"    RotationY = {snapshot.Yaw:0.###}f,",
-                $"    ConnectedIdentifier = \"VGB_\"",
+                "    \"identifier\": \"VGB_\",",
+                "    \"destinationLocation\": \"DESTINATION_MAP_NAME\",",
+                "    \"description\": \"Transit to ..\",",
+                "    \"exfiltrationTime\": 15,",
+                "    \"activateAfterSeconds\": 0,",
+                $"    \"x\": {snapshot.Position.x:0.###},",
+                $"    \"y\": {snapshot.Position.y:0.###},",
+                $"    \"z\": {snapshot.Position.z:0.###},",
+                $"    \"rotationY\": {snapshot.Yaw:0.###},",
+                "    \"connectedIdentifier\": \"VGB_\"",
                 "},"
-            }));
+            }) + Environment.NewLine);
         }
         catch (Exception ex)
         {

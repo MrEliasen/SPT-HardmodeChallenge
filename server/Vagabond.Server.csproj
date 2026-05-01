@@ -26,8 +26,9 @@
 
     <ItemGroup>
         <None Include="Config\\vagabond.json" Link="config\\vagabond.json" CopyToOutputDirectory="Always"/>
+        <None Include="Config\\trader_locations.json" Link="config\\trader_locations.json" CopyToOutputDirectory="Always"/>
+        <None Include="Config\\exfils\\*.json" Link="config\\exfils\\%(Filename)%(Extension)" CopyToOutputDirectory="Always"/>
     </ItemGroup>
-
 
     <Target Name="PostBuild" AfterTargets="Build">
         <ItemGroup>
@@ -39,9 +40,17 @@
             <PluginFiles Include="$(ProjectDir)$(OutDir)Vagabond.Common.dll"/>
         </ItemGroup>
 
+        <ItemGroup>
+            <PluginConfigFiles Include="$(ProjectDir)$(OutDir)config\**\*.*"/>
+        </ItemGroup>
+
         <!-- Copy to Tarkov plugin directory -->
         <Copy SourceFiles="@(PluginFiles)"
               DestinationFolder="$(TarkovPluginsSPTDir)Vagabond\"
+              SkipUnchangedFiles="true"/>
+
+        <Copy SourceFiles="@(PluginConfigFiles)"
+              DestinationFiles="@(PluginConfigFiles->'$(TarkovPluginsSPTDir)Vagabond\config\%(RecursiveDir)%(Filename)%(Extension)')"
               SkipUnchangedFiles="true"/>
     </Target>
 </Project>

@@ -58,6 +58,9 @@ public sealed class VagabondLoader : IOnLoad
         Api.SaveStateImpl = StateService.SaveState;
 
         VagabondConfig.Initialize();
+        ExfilsConfig.Initialize();
+        TraderLocationsConfig.Initialize();
+        HideoutService.LoadTraderLocations(TraderLocationsConfig.Locations);
 
         new Patches.MailAttachmentsPatch().Enable();
         new Patches.ProfileBootstrapPatch().Enable();

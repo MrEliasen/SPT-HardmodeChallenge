@@ -1,0 +1,27 @@
+{
+  "extracts": [
+    {
+      "identifier": "VGB_EXT_RAGMAN",
+      "displayName": "Ragman's Outlet",
+      "exfiltrationTime": 20,
+      "x": -52.581,
+      "y": 21.377,
+      "z": 46.974,
+      "rotationY": 36.619
+    }
+  ],
+  "transits": [
+    {
+      "identifier": "VGB_IC_GZ",
+      "destinationLocation": "Sandbox_high",
+      "description": "Transit to Ground Zero",
+      "exfiltrationTime": 15,
+      "activateAfterSeconds": 0,
+      "x": -318.782,
+      "y": 21.365,
+      "z": 268.296,
+      "rotationY": 207.341,
+      "connectedIdentifier": "VGB_GZ_IC"
+    }
+  ]
+}

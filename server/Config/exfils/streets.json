@@ -1,0 +1,40 @@
+{
+  "extracts": [
+    {
+      "identifier": "VGB_EXT_PRAPOR",
+      "displayName": "Prapor's Warehouse",
+      "templateExitName": "Sewer River",
+      "entryPoints": "e1_2,e2_3,e3_4,e4_5,e5_6,e6_1",
+      "exfiltrationTime": 10,
+      "x": -32.637,
+      "y": 6.608,
+      "z": -110.759,
+      "rotationY": 254.802
+    },
+    {
+      "identifier": "VGB_EXT_FENCE",
+      "displayName": "Fence's Hub",
+      "templateExitName": "Sewer River",
+      "entryPoints": "e1_2,e2_3,e3_4,e4_5,e5_6,e6_1",
+      "exfiltrationTime": 10,
+      "x": 74.785,
+      "y": -2.046,
+      "z": 49.224,
+      "rotationY": 15.011
+    }
+  ],
+  "transits": [
+    {
+      "identifier": "VGB_ST_WD",
+      "destinationLocation": "Woods",
+      "description": "Transit to Woods",
+      "exfiltrationTime": 15,
+      "activateAfterSeconds": 0,
+      "x": 259.298,
+      "y": -5.314,
+      "z": 76.97,
+      "rotationY": 282.215,
+      "connectedIdentifier": "VGB_WD_ST"
+    }
+  ]
+}

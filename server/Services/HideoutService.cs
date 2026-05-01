@@ -25,69 +25,12 @@ internal static class HideoutService
         "688246958448b05efd61d462", // Voevoda
     ];
 
-    public static List<TraderLocation> TraderLocations = new()
+    public static List<TraderLocation> TraderLocations = new();
+
+    public static void LoadTraderLocations(IEnumerable<TraderLocation> seed)
     {
-        new TraderLocation
-        {
-            TraderId = "54cb57776803fa99248b456e", // Therapist
-            Raid = RaidLocation.GroundZero,
-            ExfilIdentifier = "VGB_EXT_THERAPIST",
-        },
-        new TraderLocation
-        {
-            TraderId = "58330581ace78e27b8b10cee", // Skier
-            Raid = RaidLocation.Customs,
-            ExfilIdentifier = "VGB_EXT_SKIER",
-        },
-        new TraderLocation
-        {
-            TraderId = "5c0647fdd443bc2504c2d371", // Jaeger
-            Raid = RaidLocation.Woods,
-            ExfilIdentifier = "VGB_EXT_JAEGER",
-        },
-        new TraderLocation
-        {
-            TraderId = "5a7c2eca46aef81a7ca2145d", // Mechanic
-            Raid = RaidLocation.FactoryDay,
-            ExfilIdentifier = "VGB_EXT_MECHANIC",
-        },
-        new TraderLocation
-        {
-            TraderId = "5a7c2eca46aef81a7ca2145d", // Mechanic
-            Raid = RaidLocation.FactoryNight,
-            ExfilIdentifier = "VGB_EXT_MECHANIC",
-        },
-        new TraderLocation
-        {
-            TraderId = "54cb50c76803fa8b248b4571", // Prapor
-            Raid = RaidLocation.Streets,
-            ExfilIdentifier = "VGB_EXT_PRAPOR",
-        },
-        new TraderLocation
-        {
-            TraderId = "5ac3b934156ae10c4430e83c", // Ragman
-            Raid = RaidLocation.Interchange,
-            ExfilIdentifier = "VGB_EXT_RAGMAN",
-        },
-        new TraderLocation
-        {
-            TraderId = "5935c25fb3acc3127c3d8cd9", // Peacekeeper
-            Raid = RaidLocation.Shoreline,
-            ExfilIdentifier = "VGB_EXT_PEACEKEEPER",
-        },
-        new TraderLocation
-        {
-            TraderId = "579dc571d53a0658a154fbec", // Fence
-            Raid = RaidLocation.Streets,
-            ExfilIdentifier = "VGB_EXT_FENCE",
-        },
-        new TraderLocation
-        {
-            TraderId = "579dc571d53a0658a154fbec", // Fence
-            Raid = RaidLocation.Lighthouse,
-            ExfilIdentifier = "VGB_EXT_FENCE_DL",
-        }
-    };
+        TraderLocations = new List<TraderLocation>(seed);
+    }
 
     public static IReadOnlyCollection<string> GetAllTraderIds()
     {

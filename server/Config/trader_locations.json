@@ -1,0 +1,52 @@
+[
+  {
+    "traderId": "54cb57776803fa99248b456e",
+    "raid": "GroundZero",
+    "exfilIdentifier": "VGB_EXT_THERAPIST"
+  },
+  {
+    "traderId": "58330581ace78e27b8b10cee",
+    "raid": "Customs",
+    "exfilIdentifier": "VGB_EXT_SKIER"
+  },
+  {
+    "traderId": "5c0647fdd443bc2504c2d371",
+    "raid": "Woods",
+    "exfilIdentifier": "VGB_EXT_JAEGER"
+  },
+  {
+    "traderId": "5a7c2eca46aef81a7ca2145d",
+    "raid": "FactoryDay",
+    "exfilIdentifier": "VGB_EXT_MECHANIC"
+  },
+  {
+    "traderId": "5a7c2eca46aef81a7ca2145d",
+    "raid": "FactoryNight",
+    "exfilIdentifier": "VGB_EXT_MECHANIC"
+  },
+  {
+    "traderId": "54cb50c76803fa8b248b4571",
+    "raid": "Streets",
+    "exfilIdentifier": "VGB_EXT_PRAPOR"
+  },
+  {
+    "traderId": "5ac3b934156ae10c4430e83c",
+    "raid": "Interchange",
+    "exfilIdentifier": "VGB_EXT_RAGMAN"
+  },
+  {
+    "traderId": "5935c25fb3acc3127c3d8cd9",
+    "raid": "Shoreline",
+    "exfilIdentifier": "VGB_EXT_PEACEKEEPER"
+  },
+  {
+    "traderId": "579dc571d53a0658a154fbec",
+    "raid": "Streets",
+    "exfilIdentifier": "VGB_EXT_FENCE"
+  },
+  {
+    "traderId": "579dc571d53a0658a154fbec",
+    "raid": "Lighthouse",
+    "exfilIdentifier": "VGB_EXT_FENCE_DL"
+  }
+]
