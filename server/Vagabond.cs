@@ -60,6 +60,7 @@ public sealed class VagabondLoader : IOnLoad
         VagabondConfig.Initialize();
         ExfilsConfig.Initialize();
         TraderLocationsConfig.Initialize();
+        StaticTransitionsConfig.Initialize();
         HideoutService.LoadTraderLocations(TraderLocationsConfig.Locations);
 
         new Patches.MailAttachmentsPatch().Enable();

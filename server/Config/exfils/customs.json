@@ -26,7 +26,7 @@
       "y": -0.292,
       "z": -24.815,
       "rotationY": 258.376
-      // if the connectedIdentifier is missing, it will use the 
+      // since the connectedIdentifier is missing, it will use the matching 'raid -> raid'  static transition position
     }
   ]
 }

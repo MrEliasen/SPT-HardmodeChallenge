@@ -27,6 +27,7 @@
     <ItemGroup>
         <None Include="Config\\vagabond.json" Link="config\\vagabond.json" CopyToOutputDirectory="Always"/>
         <None Include="Config\\trader_locations.json" Link="config\\trader_locations.json" CopyToOutputDirectory="Always"/>
+        <None Include="Config\\static_transitions.json" Link="config\\static_transitions.json" CopyToOutputDirectory="Always"/>
         <None Include="Config\\exfils\\*.json" Link="config\\exfils\\%(Filename)%(Extension)" CopyToOutputDirectory="Always"/>
     </ItemGroup>
 

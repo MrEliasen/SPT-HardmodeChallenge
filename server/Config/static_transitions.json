@@ -1,0 +1,272 @@
+[
+  // Where the player spawns when entering a raid via a vanilla SPT transits.
+  // 'from' and 'to' is the direction of the transition.
+  // x,y,z & rotation is the spawn point on the destination map and what direction the player faces.
+
+  // Ground Zero
+  {
+    "from": "Streets",
+    "to": "GroundZero",
+    "x": 230.016,
+    "y": 16.187,
+    "z": 83.303,
+    "rotation": 231.771
+  },
+  // Customs
+  {
+    "from": "Interchange",
+    "to": "Customs",
+    "x": -338.961,
+    "y": 0.793,
+    "z": -194.769,
+    "rotation": 30.629
+  },
+  {
+    "from": "Shoreline",
+    "to": "Customs",
+    "x": 24.013,
+    "y": -1.326,
+    "z": 134.716,
+    "rotation": 95.674
+  },
+  {
+    "from": "Reserve",
+    "to": "Customs",
+    "x": 650.311,
+    "y": 0.39,
+    "z": 116.193,
+    "rotation": 196.06
+  },
+  {
+    "from": "FactoryDay",
+    "to": "Customs",
+    "x": 353.939,
+    "y": 1.123,
+    "z": -189.197,
+    "rotation": 3.389
+  },
+  {
+    "from": "FactoryNight",
+    "to": "Customs",
+    "x": 353.939,
+    "y": 1.123,
+    "z": -189.197,
+    "rotation": 3.389
+  },
+  {
+    "from": "Woods",
+    "to": "Customs",
+    "x": 653.017,
+    "y": -0.292,
+    "z": -24.815,
+    "rotation": 258.376
+  },
+  // Streets
+  {
+    "from": "Labs",
+    "to": "Streets",
+    "x": 210.119,
+    "y": -8.291,
+    "z": 82.166,
+    "rotation": 88.696
+  },
+  {
+    "from": "GroundZero",
+    "to": "Streets",
+    "x": -248.599,
+    "y": 2.245,
+    "z": 98.421,
+    "rotation": 19.081
+  },
+  {
+    "from": "Interchange",
+    "to": "Streets",
+    "x": 288.596,
+    "y": 3.469,
+    "z": 489.124,
+    "rotation": 227.398
+  },
+  {
+    "from": "Woods",
+    "to": "Streets",
+    "x": 288.596,
+    "y": 3.469,
+    "z": 489.124,
+    "rotation": 227.398
+  },
+  // Interchange
+  {
+    "from": "Streets",
+    "to": "Interchange",
+    "x": 269.422,
+    "y": 21.401,
+    "z": -445.558,
+    "rotation": 339.283
+  },
+  {
+    "from": "Customs",
+    "to": "Interchange",
+    "x": 289.967,
+    "y": 21.341,
+    "z": 377.473,
+    "rotation": 274.522
+  },
+  // Reserve
+  {
+    "from": "Customs",
+    "to": "Reserve",
+    "x": -200.731,
+    "y": -5.986,
+    "z": -107.305,
+    "rotation": 134.331
+  },
+  {
+    "from": "Woods",
+    "to": "Reserve",
+    "x": 35.423,
+    "y": -7.003,
+    "z": -221.638,
+    "rotation": 349.134
+  },
+  {
+    "from": "Lighthouse",
+    "to": "Reserve",
+    "x": 216.246,
+    "y": -7.007,
+    "z": -176.805,
+    "rotation": 211.995
+  },
+  // Woods
+  {
+    "from": "FactoryDay",
+    "to": "Woods",
+    "x": -355.201,
+    "y": -0.268,
+    "z": 362.391,
+    "rotation": 161.997
+  },
+  {
+    "from": "FactoryNight",
+    "to": "Woods",
+    "x": -355.201,
+    "y": -0.268,
+    "z": 362.391,
+    "rotation": 161.997
+  },
+  {
+    "from": "Customs",
+    "to": "Woods",
+    "x": -139.908,
+    "y": -1.504,
+    "z": 417.126,
+    "rotation": 212.588
+  },
+  {
+    "from": "Reserve",
+    "to": "Woods",
+    "x": 252.936,
+    "y": -9.516,
+    "z": 354.375,
+    "rotation": 135.734
+  },
+  {
+    "from": "Lighthouse",
+    "to": "Woods",
+    "x": 498.298,
+    "y": -17.483,
+    "z": 348.645,
+    "rotation": 231.116
+  },
+  // Lighthouse
+  {
+    "from": "Shoreline",
+    "to": "Lighthouse",
+    "x": -343.76,
+    "y": 8.158,
+    "z": -160.048,
+    "rotation": 109.296
+  },
+  {
+    "from": "Reserve",
+    "to": "Lighthouse",
+    "x": -313.705,
+    "y": 15.432,
+    "z": -773.452,
+    "rotation": 122.249
+  },
+  {
+    "from": "Woods",
+    "to": "Lighthouse",
+    "x": 104.531,
+    "y": 4.642,
+    "z": -959.373,
+    "rotation": 5.686
+  },
+  // Shoreline
+  {
+    "from": "Customs",
+    "to": "Shoreline",
+    "x": -848.76,
+    "y": -42.364,
+    "z": 2.421,
+    "rotation": 29.018
+  },
+  {
+    "from": "Lighthouse",
+    "to": "Shoreline",
+    "x": 418.876,
+    "y": -57.395,
+    "z": -191.697,
+    "rotation": 298.845
+  },
+  // Factory Day
+  {
+    "from": "Customs",
+    "to": "FactoryDay",
+    "x": 19.901,
+    "y": -0.335,
+    "z": -49.05,
+    "rotation": 357.57
+  },
+  {
+    "from": "Woods",
+    "to": "FactoryDay",
+    "x": 22.337,
+    "y": 1.169,
+    "z": 63.884,
+    "rotation": 174.311
+  },
+  {
+    "from": "Labs",
+    "to": "FactoryDay",
+    "x": -24.79,
+    "y": -3.562,
+    "z": -25.751,
+    "rotation": 55.127
+  },
+  // Factory Night
+  {
+    "from": "Customs",
+    "to": "FactoryNight",
+    "x": 19.901,
+    "y": -0.335,
+    "z": -49.05,
+    "rotation": 357.57
+  },
+  {
+    "from": "Woods",
+    "to": "FactoryNight",
+    "x": 22.337,
+    "y": 1.169,
+    "z": 63.884,
+    "rotation": 174.311
+  },
+  {
+    "from": "Labs",
+    "to": "FactoryNight",
+    "x": -24.79,
+    "y": -3.562,
+    "z": -25.751,
+    "rotation": 55.127
+  }
+]

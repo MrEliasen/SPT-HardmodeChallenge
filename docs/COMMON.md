@@ -144,11 +144,6 @@ Source: [common/Data/ForcedSpawnPointIds.cs](../common/Data/ForcedSpawnPointIds.
 
 `Prefix` constant, `IsForcedSpawnId(string?)`, `Build(locationName, templateId)`.
 
-### `StaticTransitionSpawns`
-Source: [common/Data/StaticTransitionSpawns.cs](../common/Data/StaticTransitionSpawns.cs)
-
-`GetStaticSpawn(RaidLocation from, RaidLocation to) → ManualSpawnPoint?` — built-in spawn coords for transit pairs.
-
 ### `ExfilQuests`
 Source: [common/Data/ExfilQuests.cs](../common/Data/ExfilQuests.cs)
 

@@ -1,8 +1,9 @@
 ﻿using Vagabond.Common.Data;
+using Vagabond.Common.Definitions;
 using Vagabond.Common.Enums;
 using Vagabond.Common.Models;
+using Vagabond.Server.Config;
 using Vagabond.Server.Services;
-using Vagabond.Common.Definitions;
 
 namespace Vagabond.Server.Data;
 
@@ -55,7 +56,7 @@ public static class StaticMapTransitions
             return null;
         }
 
-        return StaticTransitionSpawns.GetStaticSpawn(from, to);
+        return StaticTransitionsConfig.GetSpawn(from, to);
     }
 
     private static bool GetNormalRaidLocation(VagabondSessionState state, RaidLocation location,
