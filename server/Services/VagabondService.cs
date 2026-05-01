@@ -16,8 +16,6 @@ namespace Vagabond.Server.Services;
 
 internal static class VagabondService
 {
-    public static Dictionary<string, List<string>> TraderLocations = new();
-
     public static void ResetProfile(MongoId sessionId, PmcData pmc)
     {
         var inventory = pmc.Inventory;

@@ -241,28 +241,6 @@ internal static class ExfilService
         return string.Join(",", entryPoints);
     }
 
-    public static ICustomExtilData GetCustomMapData(RaidLocation raid)
-    {
-        return (raid) switch
-        {
-            (RaidLocation.Customs) => new ExfilsCustoms(),
-            (RaidLocation.FactoryDay) => new ExfilsFactoryDay(),
-            (RaidLocation.FactoryNight) => new ExfilsFactoryNight(),
-            (RaidLocation.GroundZero) => new ExfilsGroundZero(),
-            (RaidLocation.Interchange) => new ExfilsInterchange(),
-            (RaidLocation.Lighthouse) => new ExfilsLighthouse(),
-            (RaidLocation.Reserve) => new ExfilsReserve(),
-            (RaidLocation.Shoreline) => new ExfilsShoreline(),
-            (RaidLocation.Streets) => new ExfilsStreets(),
-            (RaidLocation.Woods) => new ExfilsWoods(),
-            (RaidLocation.Labs) => new ExfilsLabs(),
-            (RaidLocation.Labyrinth) => new ExfilsLabyrinth(),
-            RaidLocation.Nil => throw new ArgumentOutOfRangeException(nameof(raid), raid,
-                "RaidLocation.Nil has no custom map data."),
-            _ => throw new ArgumentOutOfRangeException(nameof(raid), raid, "Unsupported raid location.")
-        };
-    }
-
     public static bool AddHideoutExfil(PmcData pmc, VagabondSessionState state)
     {
         if (string.IsNullOrEmpty(state.HideoutState?.Id) || _loadedHideoutExfils.Contains(state.HideoutState.Id))
