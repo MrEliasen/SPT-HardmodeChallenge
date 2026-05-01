@@ -23,11 +23,25 @@
   // if disabled, to be able to relocate you will need to complete the "Fresh Foundations" quest from Skier (repeatable).
   "AllowHideoutRelocation": false,
   // Where you will be placed when you die, options are: 
-  // "hideout" - will send you to your hideout if you have one, otherwise fence.
-  // "fence" - will send you to starter fence.
+  // "hideout" - will send you to your hideout if you have one, otherwise "stays".
   // "stay" - you stay at your last known map/transit
-  // "therapist" - sends you to therapist's clinic, allowing you to heal post-raid.
+  // "custom" - goes to the raid and specified exfil
+  // acceptable raid names are:
+  //  FactoryDay,
+  //  FactoryNight,
+  //  GroundZero,
+  //  Streets,
+  //  Woods,
+  //  Customs,
+  //  Interchange,
+  //  Lighthouse,
+  //  Reserve,
+  //  Shoreline,
+  //  Labs,
+  //  Labyrinth
   "OnDeathGoTo": "hideout",
+  "OnDeathGoToRaid": "",
+  "OnDeathGoToExfilIdentifier": "",
   // Which Fence/location to use as your start location (and on death location)
   // "streets" - Streets of Tarkov location
   // "lighthouse" - Lighthouse location

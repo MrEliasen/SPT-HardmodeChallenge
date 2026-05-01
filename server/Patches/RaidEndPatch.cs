@@ -182,17 +182,6 @@ public sealed class RaidEndPatch : AbstractPatch
             var deathGoTo = VagabondConfig.Config.OnDeathGoTo.Trim().ToLower();
             state.ResetProfile = VagabondConfig.Config.ResetOnDeath;
 
-            var oldCurrentMap = state.CurrentMap;
-            var oldLastExit = state.LastExit;
-            state.CurrentMap = "Streets";
-            state.LastExit = "VGB_EXT_FENCE";
-
-            if (string.Equals(VagabondConfig.Config.StarterFence, "lighthouse", StringComparison.OrdinalIgnoreCase))
-            {
-                state.CurrentMap = "Lighthouse";
-                state.LastExit = "VGB_EXT_FENCE_DL";
-            }
-
             switch (deathGoTo)
             {
                 case "hideout":
@@ -206,17 +195,20 @@ public sealed class RaidEndPatch : AbstractPatch
                     break;
                 }
 
-                case "stay":
+                case "custom":
                 {
-                    state.CurrentMap = oldCurrentMap;
-                    state.LastExit = oldLastExit;
-                    break;
-                }
+                    var raidLoc = VagabondLocations.NormaliseMapName(VagabondConfig.Config.OnDeathGoToRaid);
+                    if (raidLoc != RaidLocation.Nil)
+                    {
+                        if (ExfilsConfig.Maps[raidLoc].Extracts.Exists(x =>
+                                x.Identifier.Equals(VagabondConfig.Config.OnDeathGoToExfilIdentifier)))
+                        {
+                            state.CurrentMap = VagabondLocations.NormaliseMapName(VagabondConfig.Config.OnDeathGoToRaid)
+                                .ToString();
+                            state.LastExit = VagabondConfig.Config.OnDeathGoToExfilIdentifier;
+                        }
+                    }
 
-                case "therapist":
-                {
-                    state.CurrentMap = "GroundZero";
-                    state.LastExit = "VGB_EXT_THERAPIST";
                     break;
                 }
             }

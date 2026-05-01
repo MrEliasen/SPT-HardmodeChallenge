@@ -22,6 +22,8 @@ public sealed class VagabondConfig
     public bool AllowPostRaidHealing { get; set; } = true;
     public bool HealStatusEffectsOnDeath { get; set; } = true;
     public string OnDeathGoTo { get; set; } = "hideout";
+    public string OnDeathGoToRaid { get; set; } = "";
+    public string OnDeathGoToExfilIdentifier { get; set; } = "";
     public string StarterFence { get; set; } = "streets";
     public int HideoutRelocationFee { get; set; } = 350_000;
     public int JoinHideoutTherapistLoyaltyLevel { get; set; } = 2;
