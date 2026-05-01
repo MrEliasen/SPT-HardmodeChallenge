@@ -128,6 +128,9 @@ public static class CommunicationService
             Vagabond.State.NewCharacter = resp.NewCharacter;
             Vagabond.State.AllowPostRaidHealing = resp.AllowPostRaidHealing;
             Vagabond.State.LimitTraderMailAccess = resp.LimitTraderMailAccess;
+            Vagabond.State.LootStreakEnabled = resp.LootStreakEnabled;
+            Vagabond.State.LootStreakMultiplier = resp.LootStreakMultiplier;
+            Vagabond.State.LootStreakCount = resp.LootStreakCount;
         }
     }
 }

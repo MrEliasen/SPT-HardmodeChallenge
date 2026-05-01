@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Comfort.Common;
 using EFT;
+using EFT.Communications;
 using EFT.Interactive;
 using EFT.Interactive.SecretExfiltrations;
 using EFT.UI;
@@ -21,6 +22,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
 {
     public static bool ExtractsAppliedThisRaid;
     public static bool TransitsAppliedThisRaid;
+    public static bool LootToastShownThisRaid;
     public static readonly Dictionary<int, CustomExfil> CustomTransitDefinitions = new();
     public static Dictionary<string, ExfiltrationPoint> ExfilPointTemplateCache = new();
 
@@ -67,6 +69,8 @@ internal class CustomExfilPlacementPatch : ModulePatch
         Vagabond.Log($"RefreshExfilStateBlocking");
         CommunicationService.RefreshExfilStateBlocking();
 
+        ShowLootStreakToast(locationId);
+
         Vagabond.State.CustomExfils.TryGetValue(raid, out var exfils);
         if (exfils == null)
         {
@@ -77,6 +81,38 @@ internal class CustomExfilPlacementPatch : ModulePatch
         ApplyCustomExtracts(__instance, raid, definitions?.Where(x => !x.IsTransit).ToList());
         ApplyCustomTransits(gameWorld.TransitController, raid, definitions?.Where(x => x.IsTransit).ToList());
         FilterExtractions(__instance);
+    }
+
+    private static void ShowLootStreakToast(string locationId)
+    {
+        if (LootToastShownThisRaid)
+        {
+            return;
+        }
+
+        if (Vagabond.IsHeadless())
+        {
+            return;
+        }
+
+        if (!Vagabond.State.LootStreakEnabled)
+        {
+            return;
+        }
+
+        var multiplier = Vagabond.State.LootStreakMultiplier;
+        var pct = (int)Math.Round(multiplier * 100);
+        var mapName = VagabondLocations.ToHumanName(VagabondLocations.NormaliseMapName(locationId));
+
+        var text = Vagabond.State.LootStreakCount <= 0
+            ? $"First raid on {mapName} - Loot spawn is at normal/100%."
+            : $"Raid #{Vagabond.State.LootStreakCount + 1} on {mapName} - Loot reduced to {pct}%";
+
+        NotificationManagerClass.DisplayMessageNotification(
+            text,
+            ENotificationDurationType.Long);
+
+        LootToastShownThisRaid = true;
     }
 
     public static List<ExfiltrationPoint> ApplyCustomExtracts(ExfiltrationControllerClass controller, RaidLocation raid,
@@ -816,6 +852,7 @@ internal class CustomExfilCleanupPatch : ModulePatch
     {
         CustomExfilPlacementPatch.TransitsAppliedThisRaid = false;
         CustomExfilPlacementPatch.ExtractsAppliedThisRaid = false;
+        CustomExfilPlacementPatch.LootToastShownThisRaid = false;
         CustomExfilPlacementPatch.CustomTransitDefinitions.Clear();
         CustomExfilPlacementPatch.ExfilPointTemplateCache.Clear();
         ExfilService.SuppressedCustomExtractPointIds.Clear();

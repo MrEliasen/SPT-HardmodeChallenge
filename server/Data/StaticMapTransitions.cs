@@ -70,8 +70,8 @@ public static class StaticMapTransitions
             return false;
         }
 
-        var raidMapData = ExfilService.GetCustomMapData(raid);
-        var exfil = raidMapData.Extracts.Concat(raidMapData.Transits).FirstOrDefault(x => x.Identifier == exitName);
+        var exfil = ExfilService.GetCustomExfils(raid)
+            .FirstOrDefault(x => x.Identifier == exitName);
         if (exfil == null)
         {
             return false;
@@ -127,8 +127,8 @@ public static class StaticMapTransitions
             return false;
         }
 
-        var fromMapData = ExfilService.GetCustomMapData(from);
-        var exfil = fromMapData.Extracts.Concat(fromMapData.Transits).FirstOrDefault(x => x.Identifier == exitName);
+        var exfil = ExfilService.GetCustomExfils(from)
+            .FirstOrDefault(x => x.Identifier == exitName);
         if (exfil == null)
         {
             return false;
@@ -140,8 +140,7 @@ public static class StaticMapTransitions
             return false;
         }
 
-        var toMapData = ExfilService.GetCustomMapData(to);
-        var position = toMapData.Extracts.Concat(toMapData.Transits)
+        var position = ExfilService.GetCustomExfils(to)
             .FirstOrDefault(x => x.Identifier == exfil.ConnectedIdentifier);
         if (position == null)
         {

@@ -86,6 +86,16 @@ public class VagabondRouter(
         response.LimitTraderMailAccess = VagabondConfig.Config.LimitTraderMailAccess;
         response.RaidFirItems = state.RaidFirItems ?? new HashSet<string>();
 
+        var ownerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionId);
+        var ownerState = ownerSessionId == sessionId ? state : StateService.GetState(ownerSessionId);
+        
+        response.LootStreakEnabled = VagabondConfig.Config.EnableConsecutiveMapLootReduction;
+        response.LootStreakMultiplier = LootStreakService.GetCurrentMultiplier(ownerSessionId, ownerState.CurrentMap);
+        response.LootStreakCount =
+            LootStreakService.GetStreakMapName(ownerState.CurrentMap) == ownerState.LastExtractMap
+                ? ownerState.ConsecutiveExtractsSameMap
+                : 0;
+
         return response;
     }
 
