@@ -63,7 +63,7 @@ public sealed class CustomExfil
 
     public string Side { get; set; } = "Pmc";
     public float ExfiltrationTime { get; set; } = 20f;
-    public int ActivateAfterSeconds { get; set; } = 60;
+    public int ActivateAfterSeconds { get; set; }
     public bool IsActive { get; set; } = true;
     public bool Events { get; set; }
     public bool HideIfNoKey { get; set; }

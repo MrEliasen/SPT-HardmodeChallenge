@@ -1,9 +1,12 @@
 {
   "extracts": [
     {
+      // this must be unique across all extracts and transits.
       "identifier": "VGB_EXT_FENCE_DL",
       "displayName": "Fence's Hub",
+      // how long it takes to extract
       "exfiltrationTime": 20,
+      // where in the raid the extract is located
       "x": -122.74,
       "y": 10.576,
       "z": -843.164,
@@ -12,15 +15,19 @@
   ],
   "transits": [
     {
+      // this must be unique across all extracts and transits.
       "identifier": "VGB_LH_SL",
+      // the raid this transit will lead to
       "destinationLocation": "Shoreline",
       "description": "Transit to Shoreline",
-      "exfiltrationTime": 15,
-      "activateAfterSeconds": 0,
+      // how long it takes to extract
+      "exfiltrationTime": 20,
+      // where in the raid the extract is located
       "x": -286.691,
       "y": 5.971,
       "z": 419.177,
       "rotationY": 110.061,
+      // this extract/transit identifier's position will be used as infil location on the destination raid
       "connectedIdentifier": "VGB_SL_LH"
     }
   ]

@@ -1,7 +1,9 @@
 [
   {
     "traderId": "54cb57776803fa99248b456e",
+    // the raid where the trader extract is available
     "raid": "GroundZero",
+    // this is Identifier of the exfil which gives you access to the trader
     "exfilIdentifier": "VGB_EXT_THERAPIST"
   },
   {

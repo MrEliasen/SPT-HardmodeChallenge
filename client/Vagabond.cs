@@ -323,7 +323,6 @@ public class Vagabond : BaseUnityPlugin
                 "    \"destinationLocation\": \"DESTINATION_MAP_NAME\",",
                 "    \"description\": \"Transit to ..\",",
                 "    \"exfiltrationTime\": 15,",
-                "    \"activateAfterSeconds\": 0,",
                 $"    \"x\": {snapshot.Position.x:0.###},",
                 $"    \"y\": {snapshot.Position.y:0.###},",
                 $"    \"z\": {snapshot.Position.z:0.###},",
