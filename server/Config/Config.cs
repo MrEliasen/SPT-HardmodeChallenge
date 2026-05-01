@@ -24,7 +24,8 @@ public sealed class VagabondConfig
     public string OnDeathGoTo { get; set; } = "hideout";
     public string OnDeathGoToRaid { get; set; } = "";
     public string OnDeathGoToExfilIdentifier { get; set; } = "";
-    public string StarterFence { get; set; } = "streets";
+    public string StartRaid { get; set; } = "Streets";
+    public string StartExfilIdentifier { get; set; } = "VGB_EXT_FENCE";
     public int HideoutRelocationFee { get; set; } = 350_000;
     public int JoinHideoutTherapistLoyaltyLevel { get; set; } = 2;
     public int JoinHideoutJaegerLoyaltyLevel { get; set; } = 2;

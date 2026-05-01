@@ -42,10 +42,22 @@
   "OnDeathGoTo": "hideout",
   "OnDeathGoToRaid": "",
   "OnDeathGoToExfilIdentifier": "",
-  // Which Fence/location to use as your start location (and on death location)
-  // "streets" - Streets of Tarkov location
-  // "lighthouse" - Lighthouse location
-  "StarterFence": "streets",
+  // This is where new players start.
+  // acceptable raid names are:
+  //  FactoryDay,
+  //  FactoryNight,
+  //  GroundZero,
+  //  Streets,
+  //  Woods,
+  //  Customs,
+  //  Interchange,
+  //  Lighthouse,
+  //  Reserve,
+  //  Shoreline,
+  //  Labs,
+  //  Labyrinth
+  "StartRaid": "Streets",
+  "StartExfilIdentifier": "VGB_EXT_FENCE",
   // will allow per-trader/per-extract (eg other players hideouts) virtual stashes.
   // if you disable this, your own permanent stash is used like normal.
   "EnableVirtualStashes": true,

@@ -39,15 +39,8 @@ internal static class VagabondService
         VirtualStashService.ClearAllTraderStashes(sessionId);
         WipeItems(sessionId, pmc, true, true, true);
 
-        state.CurrentMap = "Streets";
-        state.LastExit = "VGB_EXT_FENCE";
-
-        if (string.Equals(VagabondConfig.Config.StarterFence, "lighthouse", StringComparison.OrdinalIgnoreCase))
-        {
-            state.CurrentMap = "Lighthouse";
-            state.LastExit = "VGB_EXT_FENCE_DL";
-        }
-
+        state.CurrentMap = VagabondConfig.Config.StartRaid;
+        state.LastExit = VagabondConfig.Config.StartExfilIdentifier;
         state.TransitState = null;
         HideoutService.UpdateTraderAccess(pmc, state);
         StateService.SaveState(sessionId, state);

@@ -2,6 +2,19 @@
   // Where the player spawns when entering a raid via a vanilla SPT transits.
   // 'from' and 'to' is the direction of the transition.
   // x,y,z & rotation is the spawn point on the destination map and what direction the player faces.
+  //  acceptable raid names are:
+  //  FactoryDay,
+  //  FactoryNight,
+  //  GroundZero,
+  //  Streets,
+  //  Woods,
+  //  Customs,
+  //  Interchange,
+  //  Lighthouse,
+  //  Reserve,
+  //  Shoreline,
+  //  Labs,
+  //  Labyrinth
 
   // Ground Zero
   {

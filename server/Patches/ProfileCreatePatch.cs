@@ -45,15 +45,8 @@ public sealed class ProfileCreatePatch : AbstractPatch
         }
 
         var state = StateService.GetState(sessionId);
-        state.CurrentMap = "Streets";
-        state.LastExit = "VGB_EXT_FENCE";
-
-        if (string.Equals(VagabondConfig.Config.StarterFence, "lighthouse", StringComparison.OrdinalIgnoreCase))
-        {
-            state.CurrentMap = "Lighthouse";
-            state.LastExit = "VGB_EXT_FENCE_DL";
-        }
-
+        state.CurrentMap = VagabondConfig.Config.StartRaid;
+        state.LastExit = VagabondConfig.Config.StartExfilIdentifier;
         state.VagabondModeEnabled = true;
         state.IsNewCharacter = true;
         StateService.SaveState(sessionId, state);
