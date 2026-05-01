@@ -94,18 +94,6 @@ Source: [common/Definitions/VagabondSessionState.cs](../common/Definitions/Vagab
 ### `HideoutState`
 `Id` (`string?`), `Map` (`string?`), `X / Y / Z / R` (all `float?`).
 
-### `CustomExtilData`
-Implements `ICustomExtilData`. Fields: `MapName`, `Raid`, `Extracts`, `Transits`.
-
----
-
-## `Vagabond.Common.Interfaces`
-
-### `ICustomExtilData`
-Source: [common/Interfaces/ICustomExtilData.cs](../common/Interfaces/ICustomExtilData.cs)
-
-`MapName` (`string`), `Raid` (`RaidLocation`), `Extracts` (`List<CustomExfil>`), `Transits` (`List<CustomExfil>`).
-
 ---
 
 ## `Vagabond.Common.Models`
@@ -166,10 +154,9 @@ Source: [common/Data/ExfilQuests.cs](../common/Data/ExfilQuests.cs)
 
 `Dictionary<questId, Dictionary<sceneName, List<exfilName>>>` — vanilla quest-gated exfils.
 
-### Per-map exfil bundles
-Built-in Vagabond exfil/transit data, all implement `ICustomExtilData`. Read-only reference:
+### Per-map exfil JSON
 
-`ExfilsCustoms`, `ExfilsFactoryDay`, `ExfilsFactoryNight`, `ExfilsGroundZero`, `ExfilsInterchange`, `ExfilsLabs`, `ExfilsLabyrinth`, `ExfilsLighthouse`, `ExfilsReserve`, `ExfilsShoreline`, `ExfilsStreets`, `ExfilsWoods`.
+Default exfils/transits ship as JSON under `server/Config/exfils/<raid>.json` (one per `RaidLocation`). Default trader/exfil bindings live in `server/Config/trader_locations.json`. End users can edit these without recompiling. Internally the loader feeds the same `Api.AddExfils` / `Api.AddTraderLocations` path third-party mods use, so 3rd-party mods see no behavior change.
 
 ### `Messages`
 Source: [common/Data/Messages.cs](../common/Data/Messages.cs)
