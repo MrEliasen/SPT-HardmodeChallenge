@@ -1,4 +1,5 @@
 ﻿using SPTarkov.Server.Core.Models.Spt.Mod;
+using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Services.Mod;
 using Vagabond.Common.Data;
 using Vagabond.Server.Data.Quests;
@@ -67,8 +68,20 @@ public static class QuestService
             return;
         }
 
+        var localeService = ReflectionUtil.GetService<LocaleService>();
+        HashSet<string> supportedLocales = localeService?.GetServerSupportedLocales() ?? new() { "en" };
+
         foreach (var quest in quests)
         {
+            var defaultLocale = quest.Locales.TryGetValue("en", out var en)
+                ? en
+                : quest.Locales.First().Value;
+
+            foreach (var lang in supportedLocales)
+            {
+                quest.Locales.TryAdd(lang, defaultLocale);
+            }
+
             var result = customQuestService.CreateQuest(quest);
             if (!result.Success)
             {

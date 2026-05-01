@@ -101,6 +101,7 @@ public sealed class VagabondDbLoader : IOnLoad
     private readonly MailSendService _mailSendService;
     private readonly LocationController _locationController;
     private readonly CustomQuestService _customQuestService;
+    private readonly LocaleService _localeService;
 
     private readonly ISptLogger<VagabondDbLoader> _logger;
 
@@ -114,6 +115,7 @@ public sealed class VagabondDbLoader : IOnLoad
         MailSendService mailSendService,
         LocationController locationController,
         CustomQuestService customQuestService,
+        LocaleService localeService,
         ISptLogger<VagabondDbLoader> logger)
     {
         _services = services;
@@ -126,6 +128,7 @@ public sealed class VagabondDbLoader : IOnLoad
         _locationController = locationController;
         _customQuestService = customQuestService;
         _databaseService = databaseService;
+        _localeService = localeService;
     }
 
     public Task OnLoad()
@@ -139,6 +142,7 @@ public sealed class VagabondDbLoader : IOnLoad
         ReflectionUtil.Register(_locationController);
         ReflectionUtil.Register(_databaseService);
         ReflectionUtil.Register(_customQuestService);
+        ReflectionUtil.Register(_localeService);
         ExfilService.Apply(_databaseService);
 
         if (FikaAdapter.Init(_services))

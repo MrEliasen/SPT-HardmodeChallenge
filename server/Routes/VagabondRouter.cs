@@ -88,7 +88,7 @@ public class VagabondRouter(
 
         var ownerSessionId = FikaAdapter.GetRaidOwnerSessionId(sessionId);
         var ownerState = ownerSessionId == sessionId ? state : StateService.GetState(ownerSessionId);
-        
+
         response.LootStreakEnabled = VagabondConfig.Config.EnableConsecutiveMapLootReduction;
         response.LootStreakMultiplier = LootStreakService.GetCurrentMultiplier(ownerSessionId, ownerState.CurrentMap);
         response.LootStreakCount =
