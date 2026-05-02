@@ -151,7 +151,7 @@ Source: [common/Data/ExfilQuests.cs](../common/Data/ExfilQuests.cs)
 
 ### Per-map exfil JSON
 
-Default exfils/transits ship as JSON under `server/Config/exfils/<raid>.json` (one per `RaidLocation`). Default trader/exfil bindings live in `server/Config/trader_locations.json`. End users can edit these without recompiling. Internally the loader feeds the same `Api.AddExfils` / `Api.AddTraderLocations` path third-party mods use, so 3rd-party mods see no behavior change.
+Default exfils/transits ship as JSON under `server/Config/exfils/<raid>.json` (one per `RaidLocation`). Default trader/exfil bindings live in `server/Config/trader_locations.json`. End users can edit these without recompiling — see [CONFIG.md](CONFIG.md) for the full reference. Internally the loader feeds the same `Api.AddExfils` / `Api.AddTraderLocations` path third-party mods use, so 3rd-party mods see no behavior change.
 
 ### `Messages`
 Source: [common/Data/Messages.cs](../common/Data/Messages.cs)
