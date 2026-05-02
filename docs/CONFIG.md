@@ -10,10 +10,11 @@ Configs live in `SPT/user/mods/Vagabond/config/`. Restart the SPT server after e
 | [`exfils/<raid>.json`](EXFILS.md) | Custom extracts + transits per raid. |
 | [`static_transitions.json`](TRANSITIONS.md) | Landing spots for vanilla SPT transits. |
 | [`trader_locations.json`](TRADERS.md) | Which extract unlocks which trader. |
+| [Modder hotkeys](KEYBINDINGS.md) | Client-side `F8`/`F9`/`F10` dump hotkeys (BepInEx, not server JSON). |
 
 ## Raid names
 
-`FactoryDay`, `FactoryNight`, `GroundZero`, `Streets`, `Woods`, `Customs`, `Interchange`, `Lighthouse`, `Reserve`, `Shoreline`, `Labs`, `Labyrinth`. Day/Night are separate raids.
+`FactoryDay`, `FactoryNight`, `G[KEYBINDINGS.md](KEYBINDINGS.md)roundZero`, `Streets`, `Woods`, `Customs`, `Interchange`, `Lighthouse`, `Reserve`, `Shoreline`, `Labs`, `Labyrinth`. Day/Night are separate raids.
 
 ---
 

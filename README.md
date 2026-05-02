@@ -49,6 +49,7 @@ Configs live in `SPT/user/mods/Vagabond/config/`. Restart the SPT server after e
 - [docs/EXFILS.md](docs/EXFILS.md) - extracts + transits
 - [docs/TRANSITIONS.md](docs/TRANSITIONS.md) - vanilla SPT transit landing spots
 - [docs/TRADERS.md](docs/TRADERS.md) - which extract unlocks which trader
+- [docs/KEYBINDINGS.md](docs/KEYBINDINGS.md) - modder dump hotkeys (F8/F9/F10) for authoring exfils/transits
 
 ## Map
 [View Full Size](https://raw.githubusercontent.com/MrEliasen/SPT-Vagabond/refs/heads/master/screenshots/game-map.webp)    
