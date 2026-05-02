@@ -20,6 +20,8 @@ Array of entries:
 
 A trader can have multiple bindings (e.g. Fence on Streets + Lighthouse, Mechanic on FactoryDay + FactoryNight — Day/Night are separate raids).
 
+Multiple traders may share one `exfilIdentifier`. All bound traders unlock when that exfil is taken, and they share a single virtual stash keyed by the exfil identifier.
+
 ## Example
 
 ```json
