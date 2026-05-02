@@ -56,8 +56,6 @@ internal static class HideoutService
     public static void UpdateTraderAccess(PmcData pmc, VagabondSessionState state)
     {
         var traderId = GetCurrentTraderId(state) ?? string.Empty;
-        var isCustomTraderLoc = state.LastExit == "VGB_EXT_MARKET";
-        var traderIdList = TraderLocations.ToList().ConvertAll(x => x.TraderId);
         var tradersInfo = pmc.TradersInfo;
         var isOwnHideout = !string.IsNullOrEmpty(state.HideoutState?.Id) &&
                            state.LastExit == $"{HideoutIdPrefix}{state.HideoutState?.Id}";
@@ -66,6 +64,13 @@ internal static class HideoutService
         {
             if (IgnoredTraders.Contains(entry.Key))
             {
+                continue;
+            }
+
+            if (!string.IsNullOrEmpty(traderId) && entry.Key == traderId)
+            {
+                entry.Value.Disabled = false;
+                entry.Value.Unlocked = true;
                 continue;
             }
 
@@ -80,13 +85,6 @@ internal static class HideoutService
             }
 
             if (isOwnHideout && state.HideoutTraders.Contains(entry.Key))
-            {
-                entry.Value.Disabled = false;
-                entry.Value.Unlocked = true;
-                continue;
-            }
-
-            if (entry.Key == traderId || (isCustomTraderLoc && !traderIdList.Contains(entry.Key)))
             {
                 entry.Value.Disabled = false;
                 entry.Value.Unlocked = true;

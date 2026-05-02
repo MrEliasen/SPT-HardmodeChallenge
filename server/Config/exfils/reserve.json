@@ -1,17 +1,5 @@
 {
-  "extracts": [
-    {
-      // this must be unique across all extracts and transits.
-      "identifier": "VGB_EXT_MARKET",
-      "displayName": "Underground Market via Hermetic Door (Custom Traders)",
-      "templateExitName": "EXFIL_Bunker",
-      "hijackExfil": true,
-      "x": 62.5,
-      "y": -6.936,
-      "z": -193.896,
-      "rotationY": 17.317
-    }
-  ],
+  "extracts": [],
   "transits": [
     {
       // this must be unique across all extracts and transits.

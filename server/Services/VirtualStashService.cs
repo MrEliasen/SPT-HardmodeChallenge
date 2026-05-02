@@ -515,13 +515,6 @@ internal static class VirtualStashService
             }
         }
 
-        // if its the custom trader market
-        if (state.LastExit == "VGB_EXT_MARKET")
-        {
-            stashId = state.LastExit;
-            return true;
-        }
-
         return false;
     }
 
