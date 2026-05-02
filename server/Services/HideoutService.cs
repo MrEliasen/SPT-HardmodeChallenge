@@ -53,9 +53,34 @@ internal static class HideoutService
             && string.Equals(x.ExfilIdentifier, state.LastExit, StringComparison.OrdinalIgnoreCase))?.TraderId;
     }
 
+    public static IReadOnlyCollection<string> GetTraderIds(VagabondSessionState state)
+    {
+        var raid = VagabondLocations.NormaliseMapName(state.CurrentMap);
+        if (raid == RaidLocation.Nil || string.IsNullOrWhiteSpace(state.LastExit))
+        {
+            return [];
+        }
+
+        return TraderLocations
+            .Where(x => x.Raid == raid
+                        && string.Equals(x.ExfilIdentifier, state.LastExit, StringComparison.OrdinalIgnoreCase))
+            .Select(x => x.TraderId)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+    }
+
+    public static IReadOnlyCollection<string> GetStashKeys()
+    {
+        return TraderLocations
+            .Select(x => x.ExfilIdentifier)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+    }
+
     public static void UpdateTraderAccess(PmcData pmc, VagabondSessionState state)
     {
-        var traderId = GetCurrentTraderId(state) ?? string.Empty;
+        var currentTraderIds = new HashSet<string>(GetTraderIds(state), StringComparer.Ordinal);
         var tradersInfo = pmc.TradersInfo;
         var isOwnHideout = !string.IsNullOrEmpty(state.HideoutState?.Id) &&
                            state.LastExit == $"{HideoutIdPrefix}{state.HideoutState?.Id}";
@@ -67,7 +92,7 @@ internal static class HideoutService
                 continue;
             }
 
-            if (!string.IsNullOrEmpty(traderId) && entry.Key == traderId)
+            if (currentTraderIds.Contains(entry.Key))
             {
                 entry.Value.Disabled = false;
                 entry.Value.Unlocked = true;
@@ -92,7 +117,7 @@ internal static class HideoutService
             }
 
             entry.Value.Disabled = true;
-            entry.Value.Unlocked = false;
+            entry.Value.Unlocked = true;
         }
     }
 
