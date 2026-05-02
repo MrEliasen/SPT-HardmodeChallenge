@@ -38,6 +38,29 @@ public sealed class VagabondApiExampleLoader : IOnLoad
 
     public Task OnLoad()
     {
+        if (IsVagabondEnabled())
+        {
+            RunVagabondIntegration();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private static bool IsVagabondEnabled()
+    {
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            if (string.Equals(assembly.GetName().Name, "Vagabond.Common", StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void RunVagabondIntegration()
+    {
         _logger.Warning("Adding stuff via Vagabond API");
         List<CustomExfil> myCustomExfils =
         [
@@ -153,7 +176,5 @@ public sealed class VagabondApiExampleLoader : IOnLoad
         }
 
         _logger.Success("Changed the profiles location via Vagabond API");
-
-        return Task.CompletedTask;
     }
 }
