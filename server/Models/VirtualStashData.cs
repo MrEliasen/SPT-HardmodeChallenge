@@ -4,6 +4,6 @@ namespace Vagabond.Server.Models;
 
 internal sealed class VirtualStashData
 {
-    public string TraderId { get; set; } = string.Empty;
+    public string StashKey { get; set; } = string.Empty;
     public List<Item> Items { get; set; } = new();
 }

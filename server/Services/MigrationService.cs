@@ -51,6 +51,12 @@ public static class MigrationService
                     From05To060(state);
                     break;
                 }
+
+                case "0.6.0":
+                {
+                    From060To061(sessionId, state);
+                    break;
+                }
             }
         }
 
@@ -99,5 +105,15 @@ public static class MigrationService
         state.ConsecutiveExtractsSameMap = 1;
         state.LastExtractMap = state.CurrentMap;
         state.Version = "0.6.0";
+    }
+
+    private static void From060To061(MongoId sessionId, VagabondSessionState state)
+    {
+        foreach (var loc in HideoutService.TraderLocations)
+        {
+            VirtualStashService.RekeyStash(sessionId, loc.TraderId, loc.ExfilIdentifier);
+        }
+
+        state.Version = "0.6.1";
     }
 }

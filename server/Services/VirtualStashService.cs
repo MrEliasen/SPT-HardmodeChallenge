@@ -42,7 +42,7 @@ internal static class VirtualStashService
 
     public static IDisposable OpenStash(MongoId sessionId, PmcData? pmcData = null)
     {
-        if (!TryGetActiveStashId(sessionId, out var traderId))
+        if (!TryGetActiveStashId(sessionId, out var stashKey))
         {
             return Noop.Instance;
         }
@@ -62,10 +62,10 @@ internal static class VirtualStashService
         {
             if (ActiveStashes.TryGetValue(sessionId, out var activeState))
             {
-                if (!string.Equals(activeState.TraderId, traderId, StringComparison.Ordinal))
+                if (!string.Equals(activeState.StashKey, stashKey, StringComparison.Ordinal))
                 {
                     VagabondLogger.Error(
-                        $"Virtual stash mismatch for {sessionId}, active trader {activeState.TraderId}, requested trader {traderId}.");
+                        $"Virtual stash mismatch for {sessionId}, active key {activeState.StashKey}, requested key {stashKey}.");
                     return Noop.Instance;
                 }
 
@@ -73,14 +73,14 @@ internal static class VirtualStashService
                 return new ActiveStashSession(sessionId);
             }
 
-            var overlayState = new ActiveVirtualStashState(sessionId, traderId, pmcData);
+            var overlayState = new ActiveVirtualStashState(sessionId, stashKey, pmcData);
 
             try
             {
                 overlayState.RealItemsSnapshot = CollectVirtualItems(pmcData);
                 RemoveItems(pmcData.Inventory.Items, overlayState.RealItemsSnapshot);
 
-                overlayState.LoadedVirtualItems = LoadProjectedItems(sessionId, traderId, pmcData.Inventory.Stash,
+                overlayState.LoadedVirtualItems = LoadProjectedItems(sessionId, stashKey, pmcData.Inventory.Stash,
                     pmcData.Inventory.SortingTable);
                 if (overlayState.LoadedVirtualItems.Count > 0)
                 {
@@ -101,7 +101,7 @@ internal static class VirtualStashService
 
     public static void ApplyToClientProfile(MongoId sessionId, PmcData pmcData)
     {
-        if (!TryGetActiveStashId(sessionId, out var traderId))
+        if (!TryGetActiveStashId(sessionId, out var stashKey))
         {
             return;
         }
@@ -115,7 +115,7 @@ internal static class VirtualStashService
         RemoveItems(pmcData.Inventory.Items, currentVisibleItems);
 
         var projectedItems =
-            LoadProjectedItems(sessionId, traderId, pmcData.Inventory.Stash, pmcData.Inventory.SortingTable);
+            LoadProjectedItems(sessionId, stashKey, pmcData.Inventory.Stash, pmcData.Inventory.SortingTable);
         if (projectedItems.Count > 0)
         {
             pmcData.Inventory.Items.AddRange(projectedItems);
@@ -140,11 +140,11 @@ internal static class VirtualStashService
             }
         }
 
-        foreach (var traderId in HideoutService.GetAllTraderIds())
+        foreach (var stashKey in HideoutService.GetStashKeys())
         {
-            profileDataService.SaveProfileData(sessionId, GetProfileStashKey(traderId), new VirtualStashData
+            profileDataService.SaveProfileData(sessionId, GetProfileStashKey(stashKey), new VirtualStashData
             {
-                TraderId = traderId,
+                StashKey = stashKey,
                 Items = new List<Item>()
             });
         }
@@ -194,7 +194,7 @@ internal static class VirtualStashService
                 var currentVirtualItems = CollectVirtualItems(overlayState.PmcData);
                 SaveVirtualStash(
                     sessionId,
-                    overlayState.TraderId,
+                    overlayState.StashKey,
                     currentVirtualItems,
                     overlayState.PmcData.Inventory?.Stash,
                     overlayState.PmcData.Inventory?.SortingTable
@@ -249,7 +249,7 @@ internal static class VirtualStashService
 
     private static void SaveVirtualStash(
         MongoId sessionId,
-        string traderId,
+        string stashKey,
         List<Item> currentVirtualItems,
         MongoId? stashRootId,
         MongoId? sortingTableRootId)
@@ -263,20 +263,20 @@ internal static class VirtualStashService
         var itemsToPersist = CloneItems(currentVirtualItems);
         UpdateRootReferences(itemsToPersist, stashRootId, sortingTableRootId);
 
-        profileDataService.SaveProfileData(sessionId, GetProfileStashKey(traderId), new VirtualStashData
+        profileDataService.SaveProfileData(sessionId, GetProfileStashKey(stashKey), new VirtualStashData
         {
-            TraderId = traderId,
+            StashKey = stashKey,
             Items = itemsToPersist
         });
     }
 
     private static List<Item> LoadProjectedItems(
         MongoId sessionId,
-        string traderId,
+        string stashKey,
         MongoId? targetStashRootId,
         MongoId? targetSortingTableRootId)
     {
-        var overlayItems = GetActiveStashItems(sessionId, traderId, targetStashRootId, targetSortingTableRootId);
+        var overlayItems = GetActiveStashItems(sessionId, stashKey, targetStashRootId, targetSortingTableRootId);
         if (overlayItems != null)
         {
             return overlayItems;
@@ -289,7 +289,7 @@ internal static class VirtualStashService
         }
 
         var profileData =
-            profileDataService.GetProfileData<VirtualStashData>(sessionId, GetProfileStashKey(traderId));
+            profileDataService.GetProfileData<VirtualStashData>(sessionId, GetProfileStashKey(stashKey));
         var items = CloneItems(profileData?.Items);
         RebindRootReferences(items, targetStashRootId, targetSortingTableRootId);
         return items;
@@ -297,7 +297,7 @@ internal static class VirtualStashService
 
     private static List<Item>? GetActiveStashItems(
         MongoId sessionId,
-        string traderId,
+        string stashKey,
         MongoId? targetStashRootId,
         MongoId? targetSortingTableRootId)
     {
@@ -309,7 +309,7 @@ internal static class VirtualStashService
                 return null;
             }
 
-            if (!string.Equals(overlayState.TraderId, traderId, StringComparison.Ordinal))
+            if (!string.Equals(overlayState.StashKey, stashKey, StringComparison.Ordinal))
             {
                 return null;
             }
@@ -456,9 +456,72 @@ internal static class VirtualStashService
         sourceItems.RemoveAll(item => idsToRemove.Contains(item.Id));
     }
 
-    private static string GetProfileStashKey(string traderId)
+    private static string GetProfileStashKey(string stashKey)
     {
-        return $"{ProfileDataKeyPrefix}.{traderId}";
+        return $"{ProfileDataKeyPrefix}.{stashKey}";
+    }
+
+    // Used in the migration: rename profile stash entries from a per-trader key to a per-exfil indentifier key - from 0.6.1.
+    // This allows multiple traders to be at the same location. 
+    internal static void RekeyStash(MongoId sessionId, string oldStashKey, string newStashKey)
+    {
+        if (string.IsNullOrWhiteSpace(oldStashKey) || string.IsNullOrWhiteSpace(newStashKey))
+        {
+            VagabondLogger.Error(
+                $"Stash migraiton failed, missing stash key(s): Session={sessionId}, oldStashKey={oldStashKey}, newStashKey={newStashKey}");
+            return;
+        }
+
+        // no change needed
+        if (string.Equals(oldStashKey, newStashKey, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        VagabondLogger.Warning(
+            $"Migrating stash. Session={sessionId}, oldStashKey={oldStashKey}, newStashKey={newStashKey}");
+
+        var profileDataService = ReflectionUtil.GetService<ProfileDataService>();
+        if (profileDataService == null)
+        {
+            VagabondLogger.Error($"Migrating failed, ProfileDataService is null");
+            return;
+        }
+
+        var oldKey = GetProfileStashKey(oldStashKey);
+        var oldData = profileDataService.GetProfileData<VirtualStashData>(sessionId, oldKey);
+        if (oldData == null)
+        {
+            VagabondLogger.Success($"Stash migration successful.");
+            return;
+        }
+
+        var newKey = GetProfileStashKey(newStashKey);
+        var existing = profileDataService.GetProfileData<VirtualStashData>(sessionId, newKey);
+        if (existing == null)
+        {
+            profileDataService.SaveProfileData(sessionId, newKey, new VirtualStashData
+            {
+                StashKey = newStashKey,
+                Items = oldData.Items
+            });
+        }
+
+        // delete the old stash file
+        try
+        {
+            var oldPath = System.IO.Path.Combine("user/profileData/", sessionId.ToString(), oldKey + ".json");
+            if (File.Exists(oldPath))
+            {
+                File.Delete(oldPath);
+            }
+        }
+        catch (Exception ex)
+        {
+            VagabondLogger.Error($"Failed to delete old stash file {oldStashKey}: {ex}");
+        }
+
+        VagabondLogger.Success($"Stash migration successful.");
     }
 
     private static PmcData? ResolvePmcData(MongoId sessionId)
@@ -492,9 +555,9 @@ internal static class VirtualStashService
             return false;
         }
 
-        stashId = HideoutService.GetCurrentTraderId(state) ?? string.Empty;
-        if (!string.IsNullOrWhiteSpace(stashId))
+        if (HideoutService.GetTraderIds(state).Count > 0 && !string.IsNullOrWhiteSpace(state.LastExit))
         {
+            stashId = state.LastExit;
             return true;
         }
 
