@@ -28,7 +28,7 @@ Source: [CustomExfil.cs](../common/Definitions/CustomExfil.cs).
 | `exfiltrationTime` | `20` | Seconds. |
 | `x` / `y` / `z` | `0` | World position. Ignored when `hijackExfil=true`. |
 | `rotationY` | `0` | Facing angle when spawning here. |
-| `templateExitName` | `null` | Existing scene exfil name to clone trigger setup from. Optional. |
+| `templateExitName` | `null` | Existing scene exfil name to clone trigger setup from. See [Finding template exit names](#finding-template-exit-names). When unset, Vagabond falls back to any vanilla extract that passes the template filter — that fallback fails on raids like Reserve where no vanilla extract qualifies (see [Map-specific notes](#map-specific-notes)). |
 | `entryPoints` | `""` | Comma-separated EFT entry-point names. **Ignored on extracts** — Vagabond always overwrites with the map's PMC entry points. Not used by transits. |
 | `hijackExfil` | `false` | See [Hijack](#hijack). |
 | `side` | `"Pmc"` | Usually leave alone. |
@@ -106,6 +106,31 @@ Pair both directions to get clean two-way travel:
 }]
 ```
 
+## Finding template exit names
+
+`templateExitName` matches the runtime `ExfiltrationPoint.Settings.Name` of an existing scene exfil (case-insensitive). The level designer sets it in the Unity scene, so the source of truth is the scene itself, but you can read the strings off two places without launching the game:
+
+1. **`<SPT-server>/SPT_Data/database/locations/<scene>/allExtracts.json`** — the `Name` field per entry. For most maps this is the literal string the scene uses verbatim (e.g. Reserve `"EXFIL_Bunker_D2"`, Customs `"EXFIL_ZB-013"`, Factory `"factory4_gate0"`).
+2. **`<SPT-server>/SPT_Data/database/locales/global/<lang>.json`** — for maps where the scene uses a localized display string instead of the DB key. **Streets** is the canonical case: DB `Name: "E2"` becomes `"Sewer River"` at runtime, and that's the string `templateExitName` must contain. Look up the DB `Name` as a key in the locale file.
+3. **Vagabond's own log** — at raid start Vagabond logs `Added custom extract '<displayName>' (identifier '<id>') using template '<X>'.`. `<X>` is the live `Settings.Name` it resolved. Copy it back into your config to pin the choice deliberately.
+
+Raid file → DB folder mapping (the `<scene>` directory you should look in):
+
+| `config/exfils/<file>.json` | DB folder | Logged `<raid>` enum |
+| --- | --- | --- |
+| `customs.json` | `bigmap` | `Customs` |
+| `factory_day.json` | `factory4_day` | `FactoryDay` |
+| `factory_night.json` | `factory4_night` | `FactoryNight` |
+| `ground_zero.json` | `sandbox_high` (also `sandbox`) | `GroundZero` |
+| `interchange.json` | `interchange` | `Interchange` |
+| `labs.json` | `laboratory` | `Labs` |
+| `labyrinth.json` | `labyrinth` | `Labyrinth` |
+| `lighthouse.json` | `lighthouse` | `Lighthouse` |
+| `reserve.json` | `rezervbase` | `Reserve` |
+| `shoreline.json` | `shoreline` | `Shoreline` |
+| `streets.json` | `tarkovstreets` | `Streets` |
+| `woods.json` | `woods` | `Woods` |
+
 ## Hijack
 
 `hijackExfil: true` repurposes an existing scene exfil named by `templateExitName`. The position fields are ignored. Only one custom exfil per template per map can hijack.
@@ -134,8 +159,42 @@ Pair both directions to get clean two-way travel:
 
 Bind it to a trader in [TRADERS.md](TRADERS.md).
 
+## Map-specific notes
+
+Two raids need extra care.
+
+### Streets
+
+Vanilla Streets ships many small, conditional PMC extracts: low `Chance`, segmented `EntryPoints` (`E1_2,E2_3,…`), trigger requirements. The default template picker (used when `templateExitName` is unset) walks past anything that fails the filter — and it fails inconsistently across spawns, since `EligibleEntryPoints` are checked against the player's current entry. Letting the fallback choose gives unstable results across raids.
+
+Recommendation: **always set `templateExitName` explicitly on Streets** to a stable always-present extract. The shipped configs pin `"Sewer River"` (= DB `Name: "E2"`) for both Prapor and Fence — see [streets.json](../server/Config/exfils/streets.json).
+
+Streets specifically uses the **localized display string** as the scene's `Settings.Name`, not the DB `Name`. So look up your candidate in `database/locales/global/<lang>.json` keyed by the DB `Name` and use that localized form in the config.
+
+### Reserve
+
+Every PMC extract in [`rezervbase/allExtracts.json`](../soft-dependency-sources/database/locations/rezervbase/allExtracts.json) carries a `PassageRequirement` (`Train`, `WorldEvent`, `Reference`, `ScavCooperation`). At runtime each becomes a non-empty `Requirements` array, which the default template filter rejects. **No vanilla Reserve extract passes the default filter** — so any custom extract on Reserve without an explicit `templateExitName` will log `No template exfil found ... on Reserve.` and be skipped.
+
+Two ways forward on Reserve:
+- Don't ship custom extracts there. The shipped [reserve.json](../server/Config/exfils/reserve.json) does this, exposing only a Red-Rebel + Paracord transit.
+- If you must, set `templateExitName` to one of the gated PMC exits (e.g. `"Alpinist"`, `"EXFIL_Bunker_D2"`). You're cloning a point with vanilla requirements baked in — verify behavior.
+
 ## Rules of thumb
 
 - Identifier collisions across **any** raid file break things — keep them globally unique.
 - `destinationLocation` is a scene name, not a raid enum. `Woods` and `Interchange` happen to match both; `Customs` does not (`bigmap`).
 - One-way transits work — just omit `connectedIdentifier` and add a `static_transitions.json` entry for the fallback spawn.
+
+## Troubleshooting
+
+### `No template exfil found for '<identifier>' on <raid>.`
+
+Logged by Vagabond when an extract definition can't resolve a usable scene exfil to clone from. The named extract is skipped; other extracts on the same raid continue.
+
+`<raid>` is the `RaidLocation` enum value (`Customs`, `Reserve`, `FactoryDay`, …), not the config file name — see the table in [Finding template exit names](#finding-template-exit-names) to translate.
+
+Causes:
+
+1. **`templateExitName` is set but doesn't match any scene exfil.** Typo, wrong case, or wrong map. Cross-check against `<SPT-server>/SPT_Data/database/locations/<scene>/allExtracts.json` (`Name` field) — and for Streets, the localized form in `database/locales/global/<lang>.json`.
+2. **`templateExitName` is unset and no vanilla extract on this raid passes the default filter.** Reserve is the canonical case (every PMC extract has a `PassageRequirement`). Set an explicit `templateExitName`. See [Reserve](#reserve).
+3. **`templateExitName` is unset and the default picker dropped through on a raid with conditional/segmented PMC extracts** (Streets — low `Chance`, gated `EntryPoints`). Pin `templateExitName` to a stable exit. See [Streets](#streets).
