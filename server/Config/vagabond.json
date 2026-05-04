@@ -88,9 +88,16 @@
   // This streak resets when you successfully extract from a different map. death/aborts do not change the streak.
   // factory day and night count as the same map.
   "EnableConsecutiveMapLootReduction": true,
-  // Loot multiplier. 0.5 = halving each repeated raid (1st=100%, 2nd=50%, 3rd=25%, etc)
+  // Exponential multiplier applied to loot per consecutive raid on the same map.
+  // lootMultiplier = ConsecutiveMapLootReductionRate ^ #consecutiveRaids
+  //
+  // This is a retention value, not a reduction percentage.
+  //
+  //  0.9 = keep 90% loot per raid. After 3 raids : 0.9 ^ 3 = 0.729% loot
+  //  0.5 = keep 50% loot per raid. After 3 raids : 0.5 ^ 3 = 0.125% loot
+  //  0.1 = keep 10% loot per raid. After 1 raid  : 0.1 ^ 1 = 10% loot
   "ConsecutiveMapLootReductionRate": 0.5,
-  // the minimum amount of loot regardless of streeak. 0.05 = 5% of the normal amount of loot.
+  // the minimum amount of loot regardless of streak. 0.05 = 5% of the normal amount of loot.
   "ConsecutiveMapLootReductionMin": 0.05,
   // if enabled, your limbs are healed to this amount when you die.
   // Examples:
