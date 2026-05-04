@@ -42,6 +42,9 @@ internal static class VagabondService
         state.CurrentMap = VagabondConfig.Config.StartRaid;
         state.LastExit = VagabondConfig.Config.StartExfilIdentifier;
         state.TransitState = null;
+        ExfilService.RemoveHideout(state.HideoutState);
+        state.HideoutState = null;
+        state.CanPlaceHideout = true;
         HideoutService.UpdateTraderAccess(pmc, state);
         StateService.SaveState(sessionId, state);
         using var stashState = VirtualStashService.OpenStash(sessionId, pmc);
