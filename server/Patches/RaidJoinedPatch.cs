@@ -60,18 +60,6 @@ public sealed class RaidJoinPatch : AbstractPatch
             state.LastExit = "";
         }
 
-        // fix sandbox routing
-        var currentMapE = VagabondLocations.NormaliseMapName(state.CurrentMap);
-        if (currentMapE == RaidLocation.GroundZero || currentMapE == RaidLocation.GroundZeroSandbox)
-        {
-            var lvl = pmc.CharacterData.PmcData.Info?.Level ?? 1;
-            var routed = VagabondService.NormaliseGroundZeroForLevel(currentMapE, lvl);
-            if (routed != currentMapE)
-            {
-                state.CurrentMap = routed.ToString();
-            }
-        }
-
         RaidRuntimeState.Entered(sessionId);
 
         if (VagabondConfig.Config.WipeStashOnFirstRaidEntry && state.IsNewCharacter)

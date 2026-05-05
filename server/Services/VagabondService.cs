@@ -247,21 +247,16 @@ internal static class VagabondService
         }
     }
 
-    public static RaidLocation NormaliseGroundZeroForLevel(RaidLocation raid, int playerLevel)
+    public static string GetGroundZeroMapIdForLevel(int playerLevel)
     {
-        if (raid != RaidLocation.GroundZero && raid != RaidLocation.GroundZeroSandbox)
-        {
-            return raid;
-        }
-
         if (VagabondConfig.Config.ForceGroundZeroHigh)
         {
-            return RaidLocation.GroundZero;
+            return "Sandbox_high";
         }
 
         var db = ReflectionUtil.GetService<DatabaseService>();
         var cap = db?.GetLocations().Sandbox?.Base?.RequiredPlayerLevelMax ?? 20;
-        return playerLevel > cap ? RaidLocation.GroundZero : RaidLocation.GroundZeroSandbox;
+        return playerLevel > cap ? "Sandbox_high" : "Sandbox";
     }
 
     public static string GetCurrentRaidId(MongoId sessionId, VagabondSessionState state)
@@ -282,12 +277,8 @@ internal static class VagabondService
             return "";
         }
 
-        var playerLevel = GetPmcProfile(sessionId)?.CharacterData?.PmcData?.Info?.Level ?? 1;
-        currentMap = NormaliseGroundZeroForLevel(currentMap, playerLevel);
-
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
         RaidLocation transitMap = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
-        transitMap = NormaliseGroundZeroForLevel(transitMap, playerLevel);
         if (transitMap != RaidLocation.Nil)
         {
             if (VagabondLocations.Locations.TryGetValue(transitMap, out var mapIds))
@@ -307,6 +298,14 @@ internal static class VagabondService
                     allowedMapIds.Add(mapId);
                 }
             }
+        }
+
+        // GroundZero fix
+        var effective = transitMap != RaidLocation.Nil ? transitMap : currentMap;
+        if (effective == RaidLocation.GroundZero)
+        {
+            var lvl = GetPmcProfile(sessionId)?.CharacterData?.PmcData?.Info?.Level ?? 1;
+            return GetGroundZeroMapIdForLevel(lvl);
         }
 
         return allowedMapIds.First();

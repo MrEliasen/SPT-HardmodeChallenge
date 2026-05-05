@@ -58,12 +58,6 @@ public static class MigrationService
                     From060To061(sessionId, state);
                     break;
                 }
-
-                case "0.6.1":
-                {
-                    From061To06x(pmc, state);
-                    break;
-                }
             }
         }
 
@@ -122,18 +116,5 @@ public static class MigrationService
         }
 
         state.Version = "0.6.1";
-    }
-
-    // GroundZero map routing
-    private static void From061To06x(PmcData pmc, VagabondSessionState state)
-    {
-        if (string.Equals(state.CurrentMap, RaidLocation.GroundZero.ToString(), StringComparison.Ordinal))
-        {
-            var lvl = pmc.Info?.Level ?? 1;
-            var routed = VagabondService.NormaliseGroundZeroForLevel(RaidLocation.GroundZero, lvl);
-            state.CurrentMap = routed.ToString();
-        }
-
-        state.Version = "0.6.x";
     }
 }
