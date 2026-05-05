@@ -70,6 +70,12 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
             currentMap = RaidLocation.FactoryDay;
         }
 
+        if (currentMap == RaidLocation.GroundZero || currentMap == RaidLocation.GroundZeroSandbox)
+        {
+            var lvl = pmc.CharacterData.PmcData.Info?.Level ?? 1;
+            currentMap = VagabondService.NormaliseGroundZeroForLevel(currentMap, lvl);
+        }
+
         JsonObject? data = root["data"]?.AsObject();
         JsonObject? locations = data?["locations"]?.AsObject();
 
@@ -82,6 +88,12 @@ public sealed class ChooseRaidLocationsPatch : AbstractPatch
         HashSet<string> allowedMapIds = new(StringComparer.OrdinalIgnoreCase);
 
         RaidLocation transitMap = VagabondLocations.NormaliseMapName(state.TransitState?.ToMap);
+        if (transitMap == RaidLocation.GroundZero || transitMap == RaidLocation.GroundZeroSandbox)
+        {
+            var lvl = pmc.CharacterData.PmcData.Info?.Level ?? 1;
+            transitMap = VagabondService.NormaliseGroundZeroForLevel(transitMap, lvl);
+        }
+
         if (transitMap != RaidLocation.Nil)
         {
             if (VagabondLocations.Locations.TryGetValue(transitMap, out var mapIds))

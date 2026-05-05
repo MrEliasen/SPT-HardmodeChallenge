@@ -29,6 +29,7 @@ internal static class ExfilService
             RaidLocation.FactoryDay => locations.Factory4Day,
             RaidLocation.FactoryNight => locations.Factory4Night,
             RaidLocation.GroundZero => locations.SandboxHigh,
+            RaidLocation.GroundZeroSandbox => locations.Sandbox,
             RaidLocation.Interchange => locations.Interchange,
             RaidLocation.Lighthouse => locations.Lighthouse,
             RaidLocation.Reserve => locations.RezervBase,
@@ -115,6 +116,7 @@ internal static class ExfilService
             [RaidLocation.FactoryDay] = 9100,
             [RaidLocation.FactoryNight] = 9200,
             [RaidLocation.GroundZero] = 9300,
+            [RaidLocation.GroundZeroSandbox] = 9301,
             [RaidLocation.Interchange] = 9400,
             [RaidLocation.Lighthouse] = 9500,
             [RaidLocation.Reserve] = 9600,
@@ -127,21 +129,33 @@ internal static class ExfilService
 
         foreach (var (raid, entry) in ExfilsConfig.Maps)
         {
-            var location = RaidLocationToLocation(databaseService, raid);
-            if (location == null)
-            {
-                continue;
-            }
+            ApplyForRaid(databaseService, raid, entry, raidToOffset);
 
-            if (!VagabondLocations.InverseLookupTable.TryGetValue(raid, out var maps) || maps.Count == 0)
+            // ground_zero.json is the only config; alias to the sandbox-low variant since they share the physical map.
+            if (raid == RaidLocation.GroundZero)
             {
-                continue;
+                ApplyForRaid(databaseService, RaidLocation.GroundZeroSandbox, entry, raidToOffset);
             }
-
-            var mapName = maps.First();
-            var offset = raidToOffset.GetValueOrDefault(raid, 12000);
-            AddExtractions(offset, location, raid, mapName, entry.Extracts, entry.Transits);
         }
+    }
+
+    private static void ApplyForRaid(DatabaseService databaseService, RaidLocation raid, ExfilsConfigEntry entry,
+        Dictionary<RaidLocation, int> raidToOffset)
+    {
+        var location = RaidLocationToLocation(databaseService, raid);
+        if (location == null)
+        {
+            return;
+        }
+
+        if (!VagabondLocations.InverseLookupTable.TryGetValue(raid, out var maps) || maps.Count == 0)
+        {
+            return;
+        }
+
+        var mapName = maps.First();
+        var offset = raidToOffset.GetValueOrDefault(raid, 12000);
+        AddExtractions(offset, location, raid, mapName, entry.Extracts, entry.Transits);
     }
 
     private static void AddExtractions(int pointIdOffset, Location location, RaidLocation raid, string mapName,
@@ -343,6 +357,18 @@ internal static class ExfilService
             case RaidLocation.FactoryNight:
             {
                 raidsToAdd.Add(RaidLocation.FactoryDay);
+                break;
+            }
+
+            case RaidLocation.GroundZero:
+            {
+                raidsToAdd.Add(RaidLocation.GroundZeroSandbox);
+                break;
+            }
+
+            case RaidLocation.GroundZeroSandbox:
+            {
+                raidsToAdd.Add(RaidLocation.GroundZero);
                 break;
             }
         }

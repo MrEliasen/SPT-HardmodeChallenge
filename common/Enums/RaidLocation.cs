@@ -8,6 +8,7 @@ public enum RaidLocation
     FactoryDay,
     FactoryNight,
     [Description("Ground Zero")] GroundZero,
+    [Description("Ground Zero")] GroundZeroSandbox,
     Streets,
     Woods,
     Customs,

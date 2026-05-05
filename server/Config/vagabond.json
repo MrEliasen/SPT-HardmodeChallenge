@@ -97,5 +97,7 @@
   // 1.0 = 100%
   // 0.25 = 25%
   // 0.0 = game default.
-  "HealthOnDeath": 0.0
+  "HealthOnDeath": 0.0,
+  // if enabled, all players (regardless of level) are routed to sandbox_high (the harder Ground Zero variant).
+  "ForceGroundZeroHigh": false
 }
