@@ -46,7 +46,6 @@ public sealed class ProfileBootstrapPatch : AbstractPatch
                 VirtualStashService.ClearAllTraderStashes(sessionId);
                 VagabondService.ResetProfile(sessionId, pmc);
                 VagabondService.PersistProfileIfPossible(sessionId);
-                ExfilService.RemoveHideout(state.HideoutState);
                 return;
             }
 

@@ -16,6 +16,29 @@ public static class Messages
             "Good Luck!";
     }
 
+    public static string OnDeathHideoutFailed()
+    {
+        return
+            "You died, but you have not placed a hideout yet.\n\n" +
+            "Your 'OnDeathGoTo' config is set to 'hideout', but with no hideout to send you to, you stayed where you fell.\n" +
+            "Press CTRL+P (rebind via F12) in a raid to place your hideout entrance.";
+    }
+
+    public static string OnDeathCustomFailed(string raid, string exfil)
+    {
+        return
+            "You died, but the configured custom respawn could not be resolved.\n\n" +
+            $"Tried raid '{raid}' exfil '{exfil}'. Either the raid name is not valid, or the exfil identifier is not present in that raid's exfils config.\n" +
+            "You stayed where you fell. Check your 'vagabond.json' 'OnDeathGoToRaid' and 'OnDeathGoToExfilIdentifier' values, then restart the server.";
+    }
+
+    public static string OnDeathInvalid(string value)
+    {
+        return
+            $"You died, but your 'OnDeathGoTo' value '{value}' is not valid.\n\n" +
+            "Accepted values: 'hideout', 'stay', 'custom'. You stayed where you fell. Fix the value in 'vagabond.json' and restart the server.";
+    }
+
     public static string FirstWarning(bool wipeFirstRaid, bool permadeath)
     {
         var message = "Welcome, Vagabond.\n\n" +

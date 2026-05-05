@@ -42,6 +42,7 @@ public sealed class RaidEndPatch : AbstractPatch
         EndLocalRaidRequestData request, string locationName, out HashSet<string>? __state)
     {
         __state = null;
+
         if (!isDead && VagabondService.ShouldApplyVagabondRules(sessionId))
         {
             var state = StateService.GetState(sessionId);
@@ -191,6 +192,12 @@ public sealed class RaidEndPatch : AbstractPatch
                         state.CurrentMap = VagabondLocations.NormaliseMapName(state.HideoutState?.Map).ToString();
                         state.LastExit = $"{HideoutService.HideoutIdPrefix}{state.HideoutState?.Id}";
                     }
+                    else
+                    {
+                        VagabondLogger.Warning(
+                            $"OnDeathGoTo=hideout but no valid hideout for {sessionId}; staying at {state.CurrentMap}.");
+                        MailerService.SendMail(sessionId, Messages.OnDeathHideoutFailed());
+                    }
 
                     break;
                 }
@@ -198,17 +205,40 @@ public sealed class RaidEndPatch : AbstractPatch
                 case "custom":
                 {
                     var raidLoc = VagabondLocations.NormaliseMapName(VagabondConfig.Config.OnDeathGoToRaid);
-                    if (raidLoc != RaidLocation.Nil)
+                    if (raidLoc == RaidLocation.Nil)
                     {
-                        if (ExfilsConfig.Maps[raidLoc].Extracts.Exists(x =>
-                                x.Identifier.Equals(VagabondConfig.Config.OnDeathGoToExfilIdentifier)))
-                        {
-                            state.CurrentMap = VagabondLocations.NormaliseMapName(VagabondConfig.Config.OnDeathGoToRaid)
-                                .ToString();
-                            state.LastExit = VagabondConfig.Config.OnDeathGoToExfilIdentifier;
-                        }
+                        VagabondLogger.Warning(
+                            $"OnDeathGoTo=custom but OnDeathGoToRaid `{VagabondConfig.Config.OnDeathGoToRaid}` is not a valid raid for {sessionId}; staying at {state.CurrentMap}.");
+                        MailerService.SendMail(sessionId,
+                            Messages.OnDeathCustomFailed(VagabondConfig.Config.OnDeathGoToRaid,
+                                VagabondConfig.Config.OnDeathGoToExfilIdentifier));
+                    }
+                    else if (!ExfilsConfig.Maps[raidLoc].Extracts.Exists(x =>
+                                 x.Identifier.Equals(VagabondConfig.Config.OnDeathGoToExfilIdentifier)))
+                    {
+                        VagabondLogger.Warning(
+                            $"OnDeathGoTo=custom but OnDeathGoToExfilIdentifier `{VagabondConfig.Config.OnDeathGoToExfilIdentifier}` does not exist in {raidLoc} exfils for {sessionId}; staying at {state.CurrentMap}.");
+                        MailerService.SendMail(sessionId,
+                            Messages.OnDeathCustomFailed(VagabondConfig.Config.OnDeathGoToRaid,
+                                VagabondConfig.Config.OnDeathGoToExfilIdentifier));
+                    }
+                    else
+                    {
+                        state.CurrentMap = raidLoc.ToString();
+                        state.LastExit = VagabondConfig.Config.OnDeathGoToExfilIdentifier;
                     }
 
+                    break;
+                }
+
+                case "stay":
+                    break;
+
+                default:
+                {
+                    VagabondLogger.Warning(
+                        $"OnDeathGoTo value `{deathGoTo}` is not valid for {sessionId}; staying at {state.CurrentMap}. Accepted values: hideout, stay, custom.");
+                    MailerService.SendMail(sessionId, Messages.OnDeathInvalid(deathGoTo));
                     break;
                 }
             }
