@@ -10,20 +10,23 @@ You start with limited money to buy a simple loadout from Fence, with some meds 
 [![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/MrEliasen/SPT-Vagabond/bug?style=for-the-badge&label=open%20Issues&color=red)
 ](https://github.com/MrEliasen/SPT-Vagabond/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug)
 
+#### Custom Trader Support
+Since 0.6.0 custom traders are no longer 'officially' added to vagabond. They are fully supported if you add them yourself via the config or the mod authors add an integration. But there will be no custom traders exfils added directly in vagabond. To add traders to existing exfils is quite easy [via the configs](docs/TRADERS.md)
+
+#### ABPS Compatibility
+0.6.1 was tested with ABPS 2.0.16, and a graceful failover is added if the patch could not be applied. ABPS is going through what looks like a rewrite so expect incompatibility.
+
 #### Using SVM?
 Disable the Raid Settings tab completely, it even being enabled is enough to cause conflicts, regardless of whether or not you changed anything within the tab. - Thank you [_liquidrage](https://forge.sp-tarkov.com/user/90917/liquidrage)!
-
-#### Using ABPS ?
-0.6.0 was tested with ABPS 2.0.16, and a graceful failover is added. If your version is not compatible, it will say so in the bepinex logs, but Vagabond with continue to work.
 
 #### Does Quests Work
 They should. If its a quest which requires specific extractions, those will be available only when you have the quest(s). Using such extraction will take you back to the quest giver. Do let me know if I missed any quests / if you find any quests you cannot complete.
 
 ## Main Features
-- Place your hideout entrance anywhere (Press CTRL+P in raid to place your hideout entrance)
+- Place your hideout entrance anywhere (Press CTRL+P in raid to place your hideout entrance, if you use Fika, other players can use your hideout exit as well)
 - Per-trader (and hideout if playing with friends) stash
 - Use trader specific extractions to get access to their shop.
-- Custom trader support (Reserve exfil to get access)
+- Recruit traders into your hideout
 - Custom extractions and transits
 - Remember last exit/transit location
 - Reduce raid loot if you repeat the same raid
@@ -31,7 +34,7 @@ They should. If its a quest which requires specific extractions, those will be a
 
 ## Compatibility
 
-Any mod which makes changes to Extractions, Transits or player spawning (Like selectable entry mod or interaction mods), will likely conflict with this mod and prevent extracts from working.    
+Any mod which makes changes to Extractions, Transits or player spawning (Like selectable entry mod or interaction mods), will likely conflict with this mod and prevent extracts from working.
 Labyrinth has not been tested with this mod.. but.. should hopefully work.
 
 ## Install
