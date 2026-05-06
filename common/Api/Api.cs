@@ -18,6 +18,10 @@ public static class Api
     internal static Func<string, bool>? RemoveTraderLocationImpl;
     internal static Func<IReadOnlyList<TraderLocation>>? GetTraderLocationsImpl;
 
+    internal static Action<string, List<string>>? AddHideoutTradersImpl;
+    internal static Func<string, List<string>, bool>? RemoveHideoutTradersImpl;
+    internal static Func<string, IReadOnlyCollection<string>>? GetHideoutTradersImpl;
+
     internal static Func<string, VagabondSessionState?>? GetStateImpl;
     internal static Action<string, VagabondSessionState>? SaveStateImpl;
 
@@ -60,6 +64,25 @@ public static class Api
     /// </summary>
     public static IReadOnlyList<TraderLocation> GetTraderExtractions()
         => Required(GetTraderLocationsImpl)();
+
+    /// <summary>
+    /// Add traders, by their IDs, to be available via the player's hideout.
+    /// </summary>
+    public static void AddHideoutTraders(string sessionId, List<string> traderIds)
+        => Required(AddHideoutTradersImpl)(sessionId, traderIds);
+
+    /// <summary>
+    /// Remove traders, by their IDs, from the available traders in the player's hideout.
+    /// Returns true if at least one ID was removed.
+    /// </summary>
+    public static bool RemoveHideoutTraders(string sessionId, List<string> traderIds)
+        => Required(RemoveHideoutTradersImpl)(sessionId, traderIds);
+
+    /// <summary>
+    /// Returns a list ID's of the traders which are available in the player's hideout
+    /// </summary>
+    public static IReadOnlyCollection<string> GetHideoutTraders(string sessionId)
+        => Required(GetHideoutTradersImpl)(sessionId);
 
     /// <summary>
     /// Returns the Vagabond session state for the given profile.

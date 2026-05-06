@@ -154,4 +154,82 @@ internal static class HideoutService
     /// </summary>
     internal static IReadOnlyList<TraderLocation> GetTraderLocations()
         => TraderLocations.AsReadOnly();
+
+    /// <summary>
+    /// API: add trader IDs to the player's HideoutTraders list.
+    /// </summary>
+    internal static void AddHideoutTraders(string sessionId, List<string> traderIds)
+    {
+        if (string.IsNullOrWhiteSpace(sessionId) ||traderIds.Count == 0)
+        {
+            return;
+        }
+
+        var state = StateService.GetState(sessionId);
+        var changed = false;
+        foreach (var id in traderIds)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                continue;
+            }
+
+            if (state.HideoutTraders.Add(id))
+            {
+                changed = true;
+            }
+        }
+
+        if (changed)
+        {
+            StateService.SaveState(sessionId, state);
+        }
+    }
+
+    /// <summary>
+    /// API: remove trader IDs from the player's HideoutTraders list.
+    /// </summary>
+    internal static bool RemoveHideoutTraders(string sessionId, List<string> traderIds)
+    {
+        if (string.IsNullOrWhiteSpace(sessionId) || traderIds.Count == 0)
+        {
+            return false;
+        }
+
+        var state = StateService.GetState(sessionId);
+        var wasRemoved = false;
+        foreach (var id in traderIds)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                continue;
+            }
+
+            if (state.HideoutTraders.Remove(id))
+            {
+                wasRemoved = true;
+            }
+        }
+
+        if (wasRemoved)
+        {
+            StateService.SaveState(sessionId, state);
+        }
+
+        return wasRemoved;
+    }
+
+    /// <summary>
+    /// API: returns the list of trader ID's in the player's HideoutTraders.
+    /// </summary>
+    internal static IReadOnlyCollection<string> GetHideoutTraders(string sessionId)
+    {
+        if (string.IsNullOrWhiteSpace(sessionId))
+        {
+            return Array.Empty<string>();
+        }
+
+        var state = StateService.GetState(sessionId);
+        return state.HideoutTraders.ToArray();
+    }
 }
