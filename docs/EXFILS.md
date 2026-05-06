@@ -56,15 +56,21 @@ Use these in `destinationLocation`:
 
 ## Requirements
 
-For transits. Block usage unless conditions are met. Source: [CustomExfilRequirementType.cs](../common/Definitions/CustomExfilRequirementType.cs).
+For extracts and transits. Block usage unless conditions are met. Source: [CustomExfilRequirementType.cs](../common/Definitions/CustomExfilRequirementType.cs).
 
 | `type` | Effect | Uses |
 | --- | --- | --- |
 | `HasItem` | Player must carry `id` (×`count`). | `id`, `count`, `requirementTip` |
 | `EmptySlot` | Equipment slot must be empty. | `requiredSlot` (e.g. `Headwear`, `FaceCover`), `requirementTip` |
+| `Cost` | Player must pay `count` of currency `id`. Money is deducted at extract/transit commit. | `id` (currency template, default Rouble), `count`, `applyDiscount`, `requirementTip` |
 | `None` | Ignored. | — |
 
 `requiredSlot` values are EFT `EquipmentSlot` names: `FirstPrimaryWeapon`, `SecondPrimaryWeapon`, `Holster`, `Scabbard`, `Backpack`, `SecuredContainer`, `TacticalVest`, `ArmorVest`, `Pockets`, `Eyewear`, `FaceCover`, `Headwear`, `Earpiece`, `Dogtag`, `ArmBand`.
+
+For `Cost`, `id` is a currency template id. Supported values:
+- `5449016a4bdc2d6f028b456f` — Rouble (default if `id` is omitted)
+- `5696686a4bdc2da3298b456a` — Dollar
+- `569668774bdc2da2298b4568` — Euro
 
 Example (Red Rebel + Paracord required):
 ```json
@@ -73,6 +79,35 @@ Example (Red Rebel + Paracord required):
   { "type": "HasItem", "id": "5d80c60f86f77440373c4ece", "count": 1, "requirementTip": "Requires Paracord" }
 ]
 ```
+
+Example (50 000 ₽ toll, no Charisma/Fence discount, with Red Rebel + Paracord):
+```json
+"requirements": [
+  { "type": "HasItem", "id": "5c012ffc0db834001d23f03f", "count": 1, "requirementTip": "Requires Red Rebel" },
+  { "type": "HasItem", "id": "5d80c60f86f77440373c4ece", "count": 1, "requirementTip": "Requires Paracord" },
+  { "type": "Cost", "count": 50000, "requirementTip": "Toll" }
+]
+```
+
+### Cost notes
+
+- **Single-stack limit (extracts and transits).** The player must hold a single stack of the currency whose `StackObjectsCount >= price`. Money split across stacks won't satisfy the requirement even if the total is enough — match the vanilla v-ex behavior. Keep extract/transit costs ≤ 500 000 ₽ (the rouble stack cap) and players can pay from a single stack.
+- **`applyDiscount` (default `false`) — transit-only.** When true on a transit, the configured `count` is run through `Profile.GetExfiltrationPrice` so Charisma / Fence loyalty / Mark of Unknown discounts apply (5–25% off depending on stats). When false, transits charge the flat configured value.
+- **Extracts always discount.** EFT's vanilla v-ex pipeline runs the price through the discount formula before showing the prompt. The `applyDiscount` flag is ignored on extracts; the discounted price is what the player sees in `EXFIL_Transfer (NNNN)` and pays. If you need a flat extract price, increase `count` to compensate for the worst-case discount.
+- **Where the money comes from.** Same as vanilla v-ex: any currency stack visible to `Profile.Inventory.GetAllItemByTemplate` — equipment, pockets, secured container, etc.
+- **Non-refundable.** Like v-ex, money is deducted at commit-time. Cancelling the extract/transit after paying does not refund.
+- **Hijacked v-ex.** When `hijackExfil: true` and the template is a vanilla v-ex, a configured `Cost` overwrites the template's vanilla price (the `count` and `id` you set replace the vanilla numbers). Other requirements (HasItem / EmptySlot) are appended on top.
+
+### In-raid prompts
+
+When a transit has a `Cost` requirement, the cost is surfaced in two places:
+
+- **Action button** (bottom of screen, the prompt you press to interact): shows `TRANSFER ₽ (50000)` instead of `INTERACT`. Reuses EFT's vanilla `EXFIL_Transfer` localization, so the format matches v-ex extract prompts and inherits all language translations. When `applyDiscount: true`, this label shows the **post-discount** price the player will actually pay.
+- **Transit timer panel** (top-right, while you're in the trigger zone): a "condition" row appears under the description showing the configured cost in the same format. This row uses the configured `count` directly — discount math isn't applied here because the panel is built before the player walks in. The action button is the authoritative figure.
+
+For mixed-currency transits, both surfaces show a comma-joined list (e.g. `TRANSFER ₽ (50000), $ (200)`).
+
+Extracts get this for free — the vanilla v-ex pipeline already renders `EXFIL_Transfer` on the action button and the discounted price on the timer panel with a strikethrough overlay (no Vagabond involvement).
 
 ## Landing
 
