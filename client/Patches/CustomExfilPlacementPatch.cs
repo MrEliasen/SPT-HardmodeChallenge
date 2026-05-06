@@ -445,7 +445,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
             description = string.IsNullOrWhiteSpace(definition.Description)
                 ? definition.DisplayName
                 : definition.Description,
-            conditions = string.Empty,
+            conditions = BuildTransitConditionsString(definition),
             activateAfterSec = definition.ActivateAfterSeconds,
             time = (ushort)Mathf.Clamp(Mathf.RoundToInt(definition.ExfiltrationTime), 1, ushort.MaxValue),
             target = string.IsNullOrWhiteSpace(definition.AccessKeysSourceLocation)
@@ -490,7 +490,34 @@ internal class CustomExfilPlacementPatch : ModulePatch
             }
         }
 
-        //Vagabond.Log($"Configured Hijacked exfil '{definition.Identifier}'");
+        if (definition.Requirements.Count > 0)
+        {
+            var added = BuildRequirements(definition, template);
+            var existing = template.Requirements ?? Array.Empty<ExfiltrationRequirement>();
+
+            var existingTransfer = existing.OfType<TransferItemRequirement>().FirstOrDefault();
+            var addedTransfer = added.OfType<TransferItemRequirement>().FirstOrDefault();
+
+            if (existingTransfer != null && addedTransfer != null)
+            {
+                existingTransfer.Count = addedTransfer.Count;
+                existingTransfer.Id = addedTransfer.Id;
+                if (!string.IsNullOrWhiteSpace(addedTransfer.RequirementTip))
+                {
+                    existingTransfer.RequirementTip = addedTransfer.RequirementTip;
+                }
+
+                added = added.Where(r => r is not TransferItemRequirement).ToArray();
+            }
+
+            if (added.Length > 0)
+            {
+                var merged = new ExfiltrationRequirement[existing.Length + added.Length];
+                Array.Copy(existing, 0, merged, 0, existing.Length);
+                Array.Copy(added, 0, merged, existing.Length, added.Length);
+                template.Requirements = merged;
+            }
+        }
     }
 
     private static void ConfigureExtractClone(ExfiltrationPoint clone, ExfiltrationPoint template,
@@ -707,8 +734,14 @@ internal class CustomExfilPlacementPatch : ModulePatch
                 continue;
             }
 
+            var reqId = reqDef.Id;
+            if (eftType == ERequirementState.TransferItem && string.IsNullOrWhiteSpace(reqId))
+            {
+                reqId = Currencies.Ruble;
+            }
+
             req.Requirement = eftType;
-            req.Id = reqDef.Id;
+            req.Id = reqId;
             req.Count = reqDef.Count;
             req.RequirementTip = reqDef.RequirementTip;
 
@@ -730,6 +763,29 @@ internal class CustomExfilPlacementPatch : ModulePatch
         return TransitPointLookupField?.GetValue(controller) as Dictionary<int, TransitPoint>;
     }
 
+    private static string BuildTransitConditionsString(CustomExfil definition)
+    {
+        if (definition.Requirements == null || definition.Requirements.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var parts = new List<string>();
+        foreach (var req in definition.Requirements)
+        {
+            if (req.Type != CustomExfilRequirementType.Cost)
+            {
+                continue;
+            }
+
+            var id = string.IsNullOrWhiteSpace(req.Id) ? Currencies.Ruble : req.Id;
+            var shortName = (id + " ShortName").Localized();
+            parts.Add(string.Format("EXFIL_Transfer".Localized(), shortName, req.Count));
+        }
+
+        return parts.Count == 0 ? string.Empty : string.Join(", ", parts);
+    }
+
     private static bool IsCustomExtract(ExfiltrationPoint exfil, List<CustomExfil> definitions)
     {
         return !string.IsNullOrWhiteSpace(exfil?.Settings?.Name)
@@ -744,6 +800,7 @@ internal class CustomExfilPlacementPatch : ModulePatch
         {
             CustomExfilRequirementType.HasItem => ERequirementState.HasItem,
             CustomExfilRequirementType.EmptySlot => ERequirementState.Empty,
+            CustomExfilRequirementType.Cost => ERequirementState.TransferItem,
             _ => ERequirementState.None
         };
     }
@@ -856,6 +913,8 @@ internal class CustomExfilCleanupPatch : ModulePatch
         CustomExfilPlacementPatch.CustomTransitDefinitions.Clear();
         CustomExfilPlacementPatch.ExfilPointTemplateCache.Clear();
         ExfilService.SuppressedCustomExtractPointIds.Clear();
+        TransitCostService.Cleanup();
+        TransitInteractionLabelPatch.ClearCache();
         Vagabond.State.LastRaidStateSyncLocationId = string.Empty;
     }
 }
