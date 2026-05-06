@@ -37,7 +37,7 @@ public sealed class VagabondConfig
     public bool WipeStashOnFirstRaidEntry { get; set; } = true;
     public bool LimitTraderMailAccess { get; set; } = true;
     public bool EnableConsecutiveMapLootReduction { get; set; } = true;
-    public double ConsecutiveMapLootReductionRate { get; set; } = 0.5;
+    public double ConsecutiveMapLootRetentionRate { get; set; } = 0.5;
     public double ConsecutiveMapLootReductionMin { get; set; } = 0.05;
     public double HealthOnDeath { get; set; }
 
